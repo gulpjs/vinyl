@@ -18,7 +18,7 @@
     "test": "mocha --reporter spec"
   },
   "engines": {
-    "node": ">= 0.4.0"
+    "node": ">= 0.8.0"
   },
   "licenses": [
     {
