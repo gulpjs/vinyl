@@ -34,6 +34,10 @@ File.prototype.isNull = function() {
   return isNull(this.contents);
 };
 
+File.prototype.isDirectory = function() {
+  return this.isNull() && this.stat && this.stat.isDirectory();
+};
+
 File.prototype.clone = function() {
   var clonedStat = clone(this.stat);
   var clonedContents = this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
