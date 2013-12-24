@@ -156,20 +156,20 @@ describe('File', function() {
     it('should return false when the contents are a Buffer', function(done) {
       var val = new Buffer("test");
       var file = new File({contents: val, stat: fakeStat});
-      file.isNull().should.equal(false);
+      file.isDirectory().should.equal(false);
       done();
     });
 
     it('should return false when the contents are a Stream', function(done) {
       var val = new Stream();
       var file = new File({contents: val, stat: fakeStat});
-      file.isNull().should.equal(false);
+      file.isDirectory().should.equal(false);
       done();
     });
 
     it('should return true when the contents are a null', function(done) {
       var file = new File({contents: null, stat: fakeStat});
-      file.isNull().should.equal(true);
+      file.isDirectory().should.equal(true);
       done();
     });
   });
