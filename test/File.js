@@ -146,6 +146,34 @@ describe('File', function() {
     });
   });
 
+  describe('isDirectory()', function() {
+    var fakeStat = {
+      isDirectory: function() {
+        return true;
+      }
+    };
+
+    it('should return false when the contents are a Buffer', function(done) {
+      var val = new Buffer("test");
+      var file = new File({contents: val, stat: fakeStat});
+      file.isNull().should.equal(false);
+      done();
+    });
+
+    it('should return false when the contents are a Stream', function(done) {
+      var val = new Stream();
+      var file = new File({contents: val, stat: fakeStat});
+      file.isNull().should.equal(false);
+      done();
+    });
+
+    it('should return true when the contents are a null', function(done) {
+      var file = new File({contents: null, stat: fakeStat});
+      file.isNull().should.equal(true);
+      done();
+    });
+  });
+
   describe('clone()', function() {
     it('should copy all attributes over with Buffer', function(done) {
       var options = {
