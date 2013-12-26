@@ -11,11 +11,14 @@ var cloneBuffer = require('./lib/cloneBuffer');
 function File(file) {
   if (!file) file = {};
 
+  // TODO: should this be moved to vinyl-fs?
   this.cwd = file.cwd || process.cwd();
   this.base = file.base || this.cwd;
+
   this.path = file.path || null;
 
   // stat = fs stats object
+  // TODO: should this be moved to vinyl-fs?
   this.stat = file.stat || null;
 
   // contents = stream, buffer, or null if not read
@@ -34,6 +37,7 @@ File.prototype.isNull = function() {
   return isNull(this.contents);
 };
 
+// TODO: should this be moved to vinyl-fs?
 File.prototype.isDirectory = function() {
   return this.isNull() && this.stat && this.stat.isDirectory();
 };
@@ -99,6 +103,7 @@ Object.defineProperty(File.prototype, 'contents', {
   }
 });
 
+// TODO: should this be moved to vinyl-fs?
 Object.defineProperty(File.prototype, 'relative', {
   get: function() {
     if (!this.base) throw new Error('No base specified! Can not get relative.');
