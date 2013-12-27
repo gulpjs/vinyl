@@ -245,6 +245,8 @@ describe('File', function() {
         should.exist(chunk);
         (chunk instanceof Buffer).should.equal(true, 'should write as a buffer');
         chunk.toString('utf8').should.equal(options.contents.toString('utf8'));
+      });
+      stream.on('end', function(chunk) {
         done();
       });
       var ret = file.pipe(stream);
@@ -285,7 +287,76 @@ describe('File', function() {
       stream.on('data', function(chunk) {
         throw new Error("should not write");
       });
+      stream.on('end', function() {
+        done();
+      });
       var ret = file.pipe(stream);
+      ret.should.equal(stream, 'should return the stream');
+    });
+
+    it('should write to stream with Buffer', function(done) {
+      var options = {
+        cwd: "/",
+        base: "/test/",
+        path: "/test/test.coffee",
+        contents: new Buffer("test")
+      };
+      var file = new File(options);
+      var stream = new Stream.PassThrough();
+      stream.on('data', function(chunk) {
+        should.exist(chunk);
+        (chunk instanceof Buffer).should.equal(true, 'should write as a buffer');
+        chunk.toString('utf8').should.equal(options.contents.toString('utf8'));
+        done();
+      });
+      stream.on('end', function(chunk) {
+        throw new Error("should not end");
+      });
+      var ret = file.pipe(stream, {end: false});
+      ret.should.equal(stream, 'should return the stream');
+    });
+
+    it('should pipe to stream with Stream', function(done) {
+      var testChunk = new Buffer("test");
+      var options = {
+        cwd: "/",
+        base: "/test/",
+        path: "/test/test.coffee",
+        contents: new Stream.PassThrough()
+      };
+      var file = new File(options);
+      var stream = new Stream.PassThrough();
+      stream.on('data', function(chunk) {
+        should.exist(chunk);
+        (chunk instanceof Buffer).should.equal(true, 'should write as a buffer');
+        chunk.toString('utf8').should.equal(testChunk.toString('utf8'));
+        done();
+      });
+      stream.on('end', function(chunk) {
+        throw new Error("should not end");
+      });
+      var ret = file.pipe(stream, {end: false});
+      ret.should.equal(stream, 'should return the stream');
+
+      file.contents.write(testChunk);
+    });
+
+    it('should do nothing with null', function(done) {
+      var options = {
+        cwd: "/",
+        base: "/test/",
+        path: "/test/test.coffee",
+        contents: null
+      };
+      var file = new File(options);
+      var stream = new Stream.PassThrough();
+      stream.on('data', function(chunk) {
+        throw new Error("should not write");
+      });
+      stream.on('end', function(chunk) {
+        throw new Error("should not end");
+      });
+      var ret = file.pipe(stream, {end: false});
       ret.should.equal(stream, 'should return the stream');
       process.nextTick(done);
     });

@@ -82,15 +82,25 @@ Returns true if file.contents is null.
 
 Returns a new File object with all attributes cloned.
 
-### pipe(stream)
+### pipe(stream, options)
 
-If file.contents is a Buffer, it will write it to the stream.
+If file.contents is a Buffer, it will write it to the stream and end it except
+ if options.end is set to `false`.
 
-If file.contents is a Stream, it will pipe it to the stream.
+If file.contents is a Stream, it will pipe it to the stream and transmit the end
+ event to it except if options.end is set to `false`.
 
-If file.contents is null, it will do nothing.
+If file.contents is null, it will end the stream except if options.end is set
+ to `false`.
 
 Returns the stream.
+
+#### options.end
+
+Emit the `end` event to the piped in stream
+
+Type: `Boolean`  
+Default: `true`
 
 ### inspect()
 
