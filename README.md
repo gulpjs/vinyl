@@ -82,13 +82,15 @@ Returns true if file.contents is null.
 
 Returns a new File object with all attributes cloned.
 
-### pipe(stream)
+### pipe(stream[, opt])
 
 If file.contents is a Buffer, it will write it to the stream.
 
 If file.contents is a Stream, it will pipe it to the stream.
 
 If file.contents is null, it will do nothing.
+
+If opt.end is true, the destination stream will not be ended (same as node core).
 
 Returns the stream.
 

@@ -55,16 +55,26 @@ File.prototype.clone = function() {
   });
 };
 
-File.prototype.pipe = function(stream) {
+File.prototype.pipe = function(stream, opt) {
+  if (!opt) opt = {};
+  if (typeof opt.end === 'undefined') opt.end = true;
+
   if (this.isStream()) {
-    return this.contents.pipe(stream);
+    return this.contents.pipe(stream, opt);
   }
   if (this.isBuffer()) {
-    stream.write(this.contents);
+    if (opt.end) {
+      stream.end(this.contents);
+    } else {
+      stream.write(this.contents);
+    }
+    return stream;
+  }
+  if (this.isNull()) {
+    if (opt.end) stream.end();
     return stream;
   }
 
-  // must be null, dont do anything
   return stream;
 };
 
