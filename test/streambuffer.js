@@ -2,11 +2,12 @@ var File = require('../');
 var Stream = require('stream');
 var isBuffer = require('../lib/isBuffer');
 var isStream = require('../lib/isStream');
+var es = require('event-stream');
 
 var should = require('should');
 require('mocha');
 
-describe.only('Absctract', function() {
+describe('Using', function() {
 
   // Helpers
   function streamPrefixer(headerText) {
@@ -14,70 +15,203 @@ describe.only('Absctract', function() {
     stream.push(headerText);
     return stream;
   }
-  function bufferPrefixer(headerText) {
+  function syncBufferPrefixer(headerText) {
     return function(err, buf) {
       should.not.exist(err);
       if(null === buf) {
         return Buffer(headerText);
       }
-      return Buffer.concat(Buffer(headerText), buf);
+      return Buffer.concat([Buffer(headerText), buf]);
     }
   }
-
-  describe('using streams', function() {
-
-    it('should work with buffer set to false and buffer in', function(done) {
-      var file = new File({contents: Buffer('test'), buffer: false});
-      file.contents = file.pipe(streamPrefixer('plop'));
-      file.getBuffer(function(err, buf) {
-        should.not.exist(err);
-        isBuffer(buf).should.equal(true);
-        buf.toString('utf8').should.equal('ploptest');
-        done();
-      });
-    });
-
-    it('should work with buffer set to true and buffer in', function(done) {
-      var file = new File({contents: Buffer('test'), buffer: true});
-      file.contents = file.pipe(streamPrefixer('plop'));
-      file.getBuffer(function(err, buf) {
-        should.not.exist(err);
-        isBuffer(buf).should.equal(true);
-        buf.toString('utf8').should.equal('ploptest');
-        done();
-      });
-    });
-
-    it('should work with buffer set to false and stream in', function(done) {
-      var val = new Stream.Transform();
-      var file = new File({contents: val, buffer: false});
-      val.push(Buffer('te'));
-      val.push(Buffer('st'));
-      val.end();
-      file.contents = file.pipe(streamPrefixer('plop'));
-      file.getBuffer(function(err, buf) {
-        should.not.exist(err);
-        isBuffer(buf).should.equal(true);
-        buf.toString('utf8').should.equal('ploptest');
-        done();
-      });
-    });
-
-    it('should work with buffer set to true and stream in', function(done) {
+  function asyncBufferPrefixer(headerText) {
+    return function(err, buf, cb) {
+      should.not.exist(err);
+      if(null === buf) {
+        setTimeout(function() {
+          cb(null, Buffer(headerText));
+        }, 0);
+      } else {
+        setTimeout(function() {
+          cb(null, Buffer.concat([Buffer(headerText), buf]));
+        }, 0);
+      }
+    }
+  }
+  function streamMaker(end) {
       var val = new Stream.PassThrough();
-      var file = new File({contents: val, buffer: true});
-      val.write(Buffer('te'));
-      val.write(Buffer('st'));
-      val.end();
-      setTimeout(function() {
-        file.contents = file.pipe(streamPrefixer('plop'));
-        file.getBuffer(function(err, buf) {
-          should.not.exist(err);
-          isBuffer(buf).should.equal(true);
-          buf.toString('utf8').should.equal('ploptest');
-          done();
+      val.on('pipe', (function(chunks) {
+        chunks.forEach(val.write);
+        if (end) val.end();
+      })([].slice.call(arguments, 1)));
+  }
+
+  describe('streams', function() {
+
+    it('should work with the pipe method', function(done) {
+      var file = new File({
+        contents: es.readArray([Buffer('te'), Buffer('st')])
+      });
+      file.contents = file.pipe(streamPrefixer('plop'));
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('ploptest');
+        done();
+      }));
+    });
+
+    it('should work with multiple pipe calls', function(done) {
+      var file = new File({
+        contents: es.readArray([Buffer('te'), Buffer('st')])
+      });
+      file.contents = file.pipe(streamPrefixer('plop'));
+      file.contents = file.pipe(streamPrefixer('plip'));
+      file.contents = file.pipe(streamPrefixer('plap'));
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('plapplipploptest');
+        done();
+      }));
+    });
+
+    it('should work with the transform method', function(done) {
+      var file = new File({
+        contents: es.readArray(['te', 'st'])
+      });
+      file.transform(function() {
+        return streamPrefixer('plop')
+      });
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('ploptest');
+        done();
+      }));
+    });
+
+    it('should work with multiple transform calls', function(done) {
+      var file = new File({
+        contents: es.readArray(['te', 'st'])
+      });
+      file.transform(function() {
+        return streamPrefixer('plop');
+      });
+      file.transform(function() {
+        return streamPrefixer('plip');
+      });
+      file.transform(function() {
+        return streamPrefixer('plap');
+      });
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('plapplipploptest');
+        done();
+      }));
+    });
+
+  });
+
+  describe('buffers synchonously', function() {
+
+    it('should work with the transform method', function(done) {
+      var file = new File({
+        contents: es.readArray(['te', 'st'])
+      });
+      file.transform(syncBufferPrefixer('plop'));
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('ploptest');
+        done();
+      }));
+    });
+
+    it('should work with multiple transform calls', function(done) {
+      var file = new File({
+        contents: es.readArray(['te', 'st'])
+      });
+      file.transform(syncBufferPrefixer('plop'));
+      file.transform(syncBufferPrefixer('plip'));
+      file.transform(syncBufferPrefixer('plap'));
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('plapplipploptest');
+        done();
+      }));
+    });
+
+  });
+
+  describe('buffers asynchonously', function() {
+
+    it('should work with the transform method', function(done) {
+      var file = new File({
+        contents: es.readArray(['te', 'st'])
+      });
+      file.transform(asyncBufferPrefixer('plop'));
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('ploptest');
+        done();
+      }));
+    });
+
+    it('should work with multiple transform calls', function(done) {
+      var file = new File({
+        contents: es.readArray(['te', 'st'])
+      });
+      file.transform(asyncBufferPrefixer('plop'));
+      file.transform(asyncBufferPrefixer('plip'));
+      file.transform(asyncBufferPrefixer('plap'));
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('plapplipploptest');
+        done();
+      }));
+    });
+
+  });
+
+  describe('nested contents', function() {
+
+    it('should work', function(done) {
+      var file = new File({
+        contents: es.readArray(['te', 'st'])
+      });
+      file.transform(asyncBufferPrefixer('plop'));
+      file.transform(syncBufferPrefixer('plip'));
+      file.transform(function() {
+          return streamPrefixer('plap');
+      });
+      file.transform(asyncBufferPrefixer('plop'));
+      file.transform(syncBufferPrefixer('plip'));
+      file.transform(function() {
+          return streamPrefixer('plap');
+      });
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('plapplipplopplapplipploptest');
+        done();
+      }));
+    });
+
+    it('should be chainable', function(done) {
+      var file = new File({
+        contents: es.readArray(['te', 'st'])
+      });
+      file.transform(asyncBufferPrefixer('plop'))
+        .transform(syncBufferPrefixer('plip'))
+        .transform(function() {
+          return streamPrefixer('plap');
+        })
+        .transform(asyncBufferPrefixer('plop'))
+        .transform(syncBufferPrefixer('plip'))
+        .transform(function() {
+          return streamPrefixer('plap');
         });
-      },0);
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('plapplipplopplapplipploptest');
+        done();
+      }));
     });
 
   });
