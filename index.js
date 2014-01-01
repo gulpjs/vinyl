@@ -37,6 +37,15 @@ File.prototype.isNull = function() {
   return isNull(this.contents);
 };
 
+// Old API
+File.prototype.isBuffer = function() {
+  return false;
+};
+
+File.prototype.isStream = function() {
+  return !isNull(this.contents);
+};
+
 // TODO: should this be moved to vinyl-fs?
 File.prototype.isDirectory = function() {
   return this.isNull() && this.stat && this.stat.isDirectory();
