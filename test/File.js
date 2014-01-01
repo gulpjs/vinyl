@@ -79,50 +79,6 @@ describe('File', function() {
       done();
     });
   });
-  
-  describe('isBuffer()', function() {
-    it('should return true when the contents are a Buffer', function(done) {
-      var val = new Buffer("test");
-      var file = new File({contents: val});
-      file.isBuffer().should.equal(true);
-      done();
-    });
-
-    it('should return false when the contents are a Stream', function(done) {
-      var val = new Stream();
-      var file = new File({contents: val});
-      file.isBuffer().should.equal(false);
-      done();
-    });
-
-    it('should return false when the contents are a null', function(done) {
-      var file = new File({contents: null});
-      file.isBuffer().should.equal(false);
-      done();
-    });
-  });
-
-  describe('isStream()', function() {
-    it('should return false when the contents are a Buffer', function(done) {
-      var val = new Buffer("test");
-      var file = new File({contents: val});
-      file.isStream().should.equal(false);
-      done();
-    });
-
-    it('should return true when the contents are a Stream', function(done) {
-      var val = new Stream();
-      var file = new File({contents: val});
-      file.isStream().should.equal(true);
-      done();
-    });
-
-    it('should return false when the contents are a null', function(done) {
-      var file = new File({contents: null});
-      file.isStream().should.equal(false);
-      done();
-    });
-  });
 
   describe('isNull()', function() {
     it('should return false when the contents are a Buffer', function(done) {
@@ -199,7 +155,8 @@ describe('File', function() {
         cwd: "/",
         base: "/test/",
         path: "/test/test.coffee",
-        contents: new Stream()
+        contents: new Stream(),
+        buffer: false
       };
       var file = new File(options);
       var file2 = file.clone();
