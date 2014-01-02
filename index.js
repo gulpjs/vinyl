@@ -93,17 +93,16 @@ File.prototype.transform = function(fn, options) {
         if(2 === fn.length) {
           this.emit('data', fn(null, Buffer(buf)));
           return this.emit('end');
-        // Asynchronous callback
-        } else {
-          fn(null, Buffer(buf), function(err, val) {
-            if(err) {
-              _that.emit('error', err);
-            } else {
-              _that.emit('data', val);
-            }
-            return _that.emit('end');
-          });
         }
+        // Asynchronous callback
+        fn(null, Buffer(buf), function(err, val) {
+          if(err) {
+            _that.emit('error', err);
+          } else {
+            _that.emit('data', val);
+          }
+          return _that.emit('end');
+        });
       } else {
         streamCb = cb;
       }
@@ -114,31 +113,17 @@ File.prototype.transform = function(fn, options) {
   
 };
 
-File.prototype.pipe = function(val, options) {
-  var stream;
+File.prototype.pipe = function(stream, options) {
   
   options = options || {};
   options.end = ('boolean'===typeof options.end ? options.end : true);
 
-  if (isStream(val)) {
-    if (this.isNull()) {
-      stream = val;
-      if (options.end) {
-        stream.end();
-      }
-    } else {
-      stream = this.contents.pipe(val, options);
+  if (this.isNull()) {
+    if (options.end) {
+      stream.end();
     }
-  } else if (isBuffer(val)) {
-    stream = es.readable(function(count, cb) {
-      this.emit('data', val);
-      if (options.end) {
-        this.emit('end');
-      }
-      cb();
-    });
   } else {
-    throw new Error('The File.pipe method accept only buffers or streams.');
+    stream = this.contents.pipe(stream, options);
   }
 
   return stream;
@@ -169,10 +154,10 @@ Object.defineProperty(File.prototype, 'contents', {
   },
   set: function(val) {
     if(isBuffer(val)) {
-      throw new Error("File.contents cannot contain a Buffer, use pipe.");
+      throw new Error("File.contents cannot contain a Buffer, use File.transform.");
     }
     if (!isStream(val) && !isNull(val)) {
-      throw new Error("File.contents can only be a Stream, or null.");
+      throw new Error("File.contents can only be a Stream or null.");
     }
     this._contents = val;
   }
