@@ -161,6 +161,22 @@ describe('Using', function() {
       }));
     });
 
+    it('should work with the transform method but not end when end is false', function(done) {
+      var file = new File({
+        contents: es.readArray(['te', 'st'])
+      });
+      file.transform(syncBufferPrefixer('plop'), {end: false});
+      var stream = new Stream.PassThrough();
+      stream.on('data', function(chunk) {
+        throw new Error("should not write", chunk);
+      });
+      stream.on('end', function(chunk) {
+        throw new Error("should not end");
+      });
+      file.pipe(stream, {end: false});
+      process.nextTick(done);
+    });
+
     it('should work with multiple transform calls', function(done) {
       var file = new File({
         contents: es.readArray(['te', 'st'])

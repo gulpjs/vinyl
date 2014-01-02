@@ -6,8 +6,8 @@ var clone = require('lodash.clone');
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
+var BufferStream = require('./lib/bufferStream');
 var inspectStream = require('./lib/inspectStream');
-var es = require('event-stream');
 
 // Constructor
 function File(file) {
@@ -71,35 +71,7 @@ File.prototype.transform = function(val, options) {
     this._contents = this.pipe(val, options);
   // Dealing with buffers
   } else if ('function' === typeof val) {
-
-    // Convert the previous stream contents to a buffer
-    this.pipe(es.wait(function(err, data) {
-      if (err) {
-        val(err);
-        return;
-      }
-      buf = Buffer(data || '');
-      if (streamCb) streamCb();
-    }), options);
-
-    // Creating a Readable stream to substituate the old stream
-    this._contents = es.readable(function(count, cb) {
-      var _that = this;
-      if (buf) {
-        // Asynchronous callback
-        val(null, buf, function(err, buf) {
-          if (err) {
-            _that.emit('error', err);
-          } else if (null !== buf) {
-            _that.emit('data', buf);
-          }
-          return _that.emit('end');
-        });
-      } else {
-        streamCb = cb;
-      }
-    });
-
+    this._contents = this.pipe(new BufferStream(val), options);
   } else {
     throw new Error('The File.transform method must be called with a callback'
       +' function for buffers or with a stream.');
