@@ -76,11 +76,11 @@ File.prototype.transform = function(val, options) {
     this.pipe(es.wait(function(err, data) {
       if (err) {
         val(err);
-        return this;
+        return;
       }
       buf = Buffer(data || '');
       if (streamCb) streamCb();
-    }));
+    }), options);
 
     // Creating a Readable stream to substituate the old stream
     this._contents = es.readable(function(count, cb) {
@@ -136,7 +136,7 @@ File.prototype.inspect = function() {
   }
 
   if (! this.isNull()) {
-    inspect.push(inspectStream(this.contents));
+    inspect.push(inspectStream(this._contents));
   }
 
   return '<File '+inspect.join(' ')+'>';
