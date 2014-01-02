@@ -34,7 +34,7 @@ function File(file) {
 }
 
 File.prototype.isNull = function() {
-  return isNull(this.contents);
+  return isNull(this._contents);
 };
 
 // Old API
@@ -43,7 +43,7 @@ File.prototype.isBuffer = function() {
 };
 
 File.prototype.isStream = function() {
-  return !isNull(this.contents);
+  return !isNull(this._contents);
 };
 
 // TODO: should this be moved to vinyl-fs?
@@ -59,12 +59,12 @@ File.prototype.clone = function() {
     base: this.base,
     path: this.path,
     stat: clonedStat,
-    contents: this.contents
+    contents: this._contents
   });
 };
 
 File.prototype.transform = function(fn, options) {
-  var streamCb = null, buf = null;
+  var streamCb, buf;
 
   if ('function' !== typeof fn) {
     throw new Error('The File.transform method must be called with a function.');
@@ -72,34 +72,39 @@ File.prototype.transform = function(fn, options) {
 
   // Dealing with streams
   if (1 >= fn.length) {
-    this.contents = this.pipe(fn(this.contents), options);
+    this._contents = this.pipe(fn(this._contents), options);
 
   // Dealing with buffers
   } else {
-    // Convert the previous streams contents to a buffer
-    this.contents.pipe(es.wait(function(err, data) {
+
+    // Convert the previous stream contents to a buffer
+    this.pipe(es.wait(function(err, data) {
       if (err) {
         fn(err);
         return this;
       }
-      buf = data;
+      buf = Buffer(data || '');
       if (streamCb) streamCb();
-    }));    
+    }));
+
     // Creating a Readable stream to substituate the old stream
-    this.contents = es.readable(function(count, cb) {
+    this._contents = es.readable(function(count, cb) {
       var _that = this;
       if (buf) {
         // Synchronous callback
-        if(2 === fn.length) {
-          this.emit('data', fn(null, Buffer(buf)));
+        if (2 === fn.length) {
+          buf = fn(null, buf);
+          if (null !== buf) {
+            this.emit('data', buf);
+          }
           return this.emit('end');
         }
         // Asynchronous callback
-        fn(null, Buffer(buf), function(err, val) {
-          if(err) {
+        fn(null, buf, function(err, buf) {
+          if (err) {
             _that.emit('error', err);
-          } else {
-            _that.emit('data', val);
+          } else if (null !== buf) {
+            _that.emit('data', buf);
           }
           return _that.emit('end');
         });
@@ -107,6 +112,7 @@ File.prototype.transform = function(fn, options) {
         streamCb = cb;
       }
     });
+
   }
 
   return this;
@@ -123,7 +129,7 @@ File.prototype.pipe = function(stream, options) {
       stream.end();
     }
   } else {
-    stream = this.contents.pipe(stream, options);
+    stream = this._contents.pipe(stream, options);
   }
 
   return stream;

@@ -60,6 +60,16 @@ describe('Using', function() {
       }));
     });
 
+    it('should work with the pipe method and contents are null', function(done) {
+      var file = new File();
+      file.contents = file.pipe(streamPrefixer('plop'));
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('plop');
+        done();
+      }));
+    });
+
     it('should work with multiple pipe calls', function(done) {
       var file = new File({
         contents: es.readArray([Buffer('te'), Buffer('st')])
@@ -84,6 +94,18 @@ describe('Using', function() {
       file.contents.pipe(es.wait(function(err, data) {
         should.not.exist(err);
         data.should.equal('ploptest');
+        done();
+      }));
+    });
+
+    it('should work with the transform method when contents are null', function(done) {
+      var file = new File();
+      file.transform(function() {
+        return streamPrefixer('plop')
+      });
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('plop');
         done();
       }));
     });
@@ -124,6 +146,30 @@ describe('Using', function() {
       }));
     });
 
+    it('should work with the transform method when returning null', function(done) {
+      var file = new File({
+        contents: es.readArray(['te', 'st'])
+      });
+      file.transform(function(err, buf){
+        return null;
+      });
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('');
+        done();
+      }));
+    });
+
+    it('should work with the transform method when contents are null', function(done) {
+      var file = new File();
+      file.transform(syncBufferPrefixer('plop'));
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('plop');
+        done();
+      }));
+    });
+
     it('should work with multiple transform calls', function(done) {
       var file = new File({
         contents: es.readArray(['te', 'st'])
@@ -150,6 +196,32 @@ describe('Using', function() {
       file.contents.pipe(es.wait(function(err, data) {
         should.not.exist(err);
         data.should.equal('ploptest');
+        done();
+      }));
+    });
+
+    it('should work with the transform method when returning null', function(done) {
+      var file = new File({
+        contents: es.readArray(['te', 'st'])
+      });
+      file.transform(function(err, buf, cb){
+        setTimeout(function() {
+          cb(null, null);
+        }, 0);
+      });
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('');
+        done();
+      }));
+    });
+
+    it('should work with the transform method when contents are null', function(done) {
+      var file = new File();
+      file.transform(asyncBufferPrefixer('plop'));
+      file.contents.pipe(es.wait(function(err, data) {
+        should.not.exist(err);
+        data.should.equal('plop');
         done();
       }));
     });
