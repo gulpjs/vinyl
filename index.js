@@ -63,24 +63,19 @@ File.prototype.clone = function() {
   });
 };
 
-File.prototype.transform = function(fn, options) {
+File.prototype.transform = function(val, options) {
   var streamCb, buf;
 
-  if ('function' !== typeof fn) {
-    throw new Error('The File.transform method must be called with a function.');
-  }
-
   // Dealing with streams
-  if (1 >= fn.length) {
-    this._contents = this.pipe(fn(this._contents), options);
-
+  if (isStream(val)) {
+    this._contents = this.pipe(val, options);
   // Dealing with buffers
-  } else {
+  } else if ('function' === typeof val) {
 
     // Convert the previous stream contents to a buffer
     this.pipe(es.wait(function(err, data) {
       if (err) {
-        fn(err);
+        val(err);
         return this;
       }
       buf = Buffer(data || '');
@@ -91,16 +86,8 @@ File.prototype.transform = function(fn, options) {
     this._contents = es.readable(function(count, cb) {
       var _that = this;
       if (buf) {
-        // Synchronous callback
-        if (2 === fn.length) {
-          buf = fn(null, buf);
-          if (null !== buf) {
-            this.emit('data', buf);
-          }
-          return this.emit('end');
-        }
         // Asynchronous callback
-        fn(null, buf, function(err, buf) {
+        val(null, buf, function(err, buf) {
           if (err) {
             _that.emit('error', err);
           } else if (null !== buf) {
@@ -113,6 +100,9 @@ File.prototype.transform = function(fn, options) {
       }
     });
 
+  } else {
+    throw new Error('The File.transform method must be called with a callback'
+      +' function for buffers or with a stream.');
   }
 
   return this;

@@ -16,12 +16,13 @@ describe('Using', function() {
     return stream;
   }
   function syncBufferPrefixer(headerText) {
-    return function(err, buf) {
+    return function(err, buf, cb) {
       should.not.exist(err);
       if(null === buf) {
-        return Buffer(headerText);
+        cb(null, Buffer(headerText));
+      } else {
+        cb(null, Buffer.concat([Buffer(headerText), buf]));
       }
-      return Buffer.concat([Buffer(headerText), buf]);
     }
   }
   function asyncBufferPrefixer(headerText) {
@@ -88,9 +89,7 @@ describe('Using', function() {
       var file = new File({
         contents: es.readArray(['te', 'st'])
       });
-      file.transform(function() {
-        return streamPrefixer('plop')
-      });
+      file.transform(streamPrefixer('plop'));
       file.contents.pipe(es.wait(function(err, data) {
         should.not.exist(err);
         data.should.equal('ploptest');
@@ -100,9 +99,7 @@ describe('Using', function() {
 
     it('should work with the transform method when contents are null', function(done) {
       var file = new File();
-      file.transform(function() {
-        return streamPrefixer('plop')
-      });
+      file.transform(streamPrefixer('plop'));
       file.contents.pipe(es.wait(function(err, data) {
         should.not.exist(err);
         data.should.equal('plop');
@@ -114,15 +111,9 @@ describe('Using', function() {
       var file = new File({
         contents: es.readArray(['te', 'st'])
       });
-      file.transform(function() {
-        return streamPrefixer('plop');
-      });
-      file.transform(function() {
-        return streamPrefixer('plip');
-      });
-      file.transform(function() {
-        return streamPrefixer('plap');
-      });
+      file.transform(streamPrefixer('plop'));
+      file.transform(streamPrefixer('plip'));
+      file.transform(streamPrefixer('plap'));
       file.contents.pipe(es.wait(function(err, data) {
         should.not.exist(err);
         data.should.equal('plapplipploptest');
@@ -150,8 +141,8 @@ describe('Using', function() {
       var file = new File({
         contents: es.readArray(['te', 'st'])
       });
-      file.transform(function(err, buf){
-        return null;
+      file.transform(function(err, buf, cb){
+        cb(null, null);
       });
       file.contents.pipe(es.wait(function(err, data) {
         should.not.exist(err);
@@ -250,14 +241,10 @@ describe('Using', function() {
       });
       file.transform(asyncBufferPrefixer('plop'));
       file.transform(syncBufferPrefixer('plip'));
-      file.transform(function() {
-          return streamPrefixer('plap');
-      });
+      file.transform(streamPrefixer('plap'));
       file.transform(asyncBufferPrefixer('plop'));
       file.transform(syncBufferPrefixer('plip'));
-      file.transform(function() {
-          return streamPrefixer('plap');
-      });
+      file.transform(streamPrefixer('plap'));
       file.contents.pipe(es.wait(function(err, data) {
         should.not.exist(err);
         data.should.equal('plapplipplopplapplipploptest');
@@ -271,14 +258,10 @@ describe('Using', function() {
       });
       file.transform(asyncBufferPrefixer('plop'))
         .transform(syncBufferPrefixer('plip'))
-        .transform(function() {
-          return streamPrefixer('plap');
-        })
+        .transform(streamPrefixer('plap'))
         .transform(asyncBufferPrefixer('plop'))
         .transform(syncBufferPrefixer('plip'))
-        .transform(function() {
-          return streamPrefixer('plap');
-        });
+        .transform(streamPrefixer('plap'));
       file.contents.pipe(es.wait(function(err, data) {
         should.not.exist(err);
         data.should.equal('plapplipplopplapplipploptest');
