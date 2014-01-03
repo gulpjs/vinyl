@@ -27,7 +27,7 @@ var coffeeFile = new File({
   cwd: "/",
   base: "/test/",
   path: "/test/file.coffee"
-  contents: new Buffer("test = 123")
+  contents: fs.createReadStream("/test/file.coffee")
 });
 ```
 
@@ -54,44 +54,44 @@ Default: `null`
 
 #### options.stat
 
-The result of an fs.stat call. See [fs.Stats](http://nodejs.org/api/fs.html#fs_class_fs_stats) for more information.
+The result of an `fs.stat` call. See
+ [fs.Stats](http://nodejs.org/api/fs.html#fs_class_fs_stats) for more
+ information.
 
 Type: `fs.Stats`  
 Default: `null`
 
 #### options.contents
 
-File contents.
+File contents as a stream.
 
-Type: `Buffer, Stream, or null`  
+Type: `Stream, or null`  
 Default: `null`
 
 ### isBuffer()
 
-Returns true if file.contents is a Buffer.
+(Deprecated) Always returns `false`. Use the `File.transform` method to deal
+ with buffers.
 
 ### isStream()
 
-Returns true if file.contents is a Stream.
+(Deprecated) Returns `true` when `file.contents` is not `null`.
 
 ### isNull()
 
-Returns true if file.contents is null.
+Returns `true` if `file.contents` is `null`.
 
 ### clone()
 
-Returns a new File object with all attributes cloned.
+Returns a new `File` object with all attributes cloned.
 
 ### pipe(stream, options)
 
-If file.contents is a Buffer, it will write it to the stream and end it except
- if options.end is set to `false`.
+If `file.contents` is a `Stream`, it will pipe it to the given stream and emit
+ the `'end'` event to it except if `options.end` is set to `false`.
 
-If file.contents is a Stream, it will pipe it to the stream and transmit the end
- event to it except if options.end is set to `false`.
-
-If file.contents is null, it will end the stream except if options.end is set
- to `false`.
+If `file.contents` is `null`, it will end the stream except if `options.end` is
+ set to `false`.
 
 Returns the stream.
 
@@ -102,13 +102,66 @@ Emit the `end` event to the piped in stream
 Type: `Boolean`  
 Default: `true`
 
+### transform(val, options)
+
+If val is a Stream, it will pipe the internal stream to it and set it as the
+ new internal stream.
+
+If val is a Function, it will buffer the internal stream contents and call the
+ given function with 3 parameters:
+* an optionnal `Error` object, will be `null` if none
+* the collected `Buffer`
+* the callback `Function` wich accept an `Error` object or null if none and the
+   transformed `Buffer`.
+
+Returns the File instance in order to be chained.
+
+#### Sample
+
+Using streams:
+
+```js
+  coffeeFile.transform(myTransformStream)
+    .transform(myTransformStream2)
+    .transform(myTransformStream3);
+```
+
+Using buffers:
+
+```js
+  coffeeFile.transform(function(err, buf, callback) {
+    // Dealing with errors
+    if(err) {
+      throw err;
+    }
+    if(!buf.length) {
+      callback(new Error('Cannot append text to an empty file.'));
+      return;
+    }
+    // Append a text to the Buffer
+    buf = Buffer.concat([
+      Buffer('// Generated at ' + new Date()),
+      buf
+    ]);
+    // Pipe the result back into the stream (can be called asynchronously)
+    callback(null, buf);
+  });
+```
+
+#### options.end
+
+Emit the `end` event to the piped in stream
+
+Type: `Boolean`  
+Default: `true`
+
 ### inspect()
 
-Returns a pretty String interpretation of the File. Useful for console.log.
+Returns a pretty `String` interpretation of the `File`. Useful for `console.log`.
 
 ### relative
 
-Returns path.relative for the file base and file path.
+Returns `path.relative` for the file base and file path.
 
 Example:
 
