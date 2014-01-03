@@ -6,7 +6,7 @@ var clone = require('lodash.clone');
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
-var BufferStream = require('./lib/bufferStream');
+var BufferStream = require('bufferstreams');
 var inspectStream = require('./lib/inspectStream');
 
 // Constructor

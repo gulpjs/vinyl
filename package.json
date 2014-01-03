@@ -1,13 +1,14 @@
 {
   "name": "vinyl",
   "description": "A virtual file format",
-  "version": "0.3.0",
+  "version": "0.2.0",
   "homepage": "http://github.com/wearefractal/vinyl",
   "repository": "git://github.com/wearefractal/vinyl.git",
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
   "main": "./index.js",
   "dependencies": {
-    "lodash.clone": "~2.4.1"
+    "lodash.clone": "~2.4.1",
+    "bufferstreams": "~0.0.1"
   },
   "devDependencies": {
     "mocha": "*",
