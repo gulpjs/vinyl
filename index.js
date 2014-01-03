@@ -77,6 +77,8 @@ File.prototype.transform = function(val, options) {
       +' function for buffers or with a stream.');
   }
 
+  this._contents.pause();
+
   return this;
   
 };

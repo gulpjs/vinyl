@@ -1,7 +1,7 @@
 {
   "name": "vinyl",
   "description": "A virtual file format",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "homepage": "http://github.com/wearefractal/vinyl",
   "repository": "git://github.com/wearefractal/vinyl.git",
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
@@ -18,7 +18,7 @@
     "test": "mocha --reporter spec"
   },
   "engines": {
-    "node": ">= 0.9.0"
+    "node": ">= 10.0"
   },
   "licenses": [
     {
