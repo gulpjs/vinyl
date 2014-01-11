@@ -1,5 +1,6 @@
 var File = require('../');
 var Stream = require('stream');
+var fs = require('fs');
 
 var should = require('should');
 require('mocha');
@@ -229,8 +230,28 @@ describe('File', function() {
       should.not.exist(file2.contents);
       done();
     });
+
+    it('should properly clone the `stat` property', function(done) {
+      var options = {
+        cwd: "/",
+        base: "/test/",
+        path: "/test/test.js",
+        contents: new Buffer("test"),
+        stat: fs.statSync(__filename)
+      };
+
+      var file = new File(options);
+      var copy = file.clone();
+
+      copy.stat.isFile().should.be.true;
+      copy.stat.isDirectory().should.be.false;
+      should(file.stat instanceof fs.Stats).be.true;
+      should(copy.stat instanceof fs.Stats).be.true;
+
+      done();
+    });
   });
-  
+
   describe('pipe()', function() {
     it('should write to stream with Buffer', function(done) {
       var options = {
