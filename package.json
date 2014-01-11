@@ -6,7 +6,9 @@
   "repository": "git://github.com/wearefractal/vinyl.git",
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
   "main": "./index.js",
-  "dependencies": {},
+  "dependencies": {
+    "clone-stats": "0.0.0"
+  },
   "devDependencies": {
     "mocha": "*",
     "should": "*",

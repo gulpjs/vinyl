@@ -1,5 +1,6 @@
 var path = require('path');
-var fs = require('fs');
+
+var cloneStats = require('clone-stats');
 
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
@@ -43,14 +44,7 @@ File.prototype.isDirectory = function() {
 
 File.prototype.clone = function() {
   var clonedContents = this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
-  var clonedStat = new fs.Stats();
-  var originalStat = this.stat;
-
-  if (originalStat) {
-    Object.keys(originalStat).forEach(function(key) {
-      clonedStat[key] = originalStat[key];
-    });
-  }
+  var clonedStat = this.stat ? cloneStat(this.stat) : null;
 
   return new File({
     cwd: this.cwd,
