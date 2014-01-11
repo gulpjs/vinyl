@@ -6,9 +6,7 @@
   "repository": "git://github.com/wearefractal/vinyl.git",
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
   "main": "./index.js",
-  "dependencies": {
-    "lodash.clone": "~2.4.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "mocha": "*",
     "should": "*",
