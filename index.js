@@ -44,7 +44,7 @@ File.prototype.isDirectory = function() {
 
 File.prototype.clone = function() {
   var clonedContents = this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
-  var clonedStat = this.stat ? cloneStat(this.stat) : null;
+  var clonedStat = this.stat ? cloneStats(this.stat) : null;
 
   return new File({
     cwd: this.cwd,
