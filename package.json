@@ -7,7 +7,7 @@
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
   "main": "./index.js",
   "dependencies": {
-    "lodash.clone": "~2.4.1"
+    "clone-stats": "0.0.0"
   },
   "devDependencies": {
     "mocha": "*",
