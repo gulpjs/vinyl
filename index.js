@@ -1,6 +1,6 @@
 var path = require('path');
 
-var clone = require('lodash.clone');
+var cloneStats = require('clone-stats');
 
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
@@ -43,8 +43,8 @@ File.prototype.isDirectory = function() {
 };
 
 File.prototype.clone = function() {
-  var clonedStat = clone(this.stat);
   var clonedContents = this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
+  var clonedStat = this.stat ? cloneStats(this.stat) : null;
 
   return new File({
     cwd: this.cwd,
