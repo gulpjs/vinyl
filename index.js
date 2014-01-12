@@ -7,6 +7,7 @@ var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
 var inspectStream = require('./lib/inspectStream');
 var cloneBuffer = require('./lib/cloneBuffer');
+var Stream = require('stream');
 
 function File(file) {
   if (!file) file = {};
@@ -43,8 +44,14 @@ File.prototype.isDirectory = function() {
 };
 
 File.prototype.clone = function() {
-  var clonedContents = this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
   var clonedStat = this.stat ? cloneStats(this.stat) : null;
+  var clonedContents = null;
+  if(this.isBuffer()) {
+    clonedContents = cloneBuffer(this.contents);
+  } else if(this.isStream()) {
+    clonedContents = this.contents.pipe(new Stream.PassThrough());
+    this.contents = this.contents.pipe(new Stream.PassThrough());
+  }
 
   return new File({
     cwd: this.cwd,
