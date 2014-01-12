@@ -1,6 +1,7 @@
 var Stream = require('stream');
 var fs = require('fs');
 var path = require('path');
+var es = require('event-stream');
 
 var should = require('should');
 require('mocha');
@@ -238,20 +239,33 @@ function testFile(File) {
     });
 
     it('should copy all attributes over with Stream', function(done) {
+      var contents = new Stream.PassThrough();
       var options = {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: new Stream()
+        contents: contents
       };
       var file = new File(options);
       var file2 = file.clone();
+
+      contents.write(new Buffer('wa'));
+
+      process.nextTick(function() {
+        contents.write(new Buffer('dup'));
+        contents.end();
+      });
 
       file2.should.not.equal(file, 'refs should be different');
       file2.cwd.should.equal(file.cwd);
       file2.base.should.equal(file.base);
       file2.path.should.equal(file.path);
-      file2.contents.should.equal(file.contents, 'stream ref should be the same');
+      file.contents.pipe(es.wait(function(err, data) {
+        file2.contents.pipe(es.wait(function(err, data2) {
+          data2.should.equal(data, 'stream contents should be the same');
+        }));
+      }));
+      file2.contents.should.not.equal(file.contents, 'stream ref should not be the same');
       done();
     });
 
