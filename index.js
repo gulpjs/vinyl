@@ -12,6 +12,7 @@ var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
 var inspectStream = require('./lib/inspectStream');
+var Stream = require('stream');
 
 function File(file) {
   if (!file) file = {};
@@ -72,7 +73,15 @@ File.prototype.clone = function(opt) {
     }
   }, this);
 
-  file.contents = opt.contents && this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
+  if (this.isStream()) {
+    file.contents = this.contents.pipe(new Stream.PassThrough());
+    this.contents = this.contents.pipe(new Stream.PassThrough());
+  } else if (opt.contents && this.isBuffer()) {
+    file.contents = cloneBuffer(this.contents);
+  } else {
+    file.contents = this.contents;
+  }
+
   file.stat = this.stat ? cloneStats(this.stat) : null;
 
   return file;
@@ -93,10 +102,10 @@ File.prototype.pipe = function(stream, opt) {
     }
     return stream;
   }
-  if (this.isNull()) {
-    if (opt.end) stream.end();
-    return stream;
-  }
+
+  // isNull
+  if (opt.end) stream.end();
+  return stream;
 };
 
 File.prototype.inspect = function() {
