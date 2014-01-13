@@ -269,6 +269,37 @@ function testFile(File) {
       done();
     });
 
+    it('should copy all attributes over with Stream', function(done) {
+      var contents = new Stream.PassThrough();
+      var options = {
+        cwd: "/",
+        base: "/test/",
+        path: "/test/test.coffee",
+        contents: contents
+      };
+      var file = new File(options);
+      var file2 = file.clone();
+
+      contents.write(Buffer('wa'));
+
+      process.nextTick(function() {
+        contents.write(Buffer('dup'));
+        contents.end();
+      });
+
+      file2.should.not.equal(file, 'refs should be different');
+      file2.cwd.should.equal(file.cwd);
+      file2.base.should.equal(file.base);
+      file2.path.should.equal(file.path);
+      file2.contents.pipe(es.wait(function(err, data) {
+        file.contents.pipe(es.wait(function(err, data2) {
+          data2.should.equal(data, 'stream contents should be the same');
+        }));
+      }));
+      file2.contents.should.not.equal(file.contents, 'stream ref should not be the same');
+      done();
+    });
+
     it('should copy all attributes over with null', function(done) {
       var options = {
         cwd: '/',
