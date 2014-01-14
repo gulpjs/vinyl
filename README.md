@@ -1,6 +1,5 @@
-[![Build Status](https://travis-ci.org/wearefractal/vinyl.png?branch=master)](https://travis-ci.org/wearefractal/vinyl)
+# vinyl [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coveralls Status][coveralls-image]][coveralls-url] [![Dependency Status](https://david-dm.org/wearefractal/vinyl.png?theme=shields.io)](https://david-dm.org/wearefractal/vinyl)
 
-[![NPM version](https://badge.fury.io/js/vinyl.png)](http://badge.fury.io/js/vinyl)
 
 ## Information
 
@@ -114,28 +113,11 @@ var file = new File({
 console.log(file.relative); // file.coffee
 ```
 
-
-## LICENSE
-
-(MIT License)
-
-Copyright (c) 2013 Fractal <contact@wearefractal.com>
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+[npm-url]: https://npmjs.org/package/vinyl
+[npm-image]: https://badge.fury.io/js/vinyl.png
+[travis-url]: https://travis-ci.org/wearefractal/vinyl
+[travis-image]: https://travis-ci.org/wearefractal/vinyl.png?branch=master
+[coveralls-url]: https://coveralls.io/r/wearefractal/vinyl
+[coveralls-image]: https://coveralls.io/repos/wearefractal/vinyl/badge.png
+[depstat-url]: https://david-dm.org/wearefractal/vinyl
+[depstat-image]: https://david-dm.org/wearefractal/vinyl.png
