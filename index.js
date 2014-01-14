@@ -74,8 +74,6 @@ File.prototype.pipe = function(stream, opt) {
     if (opt.end) stream.end();
     return stream;
   }
-
-  return stream;
 };
 
 File.prototype.inspect = function() {
