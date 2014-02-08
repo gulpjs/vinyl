@@ -89,7 +89,7 @@ If file.contents is a Stream, it will pipe it to the stream.
 
 If file.contents is null, it will do nothing.
 
-If opt.end is true, the destination stream will not be ended (same as node core).
+If opt.end is false, the destination stream will not be ended (same as node core).
 
 Returns the stream.
 
