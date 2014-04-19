@@ -8,7 +8,7 @@
   "main": "./index.js",
   "dependencies": {
     "clone-stats": "~0.0.1",
-    "lodash": "^2.4.1"
+    "lodash.clonedeep": "^2.4.1"
   },
   "devDependencies": {
     "mocha": "~1.17.0",
