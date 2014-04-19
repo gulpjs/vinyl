@@ -80,7 +80,7 @@ describe('File', function() {
       done();
     });
   });
-  
+
   describe('isBuffer()', function() {
     it('should return true when the contents are a Buffer', function(done) {
       var val = new Buffer("test");
@@ -250,6 +250,48 @@ describe('File', function() {
 
       done();
     });
+
+    it('should copy custom properties', function(done) {
+      var options = {
+        cwd: "/",
+        base: "/test/",
+        path: "/test/test.coffee",
+        contents: null
+      };
+      var file = new File(options);
+      file.customProp = 'a custom property';
+
+      var file2 = file.clone();
+
+      file2.should.not.equal(file, 'refs should be different');
+      file2.cwd.should.equal(file.cwd);
+      file2.base.should.equal(file.base);
+      file2.path.should.equal(file.path);
+      file2.customProp.should.equal(file.customProp);
+
+      done();
+    });
+
+    it('should allow to reference-copy a Buffer', function(done) {
+      var options = {
+        cwd: "/",
+        base: "/test/",
+        path: "/test/test.coffee",
+        contents: new Buffer("test")
+      };
+      var file = new File(options);
+
+      var file2 = file.clone({ contents: false });
+
+      file2.should.not.equal(file, 'refs should be different');
+      file2.cwd.should.equal(file.cwd);
+      file2.base.should.equal(file.base);
+      file2.path.should.equal(file.path);
+      file2.contents.should.equal(file.contents, 'buffer ref should be the same');
+      file2.contents.toString('utf8').should.equal(file.contents.toString('utf8'));
+
+      done();
+    });
   });
 
   describe('pipe()', function() {
@@ -382,7 +424,7 @@ describe('File', function() {
       process.nextTick(done);
     });
   });
-  
+
   describe('inspect()', function() {
     it('should return correct format when no contents and no path', function(done) {
       var file = new File();
@@ -445,7 +487,7 @@ describe('File', function() {
       done();
     });
   });
-  
+
   describe('contents get/set', function() {
     it('should work with Buffer', function(done) {
       var val = new Buffer("test");

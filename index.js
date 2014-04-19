@@ -42,17 +42,32 @@ File.prototype.isDirectory = function() {
   return this.isNull() && this.stat && this.stat.isDirectory();
 };
 
-File.prototype.clone = function() {
-  var clonedContents = this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
+File.prototype.clone = function(opt) {
+  if (!opt) opt = {};
+
+  var clonedContents = this.isBuffer() && opt.contents !== false ?
+      cloneBuffer(this.contents) :
+      this.contents;
+
   var clonedStat = this.stat ? cloneStats(this.stat) : null;
 
-  return new File({
+  var newFile = new File({
     cwd: this.cwd,
     base: this.base,
     path: this.path,
     stat: clonedStat,
     contents: clonedContents
   });
+
+  // pick up custom properties, if any
+  Object.keys(this).forEach(function(key) {
+    // avoid private props and prototype props
+    if (this.hasOwnProperty(key) && newFile[key] === undefined) {
+      newFile[key] = this[key];
+    }
+  }, this);
+
+  return newFile;
 };
 
 File.prototype.pipe = function(stream, opt) {
