@@ -1,6 +1,7 @@
 var path = require('path');
 
 var cloneStats = require('clone-stats');
+var _ = require('lodash');
 
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
@@ -45,29 +46,24 @@ File.prototype.isDirectory = function() {
 File.prototype.clone = function(opt) {
   if (!opt) opt = {};
 
-  var clonedContents = this.isBuffer() && opt.contents !== false ?
-      cloneBuffer(this.contents) :
-      this.contents;
+  var clone = new File();
 
-  var clonedStat = this.stat ? cloneStats(this.stat) : null;
-
-  var newFile = new File({
-    cwd: this.cwd,
-    base: this.base,
-    path: this.path,
-    stat: clonedStat,
-    contents: clonedContents
+  _.forOwn(this, function(val, key) {
+    if (key !== '_contents' && key !== 'stat') {
+      clone[key] = _.cloneDeep(val);
+    }
   });
 
-  // pick up custom properties, if any
-  Object.keys(this).forEach(function(key) {
-    // avoid private props and prototype props
-    if (this.hasOwnProperty(key) && newFile[key] === undefined) {
-      newFile[key] = this[key];
-    }
-  }, this);
+  if (opt.contents !== false && this.isBuffer()) {
+    clone.contents = cloneBuffer(this.contents);
+  }
+  else {
+    clone.contents= this.contents;
+  }
 
-  return newFile;
+  clone.stat = this.stat ? cloneStats(this.stat) : null;
+
+  return clone;
 };
 
 File.prototype.pipe = function(stream, opt) {
