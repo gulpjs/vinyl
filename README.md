@@ -25,7 +25,7 @@ var File = require('vinyl');
 var coffeeFile = new File({
   cwd: "/",
   base: "/test/",
-  path: "/test/file.coffee"
+  path: "/test/file.coffee",
   contents: new Buffer("test = 123")
 });
 ```
