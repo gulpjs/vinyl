@@ -21,6 +21,9 @@ function File(file) {
   // TODO: should this be moved to vinyl-fs?
   this.stat = file.stat || null;
 
+  // Meta data property for passing data to other plugins (see gulp-data)
+  this.data = file.data || null;
+
   // contents = stream, buffer, or null if not read
   this.contents = file.contents || null;
 }
