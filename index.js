@@ -12,13 +12,11 @@ function File(file) {
   if (!file) file = {};
 
   // record path change
-  this.history = [];
+  this.history = file.path ? [file.path] : [];
 
   // TODO: should this be moved to vinyl-fs?
   this.cwd = file.cwd || process.cwd();
   this.base = file.base || this.cwd;
-
-  this.path = file.path || null;
 
   // stat = fs stats object
   // TODO: should this be moved to vinyl-fs?
