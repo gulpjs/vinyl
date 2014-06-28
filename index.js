@@ -135,8 +135,6 @@ Object.defineProperty(File.prototype, 'path', {
     if (path && path !== this.path) {
       this.history.push(path);
     }
-
-    this._path = path;
   }
 });
 
