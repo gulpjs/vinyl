@@ -80,7 +80,7 @@ describe('File', function() {
       done();
     });
   });
-  
+
   describe('isBuffer()', function() {
     it('should return true when the contents are a Buffer', function(done) {
       var val = new Buffer("test");
@@ -382,7 +382,7 @@ describe('File', function() {
       process.nextTick(done);
     });
   });
-  
+
   describe('inspect()', function() {
     it('should return correct format when no contents and no path', function(done) {
       var file = new File();
@@ -445,7 +445,7 @@ describe('File', function() {
       done();
     });
   });
-  
+
   describe('contents get/set', function() {
     it('should work with Buffer', function(done) {
       var val = new Buffer("test");
@@ -534,6 +534,59 @@ describe('File', function() {
       });
       file.relative.should.equal("test/test.coffee");
       done();
+    });
+  });
+
+  describe('path get/set', function() {
+
+    it('should record history when instantiation', function() {
+      var file = new File({
+        cwd: '/',
+        path: '/test/test.coffee'
+      });
+
+      file.path.should.eql('/test/test.coffee');
+      file.history.should.eql(['/test/test.coffee']);
+    });
+
+    it('should record history when path change', function() {
+      var file = new File({
+        cwd: '/',
+        path: '/test/test.coffee'
+      });
+
+      file.path = '/test/test.js';
+      file.path.should.eql('/test/test.js');
+      file.history.should.eql(['/test/test.coffee', '/test/test.js']);
+
+      file.path = '/test/test.coffee';
+      file.path.should.eql('/test/test.coffee');
+      file.history.should.eql(['/test/test.coffee', '/test/test.js', '/test/test.coffee']);
+    });
+
+    it('should not record history when set the same path', function() {
+      var file = new File({
+        cwd: '/',
+        path: '/test/test.coffee'
+      });
+
+      file.path = '/test/test.coffee';
+      file.path = '/test/test.coffee';
+      file.path.should.eql('/test/test.coffee');
+      file.history.should.eql(['/test/test.coffee']);
+    });
+
+    it('should not record history when path is null', function() {
+      var file = new File({
+        cwd: '/',
+        path: null
+      });
+
+      should.not.exist(file.path)
+      file.history.should.eql([]);
+
+      file.path = '/test/test.coffee';
+      file.path.should.eql('/test/test.coffee');
     });
   });
 

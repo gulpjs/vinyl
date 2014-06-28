@@ -11,6 +11,9 @@ var cloneBuffer = require('./lib/cloneBuffer');
 function File(file) {
   if (!file) file = {};
 
+  // record path change
+  this.history = [];
+
   // TODO: should this be moved to vinyl-fs?
   this.cwd = file.cwd || process.cwd();
   this.base = file.base || this.cwd;
@@ -120,6 +123,20 @@ Object.defineProperty(File.prototype, 'relative', {
   },
   set: function() {
     throw new Error('File.relative is generated from the base and path attributes. Do not modify it.');
+  }
+});
+
+Object.defineProperty(File.prototype, 'path', {
+  get: function() {
+    return this.history[this.history.length - 1];
+  },
+  set: function(path) {
+    // record history only when path changed
+    if (path && path !== this.path) {
+      this.history.push(path);
+    }
+
+    this._path = path;
   }
 });
 
