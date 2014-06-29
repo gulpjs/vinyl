@@ -574,9 +574,14 @@ describe('File', function() {
       file.path = '/test/test.coffee';
       file.path.should.eql('/test/test.coffee');
       file.history.should.eql(['/test/test.coffee']);
+
+      // ignore when set empty string
+      file.path = '';
+      file.path.should.eql('/test/test.coffee');
+      file.history.should.eql(['/test/test.coffee']);
     });
 
-    it('should not record history when path is null', function() {
+    it('should throw when set path null', function() {
       var file = new File({
         cwd: '/',
         path: null
@@ -585,8 +590,9 @@ describe('File', function() {
       should.not.exist(file.path)
       file.history.should.eql([]);
 
-      file.path = '/test/test.coffee';
-      file.path.should.eql('/test/test.coffee');
+      (function() {
+        file.path = null;
+      }).should.throw('path should be string');
     });
   });
 

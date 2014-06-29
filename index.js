@@ -129,6 +129,8 @@ Object.defineProperty(File.prototype, 'path', {
     return this.history[this.history.length - 1];
   },
   set: function(path) {
+    if (typeof path !== 'string') throw new Error('path should be string');
+
     // record history only when path changed
     if (path && path !== this.path) {
       this.history.push(path);
