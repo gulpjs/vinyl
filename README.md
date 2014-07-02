@@ -4,7 +4,7 @@
 ## Information
 
 <table>
-<tr> 
+<tr>
 <td>Package</td><td>vinyl</td>
 </tr>
 <tr>
@@ -34,35 +34,35 @@ var coffeeFile = new File({
 
 #### options.cwd
 
-Type: `String`  
+Type: `String`
 Default: `process.cwd()`
 
 #### options.base
 
 Used for relative pathing. Typically where a glob starts.
 
-Type: `String`  
+Type: `String`
 Default: `options.cwd`
 
 #### options.path
 
 Full path to the file.
 
-Type: `String`  
+Type: `String`
 Default: `null`
 
 #### options.stat
 
 The result of an fs.stat call. See [fs.Stats](http://nodejs.org/api/fs.html#fs_class_fs_stats) for more information.
 
-Type: `fs.Stats`  
+Type: `fs.Stats`
 Default: `null`
 
 #### options.contents
 
 File contents.
 
-Type: `Buffer, Stream, or null`  
+Type: `Buffer, Stream, or null`
 Default: `null`
 
 ### isBuffer()
@@ -77,9 +77,16 @@ Returns true if file.contents is a Stream.
 
 Returns true if file.contents is null.
 
-### clone()
+### clone(options)
 
-Returns a new File object with all attributes cloned.
+Returns a new File object with all attributes cloned.  Custom attributes that
+may have been added to the File object are deep-cloned (using the Lodash
+cloneDeep function) into the new File.
+
+#### options.contents
+
+If file.contents is a Buffer, and options.contents is false, it will
+reference-copy the buffer instead of cloning it.
 
 ### pipe(stream[, opt])
 
