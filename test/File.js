@@ -80,7 +80,7 @@ describe('File', function() {
       done();
     });
   });
-  
+
   describe('isBuffer()', function() {
     it('should return true when the contents are a Buffer', function(done) {
       var val = new Buffer("test");
@@ -250,6 +250,23 @@ describe('File', function() {
 
       done();
     });
+
+    it('should copy custom properties', function(done) {
+      var options = {
+        cwd: "/",
+        base: "/test/",
+        path: "/test/test.js",
+        contents: new Buffer("test"),
+        stat: fs.statSync(__filename)
+      };
+
+      var file = new File(options);
+      file.originPath = file.path;
+      var copy = file.clone();
+      copy.originPath.should.eql(file.path);
+
+      done();
+    });
   });
 
   describe('pipe()', function() {
@@ -382,7 +399,7 @@ describe('File', function() {
       process.nextTick(done);
     });
   });
-  
+
   describe('inspect()', function() {
     it('should return correct format when no contents and no path', function(done) {
       var file = new File();
@@ -445,7 +462,7 @@ describe('File', function() {
       done();
     });
   });
-  
+
   describe('contents get/set', function() {
     it('should work with Buffer', function(done) {
       var val = new Buffer("test");
