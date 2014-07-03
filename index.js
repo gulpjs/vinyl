@@ -46,13 +46,25 @@ File.prototype.clone = function() {
   var clonedContents = this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
   var clonedStat = this.stat ? cloneStats(this.stat) : null;
 
-  return new File({
-    cwd: this.cwd,
-    base: this.base,
-    path: this.path,
-    stat: clonedStat,
-    contents: clonedContents
+  function CloneFile() {}
+  CloneFile.prototype = Object.create(File.prototype);
+  var newFile = new CloneFile();
+  var file = this;
+
+  Object.keys(file).forEach(function(key) {
+    switch(key) {
+      case 'stat':
+        newFile[key] = clonedStat;
+        break;
+      case '_contents':
+        newFile[key] = clonedContents;
+        break;
+      default:
+        newFile[key] = file[key];
+    }
+
   });
+  return newFile;
 };
 
 File.prototype.pipe = function(stream, opt) {
