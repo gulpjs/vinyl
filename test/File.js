@@ -250,6 +250,29 @@ describe('File', function() {
 
       done();
     });
+  
+    it('should copy custom properties', function(done) {
+      var options = {
+        cwd: "/",
+        base: "/test/",
+        path: "/test/test.coffee",
+        contents: null
+      };
+
+      var file = new File(options);
+      file.custom = { a: 'custom property' };
+
+      var file2 = file.clone();
+
+      file2.should.not.equal(file, 'refs should be different');
+      file2.cwd.should.equal(file.cwd);
+      file2.base.should.equal(file.base);
+      file2.path.should.equal(file.path);
+      file2.custom.should.not.equal(file.custom);
+      file2.custom.a.should.equal(file.custom.a);
+
+      done();
+    });
   });
 
   describe('pipe()', function() {

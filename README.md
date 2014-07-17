@@ -79,7 +79,7 @@ Returns true if file.contents is null.
 
 ### clone()
 
-Returns a new File object with all attributes cloned.
+Returns a new File object with all attributes cloned. Custom attributes are deep-cloned.
 
 ### pipe(stream[, opt])
 
