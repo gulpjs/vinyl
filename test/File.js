@@ -1,6 +1,7 @@
 var File = require('../');
 var Stream = require('stream');
 var fs = require('fs');
+var path = require('path');
 
 var should = require('should');
 require('mocha');
@@ -555,7 +556,7 @@ describe('File', function() {
         cwd: "/",
         path: "/test/test.coffee"
       });
-      file.relative.should.equal("test/test.coffee");
+      file.relative.should.equal(path.join("test","test.coffee"));
       done();
     });
   });
