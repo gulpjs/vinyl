@@ -2,7 +2,7 @@ var path = require('path');
 
 var cloneStats = require('clone-stats');
 var _ = require('lodash');
-var cloneDeep = require('lodash').cloneDeep;
+var cloneDeep = _.cloneDeep;
 
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
