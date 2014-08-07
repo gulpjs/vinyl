@@ -251,7 +251,7 @@ describe('File', function() {
 
       done();
     });
-  
+
     it('should copy custom properties', function(done) {
       var options = {
         cwd: "/",
@@ -270,7 +270,27 @@ describe('File', function() {
       file2.base.should.equal(file.base);
       file2.path.should.equal(file.path);
       file2.custom.should.not.equal(file.custom);
+
+      done();
+    });
+
+    it('should support shallow cloning of custom properties', function(done) {
+      var options = {
+        cwd: "/",
+        base: "/test/",
+        path: "/test/test.coffee",
+        contents: null
+      };
+
+      var file = new File(options);
+      file.custom = { a: { b: 'custom property' } };
+
+      var file2 = file.clone({ isDeep: false });
+
+      file2.should.not.equal(file, 'refs should be different');
+      file2.custom.should.not.equal(file.custom);
       file2.custom.a.should.equal(file.custom.a);
+      file2.custom.a.b.should.equal(file.custom.a.b);
 
       done();
     });
