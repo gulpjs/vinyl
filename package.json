@@ -23,7 +23,7 @@
     "event-stream": "~3.1.0"
   },
   "scripts": {
-    "test": "mocha --reporter spec && jshint",
+    "test": "mocha --reporter spec && jshint . --exclude node_modules",
     "coveralls": "istanbul cover _mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
   "engines": {
