@@ -110,7 +110,7 @@ Object.defineProperty(File.prototype, 'contents', {
   },
   set: function(val) {
     if (!isBuffer(val) && !isStream(val) && !isNull(val)) {
-      throw new Error("File.contents can only be a Buffer, a Stream, or null.");
+      throw new Error('File.contents can only be a Buffer, a Stream, or null.');
     }
     this._contents = val;
   }
