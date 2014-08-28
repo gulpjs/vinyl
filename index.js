@@ -1,13 +1,17 @@
 var path = require('path');
 
+var clone;
+try {
+  clone = require('node-v8-clone').clone;
+} catch(e) {
+  clone = require('lodash').clone;
+}
 var cloneStats = require('clone-stats');
-var cloneDeep = require('lodash').cloneDeep;
-
+var cloneBuffer = require('./lib/cloneBuffer');
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
 var inspectStream = require('./lib/inspectStream');
-var cloneBuffer = require('./lib/cloneBuffer');
 
 function File(file) {
   if (!file) file = {};
@@ -54,18 +58,18 @@ File.prototype.clone = function(opt) {
     opt.contents = opt.contents !== false;
   }
 
-  var clone = new File();
+  var file = new File();
 
   Object.keys(this).forEach(function(key) {
     if (key !== '_contents' && key !== 'stat') {
-      clone[key] = opt.deep === true ? cloneDeep(this[key]) : this[key];
+      file[key] = opt.deep === true ? clone(this[key], true) : this[key];
     }
   }, this);
 
-  clone.contents = opt.contents && this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
-  clone.stat = this.stat ? cloneStats(this.stat) : null;
+  file.contents = opt.contents && this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
+  file.stat = this.stat ? cloneStats(this.stat) : null;
 
-  return clone;
+  return file;
 };
 
 File.prototype.pipe = function(stream, opt) {
