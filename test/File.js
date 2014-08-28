@@ -196,6 +196,28 @@ describe('File', function() {
       done();
     });
 
+    it('should copy buffer\'s reference with option contents: false', function(done) {
+      var options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.js',
+        contents: new Buffer('test')
+      };
+
+      var file = new File(options);
+
+      var copy1 = file.clone({ contents: false });
+      copy1.contents.should.equal(file.contents);
+
+      var copy2 = file.clone({});
+      copy2.contents.should.not.equal(file.contents);
+
+      var copy3 = file.clone({ contents: 'any string' });
+      copy3.contents.should.not.equal(file.contents);
+
+      done();
+    });
+
     it('should copy all attributes over with Stream', function(done) {
       var options = {
         cwd: '/',
