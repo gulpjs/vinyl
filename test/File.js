@@ -269,7 +269,7 @@ describe('File', function() {
       file2.cwd.should.equal(file.cwd);
       file2.base.should.equal(file.base);
       file2.path.should.equal(file.path);
-      file2.custom.should.not.equal(file.custom);
+      file2.custom.should.equal(file.custom);
       file2.custom.a.should.equal(file.custom.a);
 
       done();
@@ -299,6 +299,40 @@ describe('File', function() {
         '/test/test-938di2s.js'
       ]);
       file2.path.should.eql('/test/test-938di2s.js');
+
+      done();
+    });
+
+    it('should copy all attributes deeply', function(done) {
+      var options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+        contents: null
+      };
+
+      var file = new File(options);
+      file.custom = { a: 'custom property' };
+
+      var file2 = file.clone(true);
+      file2.custom.should.eql(file.custom);
+      file2.custom.should.not.equal(file.custom);
+      file2.custom.a.should.equal(file.custom.a);
+
+      var file3 = file.clone({ deep: true });
+      file3.custom.should.eql(file.custom);
+      file3.custom.should.not.equal(file.custom);
+      file3.custom.a.should.equal(file.custom.a);
+
+      var file4 = file.clone(false);
+      file4.custom.should.eql(file.custom);
+      file4.custom.should.equal(file.custom);
+      file4.custom.a.should.equal(file.custom.a);
+
+      var file5 = file.clone({ deep: false });
+      file5.custom.should.eql(file.custom);
+      file5.custom.should.equal(file.custom);
+      file5.custom.a.should.equal(file.custom.a);
 
       done();
     });
