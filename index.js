@@ -1,8 +1,7 @@
 var path = require('path');
 
 var cloneStats = require('clone-stats');
-var _ = require('lodash');
-var cloneDeep = _.cloneDeep;
+var cloneDeep = require('lodash').cloneDeep;
 
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
@@ -45,12 +44,20 @@ File.prototype.isDirectory = function() {
   return this.isNull() && this.stat && this.stat.isDirectory();
 };
 
-File.prototype.clone = function() {
+File.prototype.clone = function(opt) {
+  if (typeof opt === 'boolean') {
+    opt = { deep: opt };
+  } else if (!opt) {
+    opt = { deep: false };
+  } else {
+    opt.deep = opt.deep || false;
+  }
+
   var clone = new File();
 
   Object.keys(this).forEach(function(key) {
     if (key !== '_contents' && key !== 'stat') {
-      clone[key] = cloneDeep(this[key]);
+      clone[key] = opt.deep === true ? cloneDeep(this[key]) : this[key];
     }
   }, this);
 
