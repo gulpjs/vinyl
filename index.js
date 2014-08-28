@@ -46,11 +46,12 @@ File.prototype.isDirectory = function() {
 
 File.prototype.clone = function(opt) {
   if (typeof opt === 'boolean') {
-    opt = { deep: opt };
+    opt = { deep: opt, contents: true };
   } else if (!opt) {
-    opt = { deep: false };
+    opt = { deep: false, contents: true };
   } else {
-    opt.deep = opt.deep || false;
+    opt.deep = opt.deep === true;
+    opt.contents = opt.contents !== false;
   }
 
   var clone = new File();
@@ -61,7 +62,7 @@ File.prototype.clone = function(opt) {
     }
   }, this);
 
-  clone.contents = this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
+  clone.contents = opt.contents && this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
   clone.stat = this.stat ? cloneStats(this.stat) : null;
 
   return clone;
