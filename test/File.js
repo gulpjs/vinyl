@@ -244,10 +244,10 @@ describe('File', function() {
       var file = new File(options);
       var copy = file.clone();
 
-      copy.stat.isFile().should.be.true;
-      copy.stat.isDirectory().should.be.false;
-      should(file.stat instanceof fs.Stats).be.true;
-      should(copy.stat instanceof fs.Stats).be.true;
+      copy.stat.isFile().should.equal(true);
+      copy.stat.isDirectory().should.equal(false);
+      should(file.stat instanceof fs.Stats).equal(true);
+      should(copy.stat instanceof fs.Stats).equal(true);
 
       done();
     });
@@ -611,7 +611,7 @@ describe('File', function() {
         path: null
       });
 
-      should.not.exist(file.path)
+      should.not.exist(file.path);
       file.history.should.eql([]);
 
       (function() {
