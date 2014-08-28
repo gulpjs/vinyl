@@ -274,6 +274,34 @@ describe('File', function() {
 
       done();
     });
+
+    it('should copy history', function(done) {
+      var options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+        contents: null
+      };
+
+      var file = new File(options);
+      file.path = '/test/test.js';
+      file.path = '/test/test-938di2s.js';
+      var file2 = file.clone();
+
+      file2.history.should.eql([
+        '/test/test.coffee',
+        '/test/test.js',
+        '/test/test-938di2s.js'
+      ]);
+      file2.history.should.not.equal([
+        '/test/test.coffee',
+        '/test/test.js',
+        '/test/test-938di2s.js'
+      ]);
+      file2.path.should.eql('/test/test-938di2s.js');
+
+      done();
+    });
   });
 
   describe('pipe()', function() {
