@@ -102,10 +102,10 @@ File.prototype.pipe = function(stream, opt) {
     }
     return stream;
   }
-  if (this.isNull()) {
-    if (opt.end) stream.end();
-    return stream;
-  }
+
+  // isNull
+  if (opt.end) stream.end();
+  return stream;
 };
 
 File.prototype.inspect = function() {
