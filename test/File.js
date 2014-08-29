@@ -2,32 +2,12 @@ var Stream = require('stream');
 var fs = require('fs');
 var path = require('path');
 var es = require('event-stream');
+var File = require('../');
 
 var should = require('should');
 require('mocha');
 
 describe('File', function() {
-
-  describe('using node-v8-clone', function() {
-    var File = require('../');
-    testFile(File);
-  });
-
-  describe('using lodash', function() {
-    delete require.cache[path.join(__dirname, '../index.js')];
-    var clonePath = path.join(__dirname, '../node_modules/node-v8-clone/lib/clone.js');
-    var exports = require.cache[clonePath].exports;
-    // test lodash when node-v8-clone is not found
-    require.cache[clonePath].exports = undefined;
-    after(function() {
-      require.cache[clonePath].exports = exports;
-    });
-    var File = require('../');
-    testFile(File);
-  });
-});
-
-function testFile(File) {
   describe('constructor()', function() {
     it('should default cwd to process.cwd', function(done) {
       var file = new File();
@@ -755,4 +735,4 @@ function testFile(File) {
       }).should.throw('path should be string');
     });
   });
-}
+});
