@@ -1,11 +1,5 @@
 var path = require('path');
-
-var clone;
-try {
-  clone = require('node-v8-clone').clone;
-} catch(e) {
-  clone = require('lodash').clone;
-}
+var clone = require('lodash').clone;
 var cloneStats = require('clone-stats');
 var cloneBuffer = require('./lib/cloneBuffer');
 var isBuffer = require('./lib/isBuffer');
@@ -76,10 +70,8 @@ File.prototype.clone = function(opt) {
   if (this.isStream()) {
     file.contents = this.contents.pipe(new Stream.PassThrough());
     this.contents = this.contents.pipe(new Stream.PassThrough());
-  } else if (opt.contents && this.isBuffer()) {
-    file.contents = cloneBuffer(this.contents);
-  } else {
-    file.contents = this.contents;
+  } else if (this.isBuffer()) {
+    file.contents = opt.contents ? cloneBuffer(this.contents) : this.contents;
   }
 
   // clone our custom properties
