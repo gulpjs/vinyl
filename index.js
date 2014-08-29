@@ -1,14 +1,17 @@
 var path = require('path');
 
+var clone;
+try {
+  clone = require('node-v8-clone').clone;
+} catch(e) {
+  clone = require('lodash').clone;
+}
 var cloneStats = require('clone-stats');
-var _ = require('lodash');
-var cloneDeep = _.cloneDeep;
-
+var cloneBuffer = require('./lib/cloneBuffer');
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
 var inspectStream = require('./lib/inspectStream');
-var cloneBuffer = require('./lib/cloneBuffer');
 
 function File(file) {
   if (!file) file = {};
@@ -45,19 +48,34 @@ File.prototype.isDirectory = function() {
   return this.isNull() && this.stat && this.stat.isDirectory();
 };
 
-File.prototype.clone = function() {
-  var clone = new File();
+File.prototype.clone = function(opt) {
+  if (typeof opt === 'boolean') {
+    opt = {
+      deep: opt,
+      contents: true
+    };
+  } else if (!opt) {
+    opt = {
+      deep: false,
+      contents: true
+    };
+  } else {
+    opt.deep = opt.deep === true;
+    opt.contents = opt.contents !== false;
+  }
+
+  var file = new File();
 
   Object.keys(this).forEach(function(key) {
     if (key !== '_contents' && key !== 'stat') {
-      clone[key] = cloneDeep(this[key]);
+      file[key] = opt.deep === true ? clone(this[key], true) : this[key];
     }
   }, this);
 
-  clone.contents = this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
-  clone.stat = this.stat ? cloneStats(this.stat) : null;
+  file.contents = opt.contents && this.isBuffer() ? cloneBuffer(this.contents) : this.contents;
+  file.stat = this.stat ? cloneStats(this.stat) : null;
 
-  return clone;
+  return file;
 };
 
 File.prototype.pipe = function(stream, opt) {
@@ -110,7 +128,7 @@ Object.defineProperty(File.prototype, 'contents', {
   },
   set: function(val) {
     if (!isBuffer(val) && !isStream(val) && !isNull(val)) {
-      throw new Error("File.contents can only be a Buffer, a Stream, or null.");
+      throw new Error('File.contents can only be a Buffer, a Stream, or null.');
     }
     this._contents = val;
   }
