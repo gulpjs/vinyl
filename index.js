@@ -68,9 +68,12 @@ File.prototype.clone = function(opt) {
   var file = new File();
 
   Object.keys(this).forEach(function(key) {
-    if (key !== '_contents' && key !== 'stat') {
-      file[key] = opt.deep === true ? clone(this[key], true) : this[key];
+    // ignore these fields
+    if (key === '_contents' || key === 'stat' ||
+      key === 'history' || key === 'path') {
+      return;
     }
+    file[key] = opt.deep === true ? clone(this[key], true) : this[key];
   }, this);
 
   if (this.isStream()) {
@@ -82,7 +85,9 @@ File.prototype.clone = function(opt) {
     file.contents = this.contents;
   }
 
+  // always clone these deep
   file.stat = this.stat ? cloneStats(this.stat) : null;
+  file.history = this.history.slice();
 
   return file;
 };

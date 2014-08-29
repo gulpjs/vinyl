@@ -308,6 +308,24 @@ function testFile(File) {
       done();
     });
 
+    it('should properly clone the `history` property', function(done) {
+      var options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.js',
+        contents: new Buffer('test'),
+        stat: fs.statSync(__filename)
+      };
+
+      var file = new File(options);
+      var copy = file.clone();
+
+      copy.history[0].should.equal(options.path);
+      copy.path = 'lol';
+      file.path.should.not.equal(copy.path);
+      done();
+    });
+
     it('should copy custom properties', function(done) {
       var options = {
         cwd: '/',
