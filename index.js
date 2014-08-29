@@ -65,17 +65,14 @@ File.prototype.clone = function(opt) {
     opt.contents = opt.contents !== false;
   }
 
-  var file = new File();
+  var file = new File({
+    cwd: this.cwd,
+    base: this.base,
+    stat: (this.stat ? cloneStats(this.stat) : null)
+  });
+  file.history = this.history.slice();
 
-  Object.keys(this).forEach(function(key) {
-    // ignore these fields
-    if (key === '_contents' || key === 'stat' ||
-      key === 'history' || key === 'path') {
-      return;
-    }
-    file[key] = opt.deep === true ? clone(this[key], true) : this[key];
-  }, this);
-
+  // clone our file contents
   if (this.isStream()) {
     file.contents = this.contents.pipe(new Stream.PassThrough());
     this.contents = this.contents.pipe(new Stream.PassThrough());
@@ -85,10 +82,16 @@ File.prototype.clone = function(opt) {
     file.contents = this.contents;
   }
 
-  // always clone these deep
-  file.stat = this.stat ? cloneStats(this.stat) : null;
-  file.history = this.history.slice();
-
+  // clone our custom properties
+  Object.keys(this).forEach(function(key) {
+    // ignore built-in fields
+    if (key === '_contents' || key === 'stat' ||
+      key === 'history' || key === 'path' ||
+      key === 'base' || key === 'cwd') {
+      return;
+    }
+    file[key] = opt.deep ? clone(this[key], true) : this[key];
+  }, this);
   return file;
 };
 
