@@ -50,9 +50,15 @@ File.prototype.isDirectory = function() {
 
 File.prototype.clone = function(opt) {
   if (typeof opt === 'boolean') {
-    opt = { deep: opt, contents: true };
+    opt = {
+      deep: opt,
+      contents: true
+    };
   } else if (!opt) {
-    opt = { deep: false, contents: true };
+    opt = {
+      deep: false,
+      contents: true
+    };
   } else {
     opt.deep = opt.deep === true;
     opt.contents = opt.contents !== false;
