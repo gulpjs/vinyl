@@ -12,7 +12,8 @@ function File(file) {
   if (!file) file = {};
 
   // record path change
-  this.history = file.path ? [file.path] : [];
+  var history = file.path ? [file.path] : file.history;
+  this.history = history || [];
 
   // TODO: should this be moved to vinyl-fs?
   this.cwd = file.cwd || process.cwd();
@@ -59,20 +60,22 @@ File.prototype.clone = function(opt) {
     opt.contents = opt.contents !== false;
   }
 
+  // clone our file contents
+  var contents;
+  if (this.isStream()) {
+    contents = this.contents.pipe(new Stream.PassThrough());
+    this.contents = this.contents.pipe(new Stream.PassThrough());
+  } else if (this.isBuffer()) {
+    contents = opt.contents ? cloneBuffer(this.contents) : this.contents;
+  }
+
   var file = new File({
     cwd: this.cwd,
     base: this.base,
-    stat: (this.stat ? cloneStats(this.stat) : null)
+    stat: (this.stat ? cloneStats(this.stat) : null),
+    history: this.history.slice(),
+    contents: contents
   });
-  file.history = this.history.slice();
-
-  // clone our file contents
-  if (this.isStream()) {
-    file.contents = this.contents.pipe(new Stream.PassThrough());
-    this.contents = this.contents.pipe(new Stream.PassThrough());
-  } else if (this.isBuffer()) {
-    file.contents = opt.contents ? cloneBuffer(this.contents) : this.contents;
-  }
 
   // clone our custom properties
   Object.keys(this).forEach(function(key) {
