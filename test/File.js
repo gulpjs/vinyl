@@ -34,6 +34,12 @@ describe('File', function() {
       done();
     });
 
+    it('should default history to []', function(done) {
+      var file = new File();
+      file.history.should.eql([]);
+      done();
+    });
+
     it('should default stat to null', function(done) {
       var file = new File();
       should.not.exist(file.stat);
@@ -64,6 +70,15 @@ describe('File', function() {
       var val = '/test.coffee';
       var file = new File({path: val});
       file.path.should.equal(val);
+      file.history.should.eql([val]);
+      done();
+    });
+
+    it('should set history to given value', function(done) {
+      var val = '/test.coffee';
+      var file = new File({history: [val]});
+      file.path.should.equal(val);
+      file.history.should.eql([val]);
       done();
     });
 
