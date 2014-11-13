@@ -6,12 +6,16 @@
   "repository": "git://github.com/wearefractal/vinyl.git",
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
   "main": "./index.js",
+  "files": [
+    "index.js",
+    "lib"
+  ],
   "dependencies": {
     "clone-stats": "^0.0.1",
     "lodash": "^2.4.1"
   },
   "devDependencies": {
-    "mocha": "^1.17.0",
+    "mocha": "^2.0.0",
     "should": "^4.0.4",
     "mocha-lcov-reporter": "^0.0.1",
     "coveralls": "^2.6.1",
