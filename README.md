@@ -81,9 +81,14 @@ Returns true if file.contents is a Stream.
 
 Returns true if file.contents is null.
 
-### clone()
+### clone([opt])
 
-Returns a new File object with all attributes cloned. Custom attributes are deep-cloned.
+Returns a new File object with all attributes cloned.
+By default custom attributes are deep-cloned.
+
+If opt or opt.deep is false, custom attributes will not be deep-cloned.
+
+If opt.contents is false, it will copy file.contents Buffer's reference.
 
 ### pipe(stream[, opt])
 
