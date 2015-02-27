@@ -26,8 +26,8 @@
     "should": "^5.0.1"
   },
   "scripts": {
-    "test": "mocha --reporter spec && jshint lib",
-    "coveralls": "istanbul cover _mocha -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
+    "test": "mocha && jshint lib",
+    "coveralls": "istanbul cover _mocha && istanbul-coveralls"
   },
   "engines": {
     "node": ">= 0.9"
