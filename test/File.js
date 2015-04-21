@@ -692,6 +692,138 @@ describe('File', function() {
     });
   });
 
+  describe('dirname get/set', function() {
+    it('should error on get when no path', function(done) {
+      var a;
+      var file = new File();
+      try {
+        a = file.dirname;
+      } catch (err) {
+        should.exist(err);
+        done();
+      }
+    });
+
+    it('should return the dirname of the path', function(done) {
+      var file = new File({
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee'
+      });
+      file.dirname.should.equal('/test');
+      done();
+    });
+
+    it('should error on set when no path', function(done) {
+      var file = new File();
+      try {
+        file.dirname = '/test';
+      } catch (err) {
+        should.exist(err);
+        done();
+      }
+    });
+
+    it('should set the dirname of the path', function(done) {
+      var file = new File({
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee'
+      });
+      file.dirname = '/test/foo';
+      file.path.should.equal('/test/foo/test.coffee');
+      done();
+    });
+  });
+
+  describe('basename get/set', function() {
+    it('should error on get when no path', function(done) {
+      var a;
+      var file = new File();
+      try {
+        a = file.basename;
+      } catch (err) {
+        should.exist(err);
+        done();
+      }
+    });
+
+    it('should return the basename of the path', function(done) {
+      var file = new File({
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee'
+      });
+      file.basename.should.equal('test.coffee');
+      done();
+    });
+
+    it('should error on set when no path', function(done) {
+      var file = new File();
+      try {
+        file.basename = 'test.coffee';
+      } catch (err) {
+        should.exist(err);
+        done();
+      }
+    });
+
+    it('should set the basename of the path', function(done) {
+      var file = new File({
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee'
+      });
+      file.basename = 'foo.png';
+      file.path.should.equal('/test/foo.png');
+      done();
+    });
+  });
+
+  describe('extname get/set', function() {
+    it('should error on get when no path', function(done) {
+      var a;
+      var file = new File();
+      try {
+        a = file.extname;
+      } catch (err) {
+        should.exist(err);
+        done();
+      }
+    });
+
+    it('should return the extname of the path', function(done) {
+      var file = new File({
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee'
+      });
+      file.extname.should.equal('.coffee');
+      done();
+    });
+
+    it('should error on set when no path', function(done) {
+      var file = new File();
+      try {
+        file.extname = '.coffee';
+      } catch (err) {
+        should.exist(err);
+        done();
+      }
+    });
+
+    it('should set the extname of the path', function(done) {
+      var file = new File({
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee'
+      });
+      file.extname = '.png';
+      file.path.should.equal('/test/test.png');
+      done();
+    });
+  });
+
   describe('path get/set', function() {
 
     it('should record history when instantiation', function() {
