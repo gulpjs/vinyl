@@ -106,6 +106,10 @@ Returns the stream.
 
 Returns a pretty String interpretation of the File. Useful for console.log.
 
+### path
+
+Absolute pathname string or `undefined`. Setting to a different value pushes the old value to `history`.
+
 ### relative
 
 Returns path.relative for the file base and file path.
