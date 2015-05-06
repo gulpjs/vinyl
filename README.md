@@ -122,6 +122,10 @@ var file = new File({
 console.log(file.relative); // file.coffee
 ```
 
+### history
+
+Array of `path` values the file object has had, from `history[0]` (original) through `history[history.length - 1]` (current). `history` and its elements should normally be treated as read-only and only altered indirectly by setting `path`.
+
 [npm-url]: https://npmjs.org/package/vinyl
 [npm-image]: https://badge.fury.io/js/vinyl.png
 [travis-url]: https://travis-ci.org/wearefractal/vinyl
