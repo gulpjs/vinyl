@@ -55,6 +55,13 @@ Full path to the file.
 Type: `String`  
 Default: `undefined`
 
+#### options.history
+
+Path history. Has no effect if `options.path` is passed.
+
+Type: `Array`  
+Default: `options.path ? [options.path] : []`
+
 #### options.stat
 
 The result of an fs.stat call. See [fs.Stats](http://nodejs.org/api/fs.html#fs_class_fs_stats) for more information.
