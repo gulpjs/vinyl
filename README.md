@@ -53,7 +53,7 @@ Default: `options.cwd`
 Full path to the file.
 
 Type: `String`  
-Default: `null`
+Default: `undefined`
 
 #### options.stat
 
