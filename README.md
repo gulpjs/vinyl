@@ -53,7 +53,14 @@ Default: `options.cwd`
 Full path to the file.
 
 Type: `String`  
-Default: `null`
+Default: `undefined`
+
+#### options.history
+
+Path history. Has no effect if `options.path` is passed.
+
+Type: `Array`  
+Default: `options.path ? [options.path] : []`
 
 #### options.stat
 
@@ -106,6 +113,10 @@ Returns the stream.
 
 Returns a pretty String interpretation of the File. Useful for console.log.
 
+### path
+
+Absolute pathname string or `undefined`. Setting to a different value pushes the old value to `history`.
+
 ### relative
 
 Returns path.relative for the file base and file path.
@@ -121,6 +132,10 @@ var file = new File({
 
 console.log(file.relative); // file.coffee
 ```
+
+### history
+
+Array of `path` values the file object has had, from `history[0]` (original) through `history[history.length - 1]` (current). `history` and its elements should normally be treated as read-only and only altered indirectly by setting `path`.
 
 [npm-url]: https://npmjs.org/package/vinyl
 [npm-image]: https://badge.fury.io/js/vinyl.png
