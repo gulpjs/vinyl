@@ -4,7 +4,7 @@
 ## Information
 
 <table>
-<tr> 
+<tr>
 <td>Package</td><td>vinyl</td>
 </tr>
 <tr>
@@ -38,42 +38,42 @@ var coffeeFile = new File({
 
 #### options.cwd
 
-Type: `String`  
+Type: `String`
 Default: `process.cwd()`
 
 #### options.base
 
 Used for relative pathing. Typically where a glob starts.
 
-Type: `String`  
+Type: `String`
 Default: `options.cwd`
 
 #### options.path
 
 Full path to the file.
 
-Type: `String`  
+Type: `String`
 Default: `undefined`
 
 #### options.history
 
 Path history. Has no effect if `options.path` is passed.
 
-Type: `Array`  
+Type: `Array`
 Default: `options.path ? [options.path] : []`
 
 #### options.stat
 
 The result of an fs.stat call. See [fs.Stats](http://nodejs.org/api/fs.html#fs_class_fs_stats) for more information.
 
-Type: `fs.Stats`  
+Type: `fs.Stats`
 Default: `null`
 
 #### options.contents
 
 File contents.
 
-Type: `Buffer, Stream, or null`  
+Type: `Buffer, Stream, or null`
 Default: `null`
 
 ### isBuffer()
@@ -117,6 +117,10 @@ Returns a pretty String interpretation of the File. Useful for console.log.
 
 Absolute pathname string or `undefined`. Setting to a different value pushes the old value to `history`.
 
+### history
+
+Array of `path` values the file object has had, from `history[0]` (original) through `history[history.length - 1]` (current). `history` and its elements should normally be treated as read-only and only altered indirectly by setting `path`.
+
 ### relative
 
 Returns path.relative for the file base and file path.
@@ -133,9 +137,68 @@ var file = new File({
 console.log(file.relative); // file.coffee
 ```
 
-### history
+### dirname
 
-Array of `path` values the file object has had, from `history[0]` (original) through `history[history.length - 1]` (current). `history` and its elements should normally be treated as read-only and only altered indirectly by setting `path`.
+Gets and sets path.dirname for the file path.
+
+Example:
+
+```javascript
+var file = new File({
+  cwd: "/",
+  base: "/test/",
+  path: "/test/file.coffee"
+});
+
+console.log(file.dirname); // /test
+
+file.dirname = '/specs';
+
+console.log(file.dirname); // /specs
+console.log(file.path); // /specs/file.coffee
+````
+
+### basename
+
+Gets and sets path.basename for the file path.
+
+Example:
+
+```javascript
+var file = new File({
+  cwd: "/",
+  base: "/test/",
+  path: "/test/file.coffee"
+});
+
+console.log(file.basename); // file.coffee
+
+file.basename = 'file.js';
+
+console.log(file.basename); // file.js
+console.log(file.path); // /test/file.js
+````
+
+### extname
+
+Gets and sets path.extname for the file path.
+
+Example:
+
+```javascript
+var file = new File({
+  cwd: "/",
+  base: "/test/",
+  path: "/test/file.coffee"
+});
+
+console.log(file.extname); // .coffee
+
+file.extname = '.js';
+
+console.log(file.extname); // .js
+console.log(file.path); // /test/file.js
+````
 
 [npm-url]: https://npmjs.org/package/vinyl
 [npm-image]: https://badge.fury.io/js/vinyl.png

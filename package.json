@@ -12,7 +12,8 @@
   ],
   "dependencies": {
     "clone": "^1.0.0",
-    "clone-stats": "^0.0.1"
+    "clone-stats": "^0.0.1",
+    "replace-ext": "0.0.1"
   },
   "devDependencies": {
     "buffer-equal": "0.0.1",
