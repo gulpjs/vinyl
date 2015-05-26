@@ -38,42 +38,42 @@ var coffeeFile = new File({
 
 #### options.cwd
 
-Type: `String`
+Type: `String`<br>
 Default: `process.cwd()`
 
 #### options.base
 
 Used for relative pathing. Typically where a glob starts.
 
-Type: `String`
+Type: `String`<br>
 Default: `options.cwd`
 
 #### options.path
 
 Full path to the file.
 
-Type: `String`
+Type: `String`<br>
 Default: `undefined`
 
 #### options.history
 
 Path history. Has no effect if `options.path` is passed.
 
-Type: `Array`
+Type: `Array`<br>
 Default: `options.path ? [options.path] : []`
 
 #### options.stat
 
 The result of an fs.stat call. See [fs.Stats](http://nodejs.org/api/fs.html#fs_class_fs_stats) for more information.
 
-Type: `fs.Stats`
+Type: `fs.Stats`<br>
 Default: `null`
 
 #### options.contents
 
 File contents.
 
-Type: `Buffer, Stream, or null`
+Type: `Buffer, Stream, or null`<br>
 Default: `null`
 
 ### isBuffer()
