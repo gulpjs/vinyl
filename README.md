@@ -113,6 +113,17 @@ Returns the stream.
 
 Returns a pretty String interpretation of the File. Useful for console.log.
 
+### contents
+
+The [Stream](https://nodejs.org/api/stream.html#stream_stream) or [Buffer](https://nodejs.org/api/buffer.html#buffer_class_buffer) of the file as it was passed in via options, or as the result of modification.
+
+For example:
+```js
+if (file.isBuffer()) {
+    console.log(file.contents.toString()); // logs out the string of contents
+}
+```
+
 ### path
 
 Absolute pathname string or `undefined`. Setting to a different value pushes the old value to `history`.
