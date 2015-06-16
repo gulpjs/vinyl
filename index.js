@@ -53,7 +53,7 @@ File.prototype.clone = function(opt) {
     };
   } else if (!opt) {
     opt = {
-      deep: false,
+      deep: true,
       contents: true
     };
   } else {
