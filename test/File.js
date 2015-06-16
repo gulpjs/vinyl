@@ -338,7 +338,7 @@ describe('File', function() {
       file2.cwd.should.equal(file.cwd);
       file2.base.should.equal(file.base);
       file2.path.should.equal(file.path);
-      file2.custom.should.equal(file.custom);
+      file2.custom.should.not.equal(file.custom);
       file2.custom.a.should.equal(file.custom.a);
 
       done();
