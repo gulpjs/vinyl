@@ -16,16 +16,16 @@ function File(file) {
   var history = file.path ? [file.path] : file.history;
   this.history = history || [];
 
-  // TODO: should this be moved to vinyl-fs?
   this.cwd = file.cwd || process.cwd();
   this.base = file.base || this.cwd;
 
-  // stat = fs stats object
-  // TODO: should this be moved to vinyl-fs?
+  // stat = files stats object
   this.stat = file.stat || null;
 
   // contents = stream, buffer, or null if not read
   this.contents = file.contents || null;
+
+  this._isVinyl = true;
 }
 
 File.prototype.isBuffer = function() {
@@ -131,6 +131,10 @@ File.prototype.inspect = function() {
   }
 
   return '<File '+inspect.join(' ')+'>';
+};
+
+File.isVinyl = function(file) {
+  return file && file._isVinyl === true;
 };
 
 // virtual attributes
