@@ -34,15 +34,24 @@ var coffeeFile = new File({
 });
 ```
 
+### isVinyl
+When checking if an object is a vinyl file, you should not use instanceof. Use the isVinyl function instead.
+
+```js
+var File = require('vinyl');
+
+var dummy = new File({stuff});
+var notAFile = {};
+
+File.isVinyl(dummy); // true
+File.isVinyl(notAFile); // false
+```
+
 ### constructor(options)
-
 #### options.cwd
-
-Type: `String`<br>
-Default: `process.cwd()`
+Type: `String`<br><br>Default: `process.cwd()`
 
 #### options.base
-
 Used for relative pathing. Typically where a glob starts.
 
 Type: `String`<br>

@@ -8,6 +8,21 @@ var should = require('should');
 require('mocha');
 
 describe('File', function() {
+  describe('isVinyl()', function() {
+    it('should return true on a vinyl object', function(done) {
+      var file = new File();
+      File.isVinyl(file).should.equal(true);
+      done();
+    });
+    it('should return false on a normal object', function(done) {
+      File.isVinyl({}).should.equal(false);
+      done();
+    });
+    it('should return false on a null object', function(done) {
+      File.isVinyl({}).should.equal(false);
+      done();
+    });
+  });
   describe('constructor()', function() {
     it('should default cwd to process.cwd', function(done) {
       var file = new File();
