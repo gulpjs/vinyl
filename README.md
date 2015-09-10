@@ -1,6 +1,6 @@
 # vinyl [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coveralls Status][coveralls-image]][coveralls-url] [![Dependency Status](https://david-dm.org/wearefractal/vinyl.png?theme=shields.io)](https://david-dm.org/wearefractal/vinyl)
 ## Information
-<table><br><tr><br><td>Package</td><td>vinyl</td><br></tr><br><tr><br><td>Description</td><br><td>A virtual file format</td><br></tr><br><tr><br><td>Node Version</td><br><td>>= 0.9</td><br></tr><br></table>  
+<table><tr><td>Package</td><td>vinyl</td></tr><tr><td>Description</td><td>A virtual file format</td></tr><tr><td>Node Version</td><td>>= 0.9</td></tr></table>
 
 ## What is this?
 Read this for more info about how this plays into the grand scheme of things [https://medium.com/@eschoff/3828e8126466](https://medium.com/@eschoff/3828e8126466)
