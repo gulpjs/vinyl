@@ -2,8 +2,8 @@
   "name": "vinyl",
   "description": "A virtual file format",
   "version": "0.5.3",
-  "homepage": "http://github.com/wearefractal/vinyl",
-  "repository": "git://github.com/wearefractal/vinyl.git",
+  "homepage": "http://github.com/gulpjs/vinyl",
+  "repository": "git://github.com/gulpjs/vinyl.git",
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
   "main": "./index.js",
   "files": [
