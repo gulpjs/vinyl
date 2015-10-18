@@ -187,9 +187,9 @@ console.log(file.path); // /test/file.js
 
 [npm-url]: https://npmjs.org/package/vinyl
 [npm-image]: https://badge.fury.io/js/vinyl.png
-[travis-url]: https://travis-ci.org/wearefractal/vinyl
-[travis-image]: https://travis-ci.org/wearefractal/vinyl.png?branch=master
+[travis-url]: https://travis-ci.org/gulpjs/vinyl
+[travis-image]: https://travis-ci.org/gulpjs/vinyl.png?branch=master
 [coveralls-url]: https://coveralls.io/r/wearefractal/vinyl
 [coveralls-image]: https://coveralls.io/repos/wearefractal/vinyl/badge.png
-[depstat-url]: https://david-dm.org/wearefractal/vinyl
-[depstat-image]: https://david-dm.org/wearefractal/vinyl.png
+[depstat-url]: https://david-dm.org/gulpjs/vinyl
+[depstat-image]: https://david-dm.org/gulpjs/vinyl.png
