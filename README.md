@@ -1,4 +1,5 @@
-# vinyl [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coveralls Status][coveralls-image]][coveralls-url] [![Dependency Status](https://david-dm.org/wearefractal/vinyl.png?theme=shields.io)](https://david-dm.org/wearefractal/vinyl)
+# vinyl [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coveralls Status][coveralls-image]][coveralls-url] [![Dependency Status][depstat-image]][depstat-url]
+
 ## Information
 <table><tr><td>Package</td><td>vinyl</td></tr><tr><td>Description</td><td>A virtual file format</td></tr><tr><td>Node Version</td><td>>= 0.9</td></tr></table>
 
@@ -187,9 +188,9 @@ console.log(file.path); // /test/file.js
 
 [npm-url]: https://npmjs.org/package/vinyl
 [npm-image]: https://badge.fury.io/js/vinyl.png
-[travis-url]: https://travis-ci.org/wearefractal/vinyl
-[travis-image]: https://travis-ci.org/wearefractal/vinyl.png?branch=master
+[travis-url]: https://travis-ci.org/gulpjs/vinyl
+[travis-image]: https://travis-ci.org/gulpjs/vinyl.png?branch=master
 [coveralls-url]: https://coveralls.io/r/wearefractal/vinyl
 [coveralls-image]: https://coveralls.io/repos/wearefractal/vinyl/badge.png
-[depstat-url]: https://david-dm.org/wearefractal/vinyl
-[depstat-image]: https://david-dm.org/wearefractal/vinyl.png
+[depstat-url]: https://david-dm.org/gulpjs/vinyl
+[depstat-image]: https://david-dm.org/gulpjs/vinyl.png
