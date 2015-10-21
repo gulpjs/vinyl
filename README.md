@@ -165,6 +165,27 @@ console.log(file.path); // /test/file.js
 `
 ```
 
+### stem
+Gets and sets stem (filename without suffix) for the file path.
+
+Example:
+
+```javascript
+var file = new File({
+  cwd: "/",
+  base: "/test/",
+  path: "/test/file.coffee"
+});
+
+console.log(file.stem); // file
+
+file.stem = 'foo';
+
+console.log(file.stem); // foo
+console.log(file.path); // /test/foo.coffee
+`
+```
+
 ### extname
 Gets and sets path.extname for the file path.
 
