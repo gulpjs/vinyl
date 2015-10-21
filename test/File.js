@@ -795,6 +795,50 @@ describe('File', function() {
     });
   });
 
+  describe('stem get/set', function() {
+    it('should error on get when no path', function(done) {
+      var a;
+      var file = new File();
+      try {
+        a = file.stem;
+      } catch (err) {
+        should.exist(err);
+        done();
+      }
+    });
+
+    it('should return the stem of the path', function(done) {
+      var file = new File({
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+      });
+      file.stem.should.equal('test');
+      done();
+    });
+
+    it('should error on set when no path', function(done) {
+      var file = new File();
+      try {
+        file.stem = 'test.coffee';
+      } catch (err) {
+        should.exist(err);
+        done();
+      }
+    });
+
+    it('should set the stem of the path', function(done) {
+      var file = new File({
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+      });
+      file.stem = 'foo';
+      file.path.should.equal('/test/foo.coffee');
+      done();
+    });
+  });
+
   describe('extname get/set', function() {
     it('should error on get when no path', function(done) {
       var a;
