@@ -18,7 +18,7 @@
   "devDependencies": {
     "buffer-equal": "0.0.1",
     "eslint": "^1.7.3",
-    "eslint-config-gulp": "^1.1.0",
+    "eslint-config-gulp": "^2.0.0",
     "event-stream": "^3.1.0",
     "istanbul": "^0.3.0",
     "istanbul-coveralls": "^1.0.1",

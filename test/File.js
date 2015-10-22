@@ -32,7 +32,7 @@ describe('File', function() {
 
     it('should default base to cwd', function(done) {
       var cwd = '/';
-      var file = new File({cwd: cwd});
+      var file = new File({ cwd: cwd });
       file.base.should.equal(cwd);
       done();
     });
@@ -69,21 +69,21 @@ describe('File', function() {
 
     it('should set base to given value', function(done) {
       var val = '/';
-      var file = new File({base: val});
+      var file = new File({ base: val });
       file.base.should.equal(val);
       done();
     });
 
     it('should set cwd to given value', function(done) {
       var val = '/';
-      var file = new File({cwd: val});
+      var file = new File({ cwd: val });
       file.cwd.should.equal(val);
       done();
     });
 
     it('should set path to given value', function(done) {
       var val = '/test.coffee';
-      var file = new File({path: val});
+      var file = new File({ path: val });
       file.path.should.equal(val);
       file.history.should.eql([val]);
       done();
@@ -91,7 +91,7 @@ describe('File', function() {
 
     it('should set history to given value', function(done) {
       var val = '/test.coffee';
-      var file = new File({history: [val]});
+      var file = new File({ history: [val] });
       file.path.should.equal(val);
       file.history.should.eql([val]);
       done();
@@ -99,14 +99,14 @@ describe('File', function() {
 
     it('should set stat to given value', function(done) {
       var val = {};
-      var file = new File({stat: val});
+      var file = new File({ stat: val });
       file.stat.should.equal(val);
       done();
     });
 
     it('should set contents to given value', function(done) {
       var val = new Buffer('test');
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.contents.should.equal(val);
       done();
     });
@@ -115,20 +115,20 @@ describe('File', function() {
   describe('isBuffer()', function() {
     it('should return true when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.isBuffer().should.equal(true);
       done();
     });
 
     it('should return false when the contents are a Stream', function(done) {
       var val = new Stream();
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.isBuffer().should.equal(false);
       done();
     });
 
     it('should return false when the contents are a null', function(done) {
-      var file = new File({contents: null});
+      var file = new File({ contents: null });
       file.isBuffer().should.equal(false);
       done();
     });
@@ -137,20 +137,20 @@ describe('File', function() {
   describe('isStream()', function() {
     it('should return false when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.isStream().should.equal(false);
       done();
     });
 
     it('should return true when the contents are a Stream', function(done) {
       var val = new Stream();
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.isStream().should.equal(true);
       done();
     });
 
     it('should return false when the contents are a null', function(done) {
-      var file = new File({contents: null});
+      var file = new File({ contents: null });
       file.isStream().should.equal(false);
       done();
     });
@@ -159,20 +159,20 @@ describe('File', function() {
   describe('isNull()', function() {
     it('should return false when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.isNull().should.equal(false);
       done();
     });
 
     it('should return false when the contents are a Stream', function(done) {
       var val = new Stream();
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.isNull().should.equal(false);
       done();
     });
 
     it('should return true when the contents are a null', function(done) {
-      var file = new File({contents: null});
+      var file = new File({ contents: null });
       file.isNull().should.equal(true);
       done();
     });
@@ -187,20 +187,20 @@ describe('File', function() {
 
     it('should return false when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
-      var file = new File({contents: val, stat: fakeStat});
+      var file = new File({ contents: val, stat: fakeStat });
       file.isDirectory().should.equal(false);
       done();
     });
 
     it('should return false when the contents are a Stream', function(done) {
       var val = new Stream();
-      var file = new File({contents: val, stat: fakeStat});
+      var file = new File({ contents: val, stat: fakeStat });
       file.isDirectory().should.equal(false);
       done();
     });
 
     it('should return true when the contents are a null', function(done) {
-      var file = new File({contents: null, stat: fakeStat});
+      var file = new File({ contents: null, stat: fakeStat });
       file.isDirectory().should.equal(true);
       done();
     });
@@ -236,13 +236,13 @@ describe('File', function() {
 
       var file = new File(options);
 
-      var copy1 = file.clone({contents: false});
+      var copy1 = file.clone({ contents: false });
       copy1.contents.should.equal(file.contents);
 
       var copy2 = file.clone({});
       copy2.contents.should.not.equal(file.contents);
 
-      var copy3 = file.clone({contents: 'any string'});
+      var copy3 = file.clone({ contents: 'any string' });
       copy3.contents.should.not.equal(file.contents);
 
       done();
@@ -345,7 +345,7 @@ describe('File', function() {
       };
 
       var file = new File(options);
-      file.custom = {a: 'custom property'};
+      file.custom = { a: 'custom property' };
 
       var file2 = file.clone();
 
@@ -396,14 +396,14 @@ describe('File', function() {
       };
 
       var file = new File(options);
-      file.custom = {a: 'custom property'};
+      file.custom = { a: 'custom property' };
 
       var file2 = file.clone(true);
       file2.custom.should.eql(file.custom);
       file2.custom.should.not.equal(file.custom);
       file2.custom.a.should.equal(file.custom.a);
 
-      var file3 = file.clone({deep: true});
+      var file3 = file.clone({ deep: true });
       file3.custom.should.eql(file.custom);
       file3.custom.should.not.equal(file.custom);
       file3.custom.a.should.equal(file.custom.a);
@@ -413,7 +413,7 @@ describe('File', function() {
       file4.custom.should.equal(file.custom);
       file4.custom.a.should.equal(file.custom.a);
 
-      var file5 = file.clone({deep: false});
+      var file5 = file.clone({ deep: false });
       file5.custom.should.eql(file.custom);
       file5.custom.should.equal(file.custom);
       file5.custom.a.should.equal(file.custom.a);
@@ -503,7 +503,7 @@ describe('File', function() {
       stream.on('end', function() {
         throw new Error('should not end');
       });
-      var ret = file.pipe(stream, {end: false});
+      var ret = file.pipe(stream, { end: false });
       ret.should.equal(stream, 'should return the stream');
     });
 
@@ -526,7 +526,7 @@ describe('File', function() {
       stream.on('end', function() {
         throw new Error('should not end');
       });
-      var ret = file.pipe(stream, {end: false});
+      var ret = file.pipe(stream, { end: false });
       ret.should.equal(stream, 'should return the stream');
 
       file.contents.write(testChunk);
@@ -547,7 +547,7 @@ describe('File', function() {
       stream.on('end', function() {
         throw new Error('should not end');
       });
-      var ret = file.pipe(stream, {end: false});
+      var ret = file.pipe(stream, { end: false });
       ret.should.equal(stream, 'should return the stream');
       process.nextTick(done);
     });
