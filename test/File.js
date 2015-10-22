@@ -32,7 +32,7 @@ describe('File', function() {
 
     it('should default base to cwd', function(done) {
       var cwd = '/';
-      var file = new File({cwd: cwd});
+      var file = new File({ cwd: cwd });
       file.base.should.equal(cwd);
       done();
     });
@@ -69,21 +69,21 @@ describe('File', function() {
 
     it('should set base to given value', function(done) {
       var val = '/';
-      var file = new File({base: val});
+      var file = new File({ base: val });
       file.base.should.equal(val);
       done();
     });
 
     it('should set cwd to given value', function(done) {
       var val = '/';
-      var file = new File({cwd: val});
+      var file = new File({ cwd: val });
       file.cwd.should.equal(val);
       done();
     });
 
     it('should set path to given value', function(done) {
       var val = '/test.coffee';
-      var file = new File({path: val});
+      var file = new File({ path: val });
       file.path.should.equal(val);
       file.history.should.eql([val]);
       done();
@@ -91,7 +91,7 @@ describe('File', function() {
 
     it('should set history to given value', function(done) {
       var val = '/test.coffee';
-      var file = new File({history: [val]});
+      var file = new File({ history: [val] });
       file.path.should.equal(val);
       file.history.should.eql([val]);
       done();
@@ -99,14 +99,14 @@ describe('File', function() {
 
     it('should set stat to given value', function(done) {
       var val = {};
-      var file = new File({stat: val});
+      var file = new File({ stat: val });
       file.stat.should.equal(val);
       done();
     });
 
     it('should set contents to given value', function(done) {
       var val = new Buffer('test');
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.contents.should.equal(val);
       done();
     });
@@ -115,20 +115,20 @@ describe('File', function() {
   describe('isBuffer()', function() {
     it('should return true when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.isBuffer().should.equal(true);
       done();
     });
 
     it('should return false when the contents are a Stream', function(done) {
       var val = new Stream();
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.isBuffer().should.equal(false);
       done();
     });
 
     it('should return false when the contents are a null', function(done) {
-      var file = new File({contents: null});
+      var file = new File({ contents: null });
       file.isBuffer().should.equal(false);
       done();
     });
@@ -137,20 +137,20 @@ describe('File', function() {
   describe('isStream()', function() {
     it('should return false when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.isStream().should.equal(false);
       done();
     });
 
     it('should return true when the contents are a Stream', function(done) {
       var val = new Stream();
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.isStream().should.equal(true);
       done();
     });
 
     it('should return false when the contents are a null', function(done) {
-      var file = new File({contents: null});
+      var file = new File({ contents: null });
       file.isStream().should.equal(false);
       done();
     });
@@ -159,20 +159,20 @@ describe('File', function() {
   describe('isNull()', function() {
     it('should return false when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.isNull().should.equal(false);
       done();
     });
 
     it('should return false when the contents are a Stream', function(done) {
       var val = new Stream();
-      var file = new File({contents: val});
+      var file = new File({ contents: val });
       file.isNull().should.equal(false);
       done();
     });
 
     it('should return true when the contents are a null', function(done) {
-      var file = new File({contents: null});
+      var file = new File({ contents: null });
       file.isNull().should.equal(true);
       done();
     });
@@ -182,25 +182,25 @@ describe('File', function() {
     var fakeStat = {
       isDirectory: function() {
         return true;
-      }
+      },
     };
 
     it('should return false when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
-      var file = new File({contents: val, stat: fakeStat});
+      var file = new File({ contents: val, stat: fakeStat });
       file.isDirectory().should.equal(false);
       done();
     });
 
     it('should return false when the contents are a Stream', function(done) {
       var val = new Stream();
-      var file = new File({contents: val, stat: fakeStat});
+      var file = new File({ contents: val, stat: fakeStat });
       file.isDirectory().should.equal(false);
       done();
     });
 
     it('should return true when the contents are a null', function(done) {
-      var file = new File({contents: null, stat: fakeStat});
+      var file = new File({ contents: null, stat: fakeStat });
       file.isDirectory().should.equal(true);
       done();
     });
@@ -212,7 +212,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: new Buffer('test')
+        contents: new Buffer('test'),
       };
       var file = new File(options);
       var file2 = file.clone();
@@ -231,7 +231,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.js',
-        contents: new Buffer('test')
+        contents: new Buffer('test'),
       };
 
       var file = new File(options);
@@ -254,7 +254,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: contents
+        contents: contents,
       };
       var file = new File(options);
       var file2 = file.clone();
@@ -285,7 +285,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: null
+        contents: null,
       };
       var file = new File(options);
       var file2 = file.clone();
@@ -304,7 +304,7 @@ describe('File', function() {
         base: '/test/',
         path: '/test/test.js',
         contents: new Buffer('test'),
-        stat: fs.statSync(__filename)
+        stat: fs.statSync(__filename),
       };
 
       var file = new File(options);
@@ -324,7 +324,7 @@ describe('File', function() {
         base: '/test/',
         path: '/test/test.js',
         contents: new Buffer('test'),
-        stat: fs.statSync(__filename)
+        stat: fs.statSync(__filename),
       };
 
       var file = new File(options);
@@ -341,7 +341,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: null
+        contents: null,
       };
 
       var file = new File(options);
@@ -364,7 +364,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: null
+        contents: null,
       };
 
       var file = new File(options);
@@ -375,12 +375,12 @@ describe('File', function() {
       file2.history.should.eql([
         '/test/test.coffee',
         '/test/test.js',
-        '/test/test-938di2s.js'
+        '/test/test-938di2s.js',
       ]);
       file2.history.should.not.equal([
         '/test/test.coffee',
         '/test/test.js',
-        '/test/test-938di2s.js'
+        '/test/test-938di2s.js',
       ]);
       file2.path.should.eql('/test/test-938di2s.js');
 
@@ -392,7 +392,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: null
+        contents: null,
       };
 
       var file = new File(options);
@@ -428,7 +428,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: new Buffer('test')
+        contents: new Buffer('test'),
       };
       var file = new File(options);
       var stream = new Stream.PassThrough();
@@ -450,7 +450,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: new Stream.PassThrough()
+        contents: new Stream.PassThrough(),
       };
       var file = new File(options);
       var stream = new Stream.PassThrough();
@@ -471,7 +471,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: null
+        contents: null,
       };
       var file = new File(options);
       var stream = new Stream.PassThrough();
@@ -490,7 +490,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: new Buffer('test')
+        contents: new Buffer('test'),
       };
       var file = new File(options);
       var stream = new Stream.PassThrough();
@@ -503,7 +503,7 @@ describe('File', function() {
       stream.on('end', function() {
         throw new Error('should not end');
       });
-      var ret = file.pipe(stream, {end: false});
+      var ret = file.pipe(stream, { end: false });
       ret.should.equal(stream, 'should return the stream');
     });
 
@@ -513,7 +513,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: new Stream.PassThrough()
+        contents: new Stream.PassThrough(),
       };
       var file = new File(options);
       var stream = new Stream.PassThrough();
@@ -526,7 +526,7 @@ describe('File', function() {
       stream.on('end', function() {
         throw new Error('should not end');
       });
-      var ret = file.pipe(stream, {end: false});
+      var ret = file.pipe(stream, { end: false });
       ret.should.equal(stream, 'should return the stream');
 
       file.contents.write(testChunk);
@@ -537,7 +537,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: null
+        contents: null,
       };
       var file = new File(options);
       var stream = new Stream.PassThrough();
@@ -547,7 +547,7 @@ describe('File', function() {
       stream.on('end', function() {
         throw new Error('should not end');
       });
-      var ret = file.pipe(stream, {end: false});
+      var ret = file.pipe(stream, { end: false });
       ret.should.equal(stream, 'should return the stream');
       process.nextTick(done);
     });
@@ -563,7 +563,7 @@ describe('File', function() {
     it('should return correct format when Buffer and no path', function(done) {
       var val = new Buffer('test');
       var file = new File({
-        contents: val
+        contents: val,
       });
       file.inspect().should.equal('<File <Buffer 74 65 73 74>>');
       done();
@@ -575,7 +575,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: val
+        contents: val,
       });
       file.inspect().should.equal('<File "test.coffee" <Buffer 74 65 73 74>>');
       done();
@@ -586,7 +586,7 @@ describe('File', function() {
       var file = new File({
         cwd: '/',
         path: '/test/test.coffee',
-        contents: val
+        contents: val,
       });
       delete file.base;
       file.inspect().should.equal('<File "/test/test.coffee" <Buffer 74 65 73 74>>');
@@ -598,7 +598,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: new Stream.PassThrough()
+        contents: new Stream.PassThrough(),
       });
       file.inspect().should.equal('<File "test.coffee" <PassThroughStream>>');
       done();
@@ -609,7 +609,7 @@ describe('File', function() {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: null
+        contents: null,
       });
       file.inspect().should.equal('<File "test.coffee">');
       done();
@@ -691,7 +691,7 @@ describe('File', function() {
       var file = new File({
         cwd: '/',
         base: '/test/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
       file.relative.should.equal('test.coffee');
       done();
@@ -700,7 +700,7 @@ describe('File', function() {
     it('should return a relative path from cwd', function(done) {
       var file = new File({
         cwd: '/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
       file.relative.should.equal(path.join('test','test.coffee'));
       done();
@@ -723,7 +723,7 @@ describe('File', function() {
       var file = new File({
         cwd: '/',
         base: '/test/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
       file.dirname.should.equal('/test');
       done();
@@ -743,7 +743,7 @@ describe('File', function() {
       var file = new File({
         cwd: '/',
         base: '/test/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
       file.dirname = '/test/foo';
       file.path.should.equal('/test/foo/test.coffee');
@@ -767,7 +767,7 @@ describe('File', function() {
       var file = new File({
         cwd: '/',
         base: '/test/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
       file.basename.should.equal('test.coffee');
       done();
@@ -787,7 +787,7 @@ describe('File', function() {
       var file = new File({
         cwd: '/',
         base: '/test/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
       file.basename = 'foo.png';
       file.path.should.equal('/test/foo.png');
@@ -811,7 +811,7 @@ describe('File', function() {
       var file = new File({
         cwd: '/',
         base: '/test/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
       file.extname.should.equal('.coffee');
       done();
@@ -831,7 +831,7 @@ describe('File', function() {
       var file = new File({
         cwd: '/',
         base: '/test/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
       file.extname = '.png';
       file.path.should.equal('/test/test.png');
@@ -844,7 +844,7 @@ describe('File', function() {
     it('should record history when instantiation', function() {
       var file = new File({
         cwd: '/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
 
       file.path.should.eql('/test/test.coffee');
@@ -854,7 +854,7 @@ describe('File', function() {
     it('should record history when path change', function() {
       var file = new File({
         cwd: '/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
 
       file.path = '/test/test.js';
@@ -869,7 +869,7 @@ describe('File', function() {
     it('should not record history when set the same path', function() {
       var file = new File({
         cwd: '/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
 
       file.path = '/test/test.coffee';
@@ -877,7 +877,7 @@ describe('File', function() {
       file.path.should.eql('/test/test.coffee');
       file.history.should.eql(['/test/test.coffee']);
 
-      // ignore when set empty string
+      // Ignore when set empty string
       file.path = '';
       file.path.should.eql('/test/test.coffee');
       file.history.should.eql(['/test/test.coffee']);
@@ -886,7 +886,7 @@ describe('File', function() {
     it('should throw when set path null', function() {
       var file = new File({
         cwd: '/',
-        path: null
+        path: null,
       });
 
       should.not.exist(file.path);
