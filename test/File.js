@@ -877,7 +877,7 @@ describe('File', function() {
       file.path.should.eql('/test/test.coffee');
       file.history.should.eql(['/test/test.coffee']);
 
-      // ignore when set empty string
+      // Ignore when set empty string
       file.path = '';
       file.path.should.eql('/test/test.coffee');
       file.history.should.eql(['/test/test.coffee']);

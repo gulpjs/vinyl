@@ -14,17 +14,17 @@ function File(file) {
     file = {};
   }
 
-  // record path change
+  // Record path change
   var history = file.path ? [file.path] : file.history;
   this.history = history || [];
 
   this.cwd = file.cwd || process.cwd();
   this.base = file.base || this.cwd;
 
-  // stat = files stats object
+  // Stat = files stats object
   this.stat = file.stat || null;
 
-  // contents = stream, buffer, or null if not read
+  // Contents = stream, buffer, or null if not read
   this.contents = file.contents || null;
 
   this._isVinyl = true;
@@ -42,7 +42,7 @@ File.prototype.isNull = function() {
   return isNull(this.contents);
 };
 
-// TODO: should this be moved to vinyl-fs?
+// TODO: Should this be moved to vinyl-fs?
 File.prototype.isDirectory = function() {
   return this.isNull() && this.stat && this.stat.isDirectory();
 };
@@ -63,7 +63,7 @@ File.prototype.clone = function(opt) {
     opt.contents = opt.contents !== false;
   }
 
-  // clone our file contents
+  // Clone our file contents
   var contents;
   if (this.isStream()) {
     contents = this.contents.pipe(new Stream.PassThrough());
@@ -80,9 +80,9 @@ File.prototype.clone = function(opt) {
     contents: contents,
   });
 
-  // clone our custom properties
+  // Clone our custom properties
   Object.keys(this).forEach(function(key) {
-    // ignore built-in fields
+    // Ignore built-in fields
     if (key === '_contents' || key === 'stat' ||
       key === 'history' || key === 'path' ||
       key === 'base' || key === 'cwd') {
@@ -113,7 +113,7 @@ File.prototype.pipe = function(stream, opt) {
     return stream;
   }
 
-  // isNull
+  // Check if isNull
   if (opt.end) {
     stream.end();
   }
@@ -123,7 +123,7 @@ File.prototype.pipe = function(stream, opt) {
 File.prototype.inspect = function() {
   var inspect = [];
 
-  // use relative path if possible
+  // Use relative path if possible
   var filePath = (this.base && this.path) ? this.relative : this.path;
 
   if (filePath) {
@@ -145,8 +145,8 @@ File.isVinyl = function(file) {
   return file && file._isVinyl === true;
 };
 
-// virtual attributes
-// or stuff with extra logic
+// Virtual attributes
+// Or stuff with extra logic
 Object.defineProperty(File.prototype, 'contents', {
   get: function() {
     return this._contents;
@@ -159,7 +159,7 @@ Object.defineProperty(File.prototype, 'contents', {
   },
 });
 
-// TODO: should this be moved to vinyl-fs?
+// TODO: Should this be moved to vinyl-fs?
 Object.defineProperty(File.prototype, 'relative', {
   get: function() {
     if (!this.base) {
@@ -229,7 +229,7 @@ Object.defineProperty(File.prototype, 'path', {
       throw new Error('path should be string');
     }
 
-    // record history only when path changed
+    // Record history only when path changed
     if (path && path !== this.path) {
       this.history.push(path);
     }
