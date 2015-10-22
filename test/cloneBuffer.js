@@ -17,7 +17,7 @@ describe('cloneBuffer()', function() {
     var testBuffer = new Buffer('test');
     var testBuffer2 = cloneBuffer(testBuffer);
 
-    // test that changes dont modify both pointers
+    // Test that changes dont modify both pointers
     testBuffer2.write('w');
 
     testBuffer.toString('utf8').should.equal('test', 'original should stay the same');
