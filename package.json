@@ -17,20 +17,22 @@
   },
   "devDependencies": {
     "buffer-equal": "0.0.1",
+    "eslint": "^1.7.3",
+    "eslint-config-gulp": "^1.1.0",
     "event-stream": "^3.1.0",
     "istanbul": "^0.3.0",
     "istanbul-coveralls": "^1.0.1",
     "jscs": "^2.3.5",
     "jscs-preset-gulp": "^1.0.0",
-    "jshint": "^2.4.1",
     "lodash.templatesettings": "^3.1.0",
     "mocha": "^2.0.0",
     "rimraf": "^2.2.5",
     "should": "^7.0.0"
   },
   "scripts": {
-    "lint": "jshint *.js lib/ test/ && jscs *.js lib/ test/",
-    "test": "mocha && npm run lint",
+    "lint": "eslint . && jscs *.js lib/ test/",
+    "pretest": "npm run lint",
+    "test": "mocha",
     "coveralls": "istanbul cover _mocha && istanbul-coveralls"
   },
   "engines": {
