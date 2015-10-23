@@ -208,13 +208,17 @@ Object.defineProperty(File.prototype, 'basename', {
 // Property for getting/setting stem of the filename.
 Object.defineProperty(File.prototype, 'stem', {
   get: function() {
-    if (!this.path) throw new Error('No path specified! Can not get stem.');
+    if (!this.path) {
+      throw new Error('No path specified! Can not get stem.');
+    }
     return path.basename(this.path, this.extname);
   },
   set: function(stem) {
-    if (!this.path) throw new Error('No path specified! Can not set stem.');
-    this.path = path.join(path.dirname(this.path), stem + this.extname );
-  }
+    if (!this.path) {
+      throw new Error('No PassThrough specified! Can not set stem.');
+    }
+    this.path = path.join(path.dirname(this.path), stem + this.extname);
+  },
 });
 
 Object.defineProperty(File.prototype, 'extname', {

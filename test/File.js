@@ -811,7 +811,7 @@ describe('File', function() {
       var file = new File({
         cwd: '/',
         base: '/test/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
       file.stem.should.equal('test');
       done();
@@ -831,7 +831,7 @@ describe('File', function() {
       var file = new File({
         cwd: '/',
         base: '/test/',
-        path: '/test/test.coffee'
+        path: '/test/test.coffee',
       });
       file.stem = 'foo';
       file.path.should.equal('/test/foo.coffee');
