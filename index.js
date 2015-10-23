@@ -10,19 +10,21 @@ var Stream = require('stream');
 var replaceExt = require('replace-ext');
 
 function File(file) {
-  if (!file) file = {};
+  if (!file) {
+    file = {};
+  }
 
-  // record path change
+  // Record path change
   var history = file.path ? [file.path] : file.history;
   this.history = history || [];
 
   this.cwd = file.cwd || process.cwd();
   this.base = file.base || this.cwd;
 
-  // stat = files stats object
+  // Stat = files stats object
   this.stat = file.stat || null;
 
-  // contents = stream, buffer, or null if not read
+  // Contents = stream, buffer, or null if not read
   this.contents = file.contents || null;
 
   this._isVinyl = true;
@@ -40,7 +42,7 @@ File.prototype.isNull = function() {
   return isNull(this.contents);
 };
 
-// TODO: should this be moved to vinyl-fs?
+// TODO: Should this be moved to vinyl-fs?
 File.prototype.isDirectory = function() {
   return this.isNull() && this.stat && this.stat.isDirectory();
 };
@@ -49,19 +51,19 @@ File.prototype.clone = function(opt) {
   if (typeof opt === 'boolean') {
     opt = {
       deep: opt,
-      contents: true
+      contents: true,
     };
   } else if (!opt) {
     opt = {
       deep: true,
-      contents: true
+      contents: true,
     };
   } else {
     opt.deep = opt.deep === true;
     opt.contents = opt.contents !== false;
   }
 
-  // clone our file contents
+  // Clone our file contents
   var contents;
   if (this.isStream()) {
     contents = this.contents.pipe(new Stream.PassThrough());
@@ -75,12 +77,12 @@ File.prototype.clone = function(opt) {
     base: this.base,
     stat: (this.stat ? cloneStats(this.stat) : null),
     history: this.history.slice(),
-    contents: contents
+    contents: contents,
   });
 
-  // clone our custom properties
+  // Clone our custom properties
   Object.keys(this).forEach(function(key) {
-    // ignore built-in fields
+    // Ignore built-in fields
     if (key === '_contents' || key === 'stat' ||
       key === 'history' || key === 'path' ||
       key === 'base' || key === 'cwd') {
@@ -92,8 +94,12 @@ File.prototype.clone = function(opt) {
 };
 
 File.prototype.pipe = function(stream, opt) {
-  if (!opt) opt = {};
-  if (typeof opt.end === 'undefined') opt.end = true;
+  if (!opt) {
+    opt = {};
+  }
+  if (typeof opt.end === 'undefined') {
+    opt.end = true;
+  }
 
   if (this.isStream()) {
     return this.contents.pipe(stream, opt);
@@ -107,19 +113,21 @@ File.prototype.pipe = function(stream, opt) {
     return stream;
   }
 
-  // isNull
-  if (opt.end) stream.end();
+  // Check if isNull
+  if (opt.end) {
+    stream.end();
+  }
   return stream;
 };
 
 File.prototype.inspect = function() {
   var inspect = [];
 
-  // use relative path if possible
+  // Use relative path if possible
   var filePath = (this.base && this.path) ? this.relative : this.path;
 
   if (filePath) {
-    inspect.push('"'+filePath+'"');
+    inspect.push('"' + filePath + '"');
   }
 
   if (this.isBuffer()) {
@@ -130,15 +138,15 @@ File.prototype.inspect = function() {
     inspect.push(inspectStream(this.contents));
   }
 
-  return '<File '+inspect.join(' ')+'>';
+  return '<File ' + inspect.join(' ') + '>';
 };
 
 File.isVinyl = function(file) {
   return file && file._isVinyl === true;
 };
 
-// virtual attributes
-// or stuff with extra logic
+// Virtual attributes
+// Or stuff with extra logic
 Object.defineProperty(File.prototype, 'contents', {
   get: function() {
     return this._contents;
@@ -148,41 +156,53 @@ Object.defineProperty(File.prototype, 'contents', {
       throw new Error('File.contents can only be a Buffer, a Stream, or null.');
     }
     this._contents = val;
-  }
+  },
 });
 
-// TODO: should this be moved to vinyl-fs?
+// TODO: Should this be moved to vinyl-fs?
 Object.defineProperty(File.prototype, 'relative', {
   get: function() {
-    if (!this.base) throw new Error('No base specified! Can not get relative.');
-    if (!this.path) throw new Error('No path specified! Can not get relative.');
+    if (!this.base) {
+      throw new Error('No base specified! Can not get relative.');
+    }
+    if (!this.path) {
+      throw new Error('No path specified! Can not get relative.');
+    }
     return path.relative(this.base, this.path);
   },
   set: function() {
     throw new Error('File.relative is generated from the base and path attributes. Do not modify it.');
-  }
+  },
 });
 
 Object.defineProperty(File.prototype, 'dirname', {
   get: function() {
-    if (!this.path) throw new Error('No path specified! Can not get dirname.');
+    if (!this.path) {
+      throw new Error('No path specified! Can not get dirname.');
+    }
     return path.dirname(this.path);
   },
   set: function(dirname) {
-    if (!this.path) throw new Error('No path specified! Can not set dirname.');
+    if (!this.path) {
+      throw new Error('No path specified! Can not set dirname.');
+    }
     this.path = path.join(dirname, path.basename(this.path));
-  }
+  },
 });
 
 Object.defineProperty(File.prototype, 'basename', {
   get: function() {
-    if (!this.path) throw new Error('No path specified! Can not get basename.');
+    if (!this.path) {
+      throw new Error('No path specified! Can not get basename.');
+    }
     return path.basename(this.path);
   },
   set: function(basename) {
-    if (!this.path) throw new Error('No path specified! Can not set basename.');
+    if (!this.path) {
+      throw new Error('No path specified! Can not set basename.');
+    }
     this.path = path.join(path.dirname(this.path), basename);
-  }
+  },
 });
 
 // Property for getting/setting stem of the filename.
@@ -199,13 +219,17 @@ Object.defineProperty(File.prototype, 'stem', {
 
 Object.defineProperty(File.prototype, 'extname', {
   get: function() {
-    if (!this.path) throw new Error('No path specified! Can not get extname.');
+    if (!this.path) {
+      throw new Error('No path specified! Can not get extname.');
+    }
     return path.extname(this.path);
   },
   set: function(extname) {
-    if (!this.path) throw new Error('No path specified! Can not set extname.');
+    if (!this.path) {
+      throw new Error('No path specified! Can not set extname.');
+    }
     this.path = replaceExt(this.path, extname);
-  }
+  },
 });
 
 Object.defineProperty(File.prototype, 'path', {
@@ -213,13 +237,15 @@ Object.defineProperty(File.prototype, 'path', {
     return this.history[this.history.length - 1];
   },
   set: function(path) {
-    if (typeof path !== 'string') throw new Error('path should be string');
+    if (typeof path !== 'string') {
+      throw new Error('path should be string');
+    }
 
-    // record history only when path changed
+    // Record history only when path changed
     if (path && path !== this.path) {
       this.history.push(path);
     }
-  }
+  },
 });
 
 module.exports = File;
