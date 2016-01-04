@@ -208,10 +208,10 @@ console.log(file.path); // /test/file.js
 ```
 
 [npm-url]: https://npmjs.org/package/vinyl
-[npm-image]: https://badge.fury.io/js/vinyl.png
+[npm-image]: https://badge.fury.io/js/vinyl.svg
 [travis-url]: https://travis-ci.org/gulpjs/vinyl
-[travis-image]: https://travis-ci.org/gulpjs/vinyl.png?branch=master
+[travis-image]: https://travis-ci.org/gulpjs/vinyl.svg?branch=master
 [coveralls-url]: https://coveralls.io/r/wearefractal/vinyl
-[coveralls-image]: https://coveralls.io/repos/wearefractal/vinyl/badge.png
+[coveralls-image]: https://coveralls.io/repos/wearefractal/vinyl/badge.svg
 [depstat-url]: https://david-dm.org/gulpjs/vinyl
-[depstat-image]: https://david-dm.org/gulpjs/vinyl.png
+[depstat-image]: https://david-dm.org/gulpjs/vinyl.svg
