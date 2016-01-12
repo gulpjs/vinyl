@@ -19,7 +19,7 @@ describe('File', function() {
       done();
     });
     it('should return false on a null object', function(done) {
-      File.isVinyl({}).should.equal(false);
+      File.isVinyl(null).should.equal(false);
       done();
     });
   });
