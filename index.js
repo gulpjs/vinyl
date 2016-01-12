@@ -142,7 +142,7 @@ File.prototype.inspect = function() {
 };
 
 File.isVinyl = function(file) {
-  return file && file._isVinyl === true;
+  return (file && file._isVinyl === true) || false;
 };
 
 // Virtual attributes
