@@ -652,6 +652,21 @@ describe('File', function() {
       }
     });
 
+    it('should coerce integer stat.xtime to proper Date objects', function(done) {
+      var now = Date.now();
+      var file = new File({
+        stat: {
+          atime: now,
+          mtime: now,
+          ctime: now,
+        },
+      });
+      (file.stat.atime instanceof Date).should.equal(true);
+      (file.stat.mtime instanceof Date).should.equal(true);
+      (file.stat.ctime instanceof Date).should.equal(true);
+      done();
+    });
+
     it('should update atime when reading contents', function(done) {
       var earlier = Date.now() - 1000;
       var file = new File({

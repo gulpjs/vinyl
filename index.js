@@ -27,6 +27,19 @@ function File(file) {
   // Stat = files stats object
   this.stat = file.stat || null;
 
+  // Make sure times are proper Date objects
+  if (this.stat) {
+    if (typeof this.stat.atime === 'number') {
+      this.stat.atime = new Date(this.stat.atime);
+    }
+    if (typeof this.stat.mtime === 'number') {
+      this.stat.mtime = new Date(this.stat.mtime);
+    }
+    if (typeof this.stat.ctime === 'number') {
+      this.stat.ctime = new Date(this.stat.ctime);
+    }
+  }
+
   this._isVinyl = true;
 }
 
