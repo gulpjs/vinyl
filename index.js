@@ -21,11 +21,24 @@ function File(file) {
   this.cwd = file.cwd || process.cwd();
   this.base = file.base || this.cwd;
 
+  // Contents = stream, buffer, or null if not read
+  this.contents = file.contents || null;
+
   // Stat = files stats object
   this.stat = file.stat || null;
 
-  // Contents = stream, buffer, or null if not read
-  this.contents = file.contents || null;
+  // Make sure times are proper Date objects
+  if (this.stat) {
+    if (typeof this.stat.atime === 'number') {
+      this.stat.atime = new Date(this.stat.atime);
+    }
+    if (typeof this.stat.mtime === 'number') {
+      this.stat.mtime = new Date(this.stat.mtime);
+    }
+    if (typeof this.stat.ctime === 'number') {
+      this.stat.ctime = new Date(this.stat.ctime);
+    }
+  }
 
   this._isVinyl = true;
 }
@@ -149,11 +162,23 @@ File.isVinyl = function(file) {
 // Or stuff with extra logic
 Object.defineProperty(File.prototype, 'contents', {
   get: function() {
+    if (this.stat && this.stat.atime) {
+      this.stat.atime.setTime(Date.now());
+    }
     return this._contents;
   },
   set: function(val) {
     if (!isBuffer(val) && !isStream(val) && !isNull(val)) {
       throw new Error('File.contents can only be a Buffer, a Stream, or null.');
+    }
+    if (this.stat) {
+      var now = Date.now();
+      if (this.stat.mtime) {
+        this.stat.mtime.setTime(now);
+      }
+      if (this.stat.ctime) {
+        this.stat.ctime.setTime(now);
+      }
     }
     this._contents = val;
   },
