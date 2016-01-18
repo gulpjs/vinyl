@@ -1,7 +1,7 @@
 {
   "name": "vinyl",
   "description": "A virtual file format",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "homepage": "http://github.com/gulpjs/vinyl",
   "repository": "git://github.com/gulpjs/vinyl.git",
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
