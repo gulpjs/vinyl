@@ -1,6 +1,9 @@
 ## Change Log
 
-### upcoming (2016/01/15 08:53 +00:00)
+### v1.1.1 (2016/01/18 23:23 +00:00)
+- [3990e00](https://github.com/gulpjs/vinyl/commit/3990e007b004c809a53670c00566afb157fa56b6) 1.1.1
+- [2d3e984](https://github.com/gulpjs/vinyl/commit/2d3e98447a42285b593e1b261984b87b171e7313) chore: add NPM script for changelog (@T1st3)
+- [f70c395](https://github.com/gulpjs/vinyl/commit/f70c395085fc3952cf72c061c851f5b0d4676030) docs: add CHANGELOG.md (@T1st3)
 - [#74](https://github.com/gulpjs/vinyl/pull/74) Fix isVinyl for falsy values (@erikkemperman)
 - [3e8b132](https://github.com/gulpjs/vinyl/commit/3e8b132cd87bf5ab536ff7a4c6d660e33f5990b4) Fix isVinyl for falsy values (@erikkemperman)
 - [#73](https://github.com/gulpjs/vinyl/pull/73) Readme: use SVG images. (@d10)
@@ -55,8 +58,8 @@
 - [e5b2670](https://github.com/gulpjs/vinyl/commit/e5b2670af205ca0fb6f589a396b89ab2845a91ac) update license attribut (@pgilad)
 - [55f90e3](https://github.com/gulpjs/vinyl/commit/55f90e3763af84c7eb599bd6403dbe14f63d5513) dep updates (@contra)
 - [#48](https://github.com/gulpjs/vinyl/pull/48) Update docs for `path` and `history` (@jmm)
-- [93df183](https://github.com/gulpjs/vinyl/commit/93df18374b62de32c76862baf73e92f33b04882a) Document `options.history`. (@jmm)
 - [231f32a](https://github.com/gulpjs/vinyl/commit/231f32a375aa9147d0a41ffd1ace773c45e66ee5) Document `path`. (@jmm)
+- [93df183](https://github.com/gulpjs/vinyl/commit/93df18374b62de32c76862baf73e92f33b04882a) Document `options.history`. (@jmm)
 - [2ed6a01](https://github.com/gulpjs/vinyl/commit/2ed6a012c03a78b46f9d41034969898a15fdfe15) Correct `options.path` default value docs. (@jmm)
 - [edf1ecb](https://github.com/gulpjs/vinyl/commit/edf1ecb0698f355e137f9361a9a9a2581ca485e5) Document `history`. (@jmm)
 - [#45](https://github.com/gulpjs/vinyl/pull/45) Update dependencies and devDependencies (@shinnn)
