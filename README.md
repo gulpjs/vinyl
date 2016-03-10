@@ -141,7 +141,6 @@ file.dirname = '/specs';
 
 console.log(file.dirname); // /specs
 console.log(file.path); // /specs/file.coffee
-`
 ```
 
 ### basename
@@ -162,7 +161,6 @@ file.basename = 'file.js';
 
 console.log(file.basename); // file.js
 console.log(file.path); // /test/file.js
-`
 ```
 
 ### stem
@@ -183,7 +181,6 @@ file.stem = 'foo';
 
 console.log(file.stem); // foo
 console.log(file.path); // /test/foo.coffee
-`
 ```
 
 ### extname
@@ -204,7 +201,6 @@ file.extname = '.js';
 
 console.log(file.extname); // .js
 console.log(file.path); // /test/file.js
-`
 ```
 
 [npm-url]: https://npmjs.org/package/vinyl
