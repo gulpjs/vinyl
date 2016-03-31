@@ -215,7 +215,7 @@ Object.defineProperty(File.prototype, 'stem', {
   },
   set: function(stem) {
     if (!this.path) {
-      throw new Error('No PassThrough specified! Can not set stem.');
+      throw new Error('No path specified! Can not set stem.');
     }
     this.path = path.join(path.dirname(this.path), stem + this.extname);
   },
