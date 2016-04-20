@@ -56,7 +56,7 @@ File.prototype.toJSON = function() {
     extname: self.extname,
     path: self.path,
     relative: self.relative,
-    stem: self.stem
+    stem: self.stem,
   };
 };
 
