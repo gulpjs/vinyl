@@ -47,6 +47,19 @@ File.prototype.isDirectory = function() {
   return this.isNull() && this.stat && this.stat.isDirectory();
 };
 
+File.prototype.toJSON = function() {
+  var self = this;
+  return {
+    basename: self.basename,
+    contents: self.contents.toString(),
+    dirname: self.dirname,
+    extname: self.extname,
+    path: self.path,
+    relative: self.relative,
+    stem: self.stem
+  };
+};
+
 File.prototype.clone = function(opt) {
   if (typeof opt === 'boolean') {
     opt = {
