@@ -48,7 +48,8 @@ File.prototype.isDirectory = function() {
 };
 
 File.prototype.toJSON = function() {
-  var self = this, contents;
+  var self = this;
+  var contents;
   if (self.contents === null) {
     contents = null;
   } else {
