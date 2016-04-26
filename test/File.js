@@ -1,4 +1,4 @@
-var Stream = require('stream');
+var Stream = require('readable-stream');
 var fs = require('fs');
 var path = require('path');
 var es = require('event-stream');

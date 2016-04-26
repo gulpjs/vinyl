@@ -1,4 +1,5 @@
 var isStream = require('../lib/isStream');
+// Use node stream to test readable-stream inherits from it
 var Stream = require('stream');
 require('should');
 require('mocha');

@@ -6,7 +6,7 @@ var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
 var inspectStream = require('./lib/inspectStream');
-var Stream = require('stream');
+var Stream = require('readable-stream');
 var replaceExt = require('replace-ext');
 
 var builtInFields = [

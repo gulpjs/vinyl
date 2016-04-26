@@ -1,5 +1,5 @@
 var isBuffer = require('../lib/isBuffer');
-var Stream = require('stream');
+var Stream = require('readable-stream');
 require('should');
 require('mocha');
 
