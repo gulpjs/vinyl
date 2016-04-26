@@ -1,11 +1,11 @@
 var inspectStream = require('../lib/inspectStream');
-var Stream = require('stream');
+var Stream = require('readable-stream');
 var should = require('should');
 require('mocha');
 
 describe('inspectStream()', function() {
   it('should work on a core Stream', function(done) {
-    var testStream = new Stream();
+    var testStream = new Stream.Stream();
     inspectStream(testStream).should.equal('<Stream>');
     done();
   });
