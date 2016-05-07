@@ -207,7 +207,7 @@ console.log(file.path); // /test/file.js
 [npm-image]: https://badge.fury.io/js/vinyl.svg
 [travis-url]: https://travis-ci.org/gulpjs/vinyl
 [travis-image]: https://travis-ci.org/gulpjs/vinyl.svg?branch=master
-[coveralls-url]: https://coveralls.io/r/wearefractal/vinyl
-[coveralls-image]: https://coveralls.io/repos/wearefractal/vinyl/badge.svg
+[coveralls-url]: https://coveralls.io/github/gulpjs/vinyl
+[coveralls-image]: https://coveralls.io/repos/github/gulpjs/vinyl/badge.svg
 [depstat-url]: https://david-dm.org/gulpjs/vinyl
 [depstat-image]: https://david-dm.org/gulpjs/vinyl.svg
