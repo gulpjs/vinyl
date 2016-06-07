@@ -72,7 +72,7 @@ File.prototype.clone = function(opt) {
     contents = opt.contents ? cloneBuffer(this.contents) : this.contents;
   }
 
-  var file = new File({
+  var file = new this.constructor({
     cwd: this.cwd,
     base: this.base,
     stat: (this.stat ? cloneStats(this.stat) : null),
