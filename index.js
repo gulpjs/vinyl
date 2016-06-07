@@ -28,6 +28,13 @@ function File(file) {
   this.contents = file.contents || null;
 
   this._isVinyl = true;
+
+  // Set custom properties
+  Object.keys(file).forEach(function(key) {
+    if (this.constructor.isCustomProp(key)) {
+      this[key] = file[key];
+    }
+  }, this);
 }
 
 File.prototype.isBuffer = function() {
@@ -82,13 +89,9 @@ File.prototype.clone = function(opt) {
 
   // Clone our custom properties
   Object.keys(this).forEach(function(key) {
-    // Ignore built-in fields
-    if (key === '_contents' || key === 'stat' ||
-      key === 'history' || key === 'path' ||
-      key === 'base' || key === 'cwd') {
-      return;
+    if (this.constructor.isCustomProp(key)) {
+      file[key] = opt.deep ? clone(this[key], true) : this[key];
     }
-    file[key] = opt.deep ? clone(this[key], true) : this[key];
   }, this);
   return file;
 };
@@ -139,6 +142,12 @@ File.prototype.inspect = function() {
   }
 
   return '<File ' + inspect.join(' ') + '>';
+};
+
+File.builtInFields = ['_contents', 'contents', 'stat', 'history', 'path', 'base', 'cwd'];
+
+File.isCustomProp = function(key) {
+  return this.builtInFields.indexOf(key) === -1;
 };
 
 File.isVinyl = function(file) {
