@@ -420,6 +420,30 @@ describe('File', function() {
 
       done();
     });
+
+    it('should work with extended files', function(done) {
+      function ExtendedFile() {
+        File.apply(this, arguments);
+      }
+      ExtendedFile.prototype = Object.create(File.prototype);
+      ExtendedFile.prototype.constructor = ExtendedFile;
+      // Object.setPrototypeOf(ExtendedFile, File);
+      // Just copy static stuff since Object.setPrototypeOf is node >=0.12
+      Object.keys(File).forEach(function(key) {
+        ExtendedFile[key] = File[key];
+      });
+
+      var file = new ExtendedFile();
+      var file2 = file.clone();
+
+      file2.should.not.equal(file, 'refs should be different');
+      file2.constructor.should.equal(ExtendedFile);
+      (file2 instanceof ExtendedFile).should.equal(true);
+      (file2 instanceof File).should.equal(true);
+      ExtendedFile.prototype.isPrototypeOf(file2).should.equal(true);
+      File.prototype.isPrototypeOf(file2).should.equal(true);
+      done();
+    });
   });
 
   describe('pipe()', function() {
