@@ -144,10 +144,11 @@ File.prototype.inspect = function() {
   return '<File ' + inspect.join(' ') + '>';
 };
 
-File.builtInFields = ['_contents', 'contents', 'stat', 'history', 'path', 'base', 'cwd'];
-
 File.isCustomProp = function(key) {
-  return this.builtInFields.indexOf(key) === -1;
+  var builtInFields = [
+    '_contents', 'contents', 'stat', 'history', 'path', 'base', 'cwd',
+  ];
+  return builtInFields.indexOf(key) === -1;
 };
 
 File.isVinyl = function(file) {
