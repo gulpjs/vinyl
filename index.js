@@ -9,6 +9,10 @@ var inspectStream = require('./lib/inspectStream');
 var Stream = require('stream');
 var replaceExt = require('replace-ext');
 
+var builtInFields = [
+  '_contents', 'contents', 'stat', 'history', 'path', 'base', 'cwd',
+];
+
 function File(file) {
   if (!file) {
     file = {};
@@ -145,9 +149,6 @@ File.prototype.inspect = function() {
 };
 
 File.isCustomProp = function(key) {
-  var builtInFields = [
-    '_contents', 'contents', 'stat', 'history', 'path', 'base', 'cwd',
-  ];
   return builtInFields.indexOf(key) === -1;
 };
 
