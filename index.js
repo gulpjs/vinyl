@@ -14,6 +14,8 @@ var builtInFields = [
 ];
 
 function File(file) {
+  var self = this;
+
   if (!file) {
     file = {};
   }
@@ -35,10 +37,10 @@ function File(file) {
 
   // Set custom properties
   Object.keys(file).forEach(function(key) {
-    if (this.constructor.isCustomProp(key)) {
-      this[key] = file[key];
+    if (self.constructor.isCustomProp(key)) {
+      self[key] = file[key];
     }
-  }, this);
+  });
 }
 
 File.prototype.isBuffer = function() {
@@ -59,6 +61,8 @@ File.prototype.isDirectory = function() {
 };
 
 File.prototype.clone = function(opt) {
+  var self = this;
+
   if (typeof opt === 'boolean') {
     opt = {
       deep: opt,
@@ -93,10 +97,10 @@ File.prototype.clone = function(opt) {
 
   // Clone our custom properties
   Object.keys(this).forEach(function(key) {
-    if (this.constructor.isCustomProp(key)) {
-      file[key] = opt.deep ? clone(this[key], true) : this[key];
+    if (self.constructor.isCustomProp(key)) {
+      file[key] = opt.deep ? clone(self[key], true) : self[key];
     }
-  }, this);
+  });
   return file;
 };
 
