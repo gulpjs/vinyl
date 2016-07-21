@@ -9,141 +9,141 @@ var inspectStream = require('./lib/inspectStream');
 var Stream = require('stream');
 var replaceExt = require('replace-ext');
 
-function File(file) {
-  if (!file) {
-    file = {};
-  }
-
-  // Record path change
-  var history = file.path ? [file.path] : file.history;
-  this.history = history || [];
-
-  this.cwd = file.cwd || process.cwd();
-  this.base = file.base || this.cwd;
-
-  // Stat = files stats object
-  this.stat = file.stat || null;
-
-  // Contents = stream, buffer, or null if not read
-  this.contents = file.contents || null;
-
-  this._isVinyl = true;
-}
-
-File.prototype.isBuffer = function() {
-  return isBuffer(this.contents);
-};
-
-File.prototype.isStream = function() {
-  return isStream(this.contents);
-};
-
-File.prototype.isNull = function() {
-  return isNull(this.contents);
-};
-
-// TODO: Should this be moved to vinyl-fs?
-File.prototype.isDirectory = function() {
-  return this.isNull() && this.stat && this.stat.isDirectory();
-};
-
-File.prototype.clone = function(opt) {
-  if (typeof opt === 'boolean') {
-    opt = {
-      deep: opt,
-      contents: true,
-    };
-  } else if (!opt) {
-    opt = {
-      deep: true,
-      contents: true,
-    };
-  } else {
-    opt.deep = opt.deep === true;
-    opt.contents = opt.contents !== false;
-  }
-
-  // Clone our file contents
-  var contents;
-  if (this.isStream()) {
-    contents = this.contents.pipe(new Stream.PassThrough());
-    this.contents = this.contents.pipe(new Stream.PassThrough());
-  } else if (this.isBuffer()) {
-    contents = opt.contents ? cloneBuffer(this.contents) : this.contents;
-  }
-
-  var file = new this.constructor({
-    cwd: this.cwd,
-    base: this.base,
-    stat: (this.stat ? cloneStats(this.stat) : null),
-    history: this.history.slice(),
-    contents: contents,
-  });
-
-  // Clone our custom properties
-  Object.keys(this).forEach(function(key) {
-    // Ignore built-in fields
-    if (key === '_contents' || key === 'stat' ||
-      key === 'history' || key === 'path' ||
-      key === 'base' || key === 'cwd') {
-      return;
+class File {
+  constructor(file) {
+    if (!file) {
+      file = {};
     }
-    file[key] = opt.deep ? clone(this[key], true) : this[key];
-  }, this);
-  return file;
-};
-
-File.prototype.pipe = function(stream, opt) {
-  if (!opt) {
-    opt = {};
+    
+    var history = file.path ? [file.path] : file.history;
+    this.history = history || [];
+    
+    this.cwd = file.cwd || process.cwd();
+    this.base = file.base || this.cwd;
+    
+    // Stat = files stats object
+    this.stat = file.stat || null;
+    
+    // Contents = stream, buffer, or null if not read
+    this.contents = file.contents || null;
+    
+    this._isVinyl = true;
   }
-  if (typeof opt.end === 'undefined') {
-    opt.end = true;
+  
+  isBuffer() {
+    return isBuffer(this.contents);
   }
-
-  if (this.isStream()) {
-    return this.contents.pipe(stream, opt);
+  
+  isStream() {
+    return isStream(this.contents);
   }
-  if (this.isBuffer()) {
-    if (opt.end) {
-      stream.end(this.contents);
+  
+  isNull() {
+    return isNull(this.contents);
+  }
+  
+  isDirectory() {
+    return this.isNull() && this.stat && this.stat.isDirectory();
+  }
+  
+  clone(opt) {
+    if (typeof opt == "boolean") {
+      opt = {
+        deep: opt,
+        contents: true,
+      };
+    } else if (!opt) {
+      opt = {
+        deep: true,
+        contents: true,
+      };
     } else {
-      stream.write(this.contents);
+      opt.deep = opt.deep === true;
+      opt.contents = opt.contents !== false;
+    }
+    
+    // Clone our file contents
+    var contents;
+    if (this.isStream()) {
+      contents = this.contents.pipe(new Stream.PassThrough());
+      this.contents = this.contents.pipe(new Stream.PassThrough());
+    } else if (this.isBuffer()) {
+      contents = opt.contents ? cloneBuffer(this.contents) : this.contents;
+    }
+    
+    var file = new this.constructor({
+      cwd: this.cwd,
+      base: this.base,
+      stat: (this.stat ? cloneStats(this.stat) : null),
+      history: this.history.slice(),
+      contents: contents,
+    });
+    
+    // Clone our custom properties
+    Object.keys(this).forEach(function(key) {
+      // Ignore built-in fields
+      if (key === '_contents' || key === 'stat' ||
+        key === 'history' || key === 'path' ||
+        key === 'base' || key === 'cwd') {
+        return;
+      }
+      file[key] = opt.deep ? clone(this[key], true) : this[key];
+    }, this);
+    return file;
+  }
+  
+  pipe(stream, opt) {
+    if (!opt) {
+      opt = {};
+    }
+    if (typeof opt.end === 'undefined') {
+      opt.end = true;
+    }
+
+    if (this.isStream()) {
+      return this.contents.pipe(stream, opt);
+    }
+    if (this.isBuffer()) {
+      if (opt.end) {
+        stream.end(this.contents);
+      } else {
+        stream.write(this.contents);
+      }
+      return stream;
+    }
+
+    // Check if isNull
+    if (opt.end) {
+      stream.end();
     }
     return stream;
   }
+  
+  inspect() {
+    var inspect = [];
 
-  // Check if isNull
-  if (opt.end) {
-    stream.end();
+    // Use relative path if possible
+    var filePath = (this.base && this.path) ? this.relative : this.path;
+
+    if (filePath) {
+      inspect.push('"' + filePath + '"');
+    }
+
+    if (this.isBuffer()) {
+      inspect.push(this.contents.inspect());
+    }
+
+    if (this.isStream()) {
+      inspect.push(inspectStream(this.contents));
+    }
+
+    return '<File ' + inspect.join(' ') + '>';
   }
-  return stream;
-};
-
-File.prototype.inspect = function() {
-  var inspect = [];
-
-  // Use relative path if possible
-  var filePath = (this.base && this.path) ? this.relative : this.path;
-
-  if (filePath) {
-    inspect.push('"' + filePath + '"');
+  
+  isVinyl() {
+    return (file && file._isVinyl === true) || false;
   }
-
-  if (this.isBuffer()) {
-    inspect.push(this.contents.inspect());
-  }
-
-  if (this.isStream()) {
-    inspect.push(inspectStream(this.contents));
-  }
-
-  return '<File ' + inspect.join(' ') + '>';
-};
-
-File.isVinyl = function(file) {
-  return (file && file._isVinyl === true) || false;
-};
+}
 
 // Virtual attributes
 // Or stuff with extra logic
