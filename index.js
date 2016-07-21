@@ -8,6 +8,7 @@ var isNull = require('./lib/isNull');
 var inspectStream = require('./lib/inspectStream');
 var Stream = require('stream');
 var replaceExt = require('replace-ext');
+require("harmonize")();
 
 class File {
   constructor(file) {
