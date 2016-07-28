@@ -15,8 +15,7 @@ function File(file) {
   }
 
   // Record path change
-  var history = file.path ? [file.path] : file.history;
-  this.history = history || [];
+  this.history = file.path ? [file.path] : file.history || [];
 
   this.cwd = file.cwd || process.cwd();
   this.base = file.base || this.cwd;
@@ -142,7 +141,7 @@ File.prototype.inspect = function() {
 };
 
 File.isVinyl = function(file) {
-  return (file && file._isVinyl === true) || false;
+  return Boolean(file && file._isVinyl);
 };
 
 // Virtual attributes
