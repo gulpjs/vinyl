@@ -32,6 +32,18 @@ File.isVinyl(dummy); // true
 File.isVinyl(notAFile); // false
 ```
 
+### isCustomProp
+Vinyl checks if a property is not managed internally, such as `sourceMap`. This is than used in `constructor(options)` when setting, and `clone()` when copying properties.
+
+```js
+var File = require('vinyl');
+
+File.isCustomProp('sourceMap'); // true
+File.isCustomProp('path'); // false -> internal getter/setter
+```
+
+Read more in [Extending Vinyl](#extending-vinyl).
+
 ### constructor(options)
 #### options.cwd
 Type: `String`<br><br>Default: `process.cwd()`
@@ -60,6 +72,16 @@ Type: `fs.Stats`<br><br>Default: `null`
 File contents.
 
 Type: `Buffer, Stream, or null`<br><br>Default: `null`
+
+#### options.{custom}
+Any other option properties will just be assigned to the new File object.
+
+```js
+var File = require('vinyl');
+
+var file = new File({foo: 'bar'});
+file.foo === 'bar'; // true
+```
 
 ### isBuffer()
 Returns true if file.contents is a Buffer.
@@ -202,6 +224,36 @@ file.extname = '.js';
 console.log(file.extname); // .js
 console.log(file.path); // /test/file.js
 ```
+
+## Extending Vinyl
+When extending Vinyl into your own class with extra features, you need to think about a few things.
+
+When you have your own properties that are managed internally, you need to extend the static `isCustomProp` method to return `false` when one of these properties is queried.
+
+```js
+const File = require('vinyl');
+
+const builtInProps = ['foo', '_foo'];
+
+class SuperFile extends File {
+  constructor(options) {
+    super(options);
+    this._foo = 'example internal read-only value';
+  }
+
+  get foo() {
+    return this._foo;
+  }
+
+  static isCustomProp(name) {
+    return super.isCustomProp(name) && builtInProps.indexOf(name) === -1;
+  }
+}
+```
+
+This makes properties `foo` and `_foo` ignored when cloning, and when passed in options to `constructor(options)` so they don't get assigned to the new object.
+
+Same goes for `clone()`. If you have your own internal stuff that needs special handling during cloning, you should extend it to do so.
 
 [npm-url]: https://npmjs.org/package/vinyl
 [npm-image]: https://badge.fury.io/js/vinyl.svg

@@ -9,7 +9,13 @@ var inspectStream = require('./lib/inspectStream');
 var Stream = require('stream');
 var replaceExt = require('replace-ext');
 
+var builtInFields = [
+  '_contents', 'contents', 'stat', 'history', 'path', 'base', 'cwd',
+];
+
 function File(file) {
+  var self = this;
+
   if (!file) {
     file = {};
   }
@@ -28,6 +34,13 @@ function File(file) {
   this.contents = file.contents || null;
 
   this._isVinyl = true;
+
+  // Set custom properties
+  Object.keys(file).forEach(function(key) {
+    if (self.constructor.isCustomProp(key)) {
+      self[key] = file[key];
+    }
+  });
 }
 
 File.prototype.isBuffer = function() {
@@ -48,6 +61,8 @@ File.prototype.isDirectory = function() {
 };
 
 File.prototype.clone = function(opt) {
+  var self = this;
+
   if (typeof opt === 'boolean') {
     opt = {
       deep: opt,
@@ -82,14 +97,10 @@ File.prototype.clone = function(opt) {
 
   // Clone our custom properties
   Object.keys(this).forEach(function(key) {
-    // Ignore built-in fields
-    if (key === '_contents' || key === 'stat' ||
-      key === 'history' || key === 'path' ||
-      key === 'base' || key === 'cwd') {
-      return;
+    if (self.constructor.isCustomProp(key)) {
+      file[key] = opt.deep ? clone(self[key], true) : self[key];
     }
-    file[key] = opt.deep ? clone(this[key], true) : this[key];
-  }, this);
+  });
   return file;
 };
 
@@ -139,6 +150,10 @@ File.prototype.inspect = function() {
   }
 
   return '<File ' + inspect.join(' ') + '>';
+};
+
+File.isCustomProp = function(key) {
+  return builtInFields.indexOf(key) === -1;
 };
 
 File.isVinyl = function(file) {

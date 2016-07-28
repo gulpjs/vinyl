@@ -110,6 +110,13 @@ describe('File', function() {
       file.contents.should.equal(val);
       done();
     });
+
+    it('should set custom properties', function(done) {
+      var sourceMap = {};
+      var file = new File({ sourceMap: sourceMap });
+      file.sourceMap.should.equal(sourceMap);
+      done();
+    });
   });
 
   describe('isBuffer()', function() {
