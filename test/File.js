@@ -211,6 +211,46 @@ describe('File', function() {
       file.isDirectory().should.equal(true);
       done();
     });
+
+    it('returns false when the stats exist but do not contain isDirectory method', function(done) {
+      var file = new File({ contents: null, stat: {} });
+      file.isDirectory().should.equal(false);
+      done();
+    });
+  });
+
+  describe('isSymbolic()', function() {
+    var fakeStat = {
+      isSymbolicLink: function() {
+        return true;
+      },
+    };
+
+    it('should return false when the contents are a Buffer', function(done) {
+      var val = new Buffer('test');
+      var file = new File({ contents: val, stat: fakeStat });
+      file.isSymbolic().should.equal(false);
+      done();
+    });
+
+    it('should return false when the contents are a Stream', function(done) {
+      var val = new Stream();
+      var file = new File({ contents: val, stat: fakeStat });
+      file.isSymbolic().should.equal(false);
+      done();
+    });
+
+    it('should return true when the contents are a null', function(done) {
+      var file = new File({ contents: null, stat: fakeStat });
+      file.isSymbolic().should.equal(true);
+      done();
+    });
+
+    it('returns false when the stats exist but do not contain isSymbolicLink method', function(done) {
+      var file = new File({ contents: null, stat: {} });
+      file.isSymbolic().should.equal(false);
+      done();
+    });
   });
 
   describe('clone()', function() {
@@ -970,6 +1010,47 @@ describe('File', function() {
       (function() {
         file.path = null;
       }).should.throw('path should be string');
+    });
+  });
+
+  describe('symlink get/set', function() {
+    it('should return null on get when no symlink', function(done) {
+      var file = new File();
+      var a = file.symlink;
+      should.not.exist(a);
+      done();
+    });
+
+    it('should return the symlink if set', function(done) {
+      var file = new File({
+        symlink: '/test/test.coffee',
+      });
+      file.symlink.should.equal('/test/test.coffee');
+      done();
+    });
+
+    it('should error on set with non-string symlink', function(done) {
+      var file = new File();
+      try {
+        file.symlink = null;
+      } catch (err) {
+        should.exist(err);
+        done();
+      }
+    });
+
+    it('should set the symlink', function(done) {
+      var file = new File();
+      file.symlink = '/test/test.coffee';
+      file.symlink.should.equal('/test/test.coffee');
+      done();
+    });
+
+    it('should set the relative symlink', function(done) {
+      var file = new File();
+      file.symlink = './test.coffee';
+      file.symlink.should.equal('./test.coffee');
+      done();
     });
   });
 });
