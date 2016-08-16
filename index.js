@@ -6,8 +6,8 @@ var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
 var inspectStream = require('./lib/inspectStream');
-var Stream = require('readable-stream');
 var replaceExt = require('replace-ext');
+var cloneable = require('cloneable-readable');
 
 var builtInFields = [
   '_contents', 'contents', 'stat', 'history', 'path', 'base', 'cwd',
@@ -81,8 +81,11 @@ File.prototype.clone = function(opt) {
   // Clone our file contents
   var contents;
   if (this.isStream()) {
-    contents = this.contents.pipe(new Stream.PassThrough());
-    this.contents = this.contents.pipe(new Stream.PassThrough());
+    if (typeof this.contents.clone !== 'function') {
+      this.contents = cloneable(this.contents);
+    }
+
+    contents = this.contents.clone();
   } else if (this.isBuffer()) {
     contents = opt.contents ? cloneBuffer(this.contents) : this.contents;
   }
@@ -170,6 +173,11 @@ Object.defineProperty(File.prototype, 'contents', {
     if (!isBuffer(val) && !isStream(val) && !isNull(val)) {
       throw new Error('File.contents can only be a Buffer, a Stream, or null.');
     }
+
+    if (isStream(val)) {
+      val = cloneable(val);
+    }
+
     this._contents = val;
   },
 });

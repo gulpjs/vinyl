@@ -631,7 +631,7 @@ describe('File', function() {
         path: '/test/test.coffee',
         contents: new Stream.PassThrough(),
       });
-      file.inspect().should.equal('<File "test.coffee" <PassThroughStream>>');
+      file.inspect().should.equal('<File "test.coffee" <CloneableStream>>');
       done();
     });
 
@@ -656,11 +656,11 @@ describe('File', function() {
       done();
     });
 
-    it('should work with Stream', function(done) {
-      var val = new Stream.PassThrough();
+    it('should wrap Stream in Cloneable', function(done) {
+      var val = new Stream();
       var file = new File();
       file.contents = val;
-      file.contents.should.equal(val);
+      (typeof file.contents.clone).should.equal('function');
       done();
     });
 
