@@ -2,15 +2,18 @@ var path = require('path');
 var clone = require('clone');
 var cloneStats = require('clone-stats');
 var cloneBuffer = require('./lib/cloneBuffer');
+var endWithSep = require('./lib/endWithSep');
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
 var inspectStream = require('./lib/inspectStream');
+var normalize = require('./lib/normalize');
 var Stream = require('stream');
 var replaceExt = require('replace-ext');
 
 var builtInFields = [
-  '_contents', '_symlink', 'contents', 'stat', 'history', 'path', 'base', 'cwd',
+  '_contents', '_symlink', 'contents', 'stat', 'history', 'path',
+  '_base', 'base', '_cwd', 'cwd',
 ];
 
 function File(file) {
@@ -20,18 +23,21 @@ function File(file) {
     file = {};
   }
 
-  // Record path change
-  var history = file.path ? [file.path] : file.history;
-  this.history = history || [];
-
-  this.cwd = file.cwd || process.cwd();
-  this.base = file.base || this.cwd;
-
   // Stat = files stats object
   this.stat = file.stat || null;
 
   // Contents = stream, buffer, or null if not read
   this.contents = file.contents || null;
+
+  // Replay path history to ensure proper normalization and trailing sep
+  var history = file.path ? [file.path] : file.history || [];
+  this.history = [];
+  history.forEach(function(path) {
+    self.path = path;
+  });
+
+  this.cwd = file.cwd || process.cwd();
+  this.base = file.base;
 
   this._isVinyl = true;
 
@@ -156,7 +162,7 @@ File.prototype.inspect = function() {
   var inspect = [];
 
   // Use relative path if possible
-  var filePath = (this.base && this.path) ? this.relative : this.path;
+  var filePath = this.path ? this.relative : null;
 
   if (filePath) {
     inspect.push('"' + filePath + '"');
@@ -195,16 +201,45 @@ Object.defineProperty(File.prototype, 'contents', {
   },
 });
 
+Object.defineProperty(File.prototype, 'cwd', {
+  get: function() {
+    return this._cwd;
+  },
+  set: function(cwd) {
+    if (!cwd || typeof cwd !== 'string') {
+      throw new Error('cwd must be a non-empty string.');
+    }
+    this._cwd = endWithSep(normalize(cwd));
+  },
+});
+
+Object.defineProperty(File.prototype, 'base', {
+  get: function() {
+    return this._base || this._cwd;
+  },
+  set: function(base) {
+    if (base == null) {
+      delete this._base;
+      return;
+    }
+    if (typeof base !== 'string' || !base) {
+      throw new Error('base must be a non-empty string, or null/undefined.');
+    }
+    base = endWithSep(normalize(base));
+    if (base !== this._cwd) {
+      this._base = base;
+    }
+  },
+});
+
 // TODO: Should this be moved to vinyl-fs?
 Object.defineProperty(File.prototype, 'relative', {
   get: function() {
-    if (!this.base) {
-      throw new Error('No base specified! Can not get relative.');
-    }
     if (!this.path) {
       throw new Error('No path specified! Can not get relative.');
     }
-    return path.relative(this.base, this.path);
+    var relative = path.relative(this.base, this.path);
+    return this.isDirectory() ? endWithSep(relative) : relative;
   },
   set: function() {
     throw new Error('File.relative is generated from the base and path attributes. Do not modify it.');
@@ -216,7 +251,7 @@ Object.defineProperty(File.prototype, 'dirname', {
     if (!this.path) {
       throw new Error('No path specified! Can not get dirname.');
     }
-    return path.dirname(this.path);
+    return endWithSep(path.dirname(this.path));
   },
   set: function(dirname) {
     if (!this.path) {
@@ -231,7 +266,8 @@ Object.defineProperty(File.prototype, 'basename', {
     if (!this.path) {
       throw new Error('No path specified! Can not get basename.');
     }
-    return path.basename(this.path);
+    var basename = path.basename(this.path);
+    return this.isDirectory() ? endWithSep(basename) : basename;
   },
   set: function(basename) {
     if (!this.path) {
@@ -278,7 +314,13 @@ Object.defineProperty(File.prototype, 'path', {
   },
   set: function(path) {
     if (typeof path !== 'string') {
-      throw new Error('path should be string');
+      throw new Error('path should be a string.');
+    }
+    path = normalize(path);
+
+    // Add trailing separator when non-empty directory
+    if (path && this.isDirectory()) {
+      path = endWithSep(path);
     }
 
     // Record history only when path changed

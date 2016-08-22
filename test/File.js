@@ -3,6 +3,7 @@ var fs = require('fs');
 var path = require('path');
 var es = require('event-stream');
 var File = require('../');
+var endWithSep = require('../lib/endWithSep');
 
 var should = require('should');
 require('mocha');
@@ -26,12 +27,12 @@ describe('File', function() {
   describe('constructor()', function() {
     it('should default cwd to process.cwd', function(done) {
       var file = new File();
-      file.cwd.should.equal(process.cwd());
+      file.cwd.should.equal(endWithSep(process.cwd()));
       done();
     });
 
     it('should default base to cwd', function(done) {
-      var cwd = '/';
+      var cwd = path.normalize('/');
       var file = new File({ cwd: cwd });
       file.base.should.equal(cwd);
       done();
@@ -39,7 +40,7 @@ describe('File', function() {
 
     it('should default base to cwd even when none is given', function(done) {
       var file = new File();
-      file.base.should.equal(process.cwd());
+      file.base.should.equal(endWithSep(process.cwd()));
       done();
     });
 
@@ -68,21 +69,21 @@ describe('File', function() {
     });
 
     it('should set base to given value', function(done) {
-      var val = '/';
+      var val = path.normalize('/');
       var file = new File({ base: val });
       file.base.should.equal(val);
       done();
     });
 
     it('should set cwd to given value', function(done) {
-      var val = '/';
+      var val = path.normalize('/');
       var file = new File({ cwd: val });
       file.cwd.should.equal(val);
       done();
     });
 
     it('should set path to given value', function(done) {
-      var val = '/test.coffee';
+      var val = path.normalize('/test.coffee');
       var file = new File({ path: val });
       file.path.should.equal(val);
       file.history.should.eql([val]);
@@ -90,7 +91,7 @@ describe('File', function() {
     });
 
     it('should set history to given value', function(done) {
-      var val = '/test.coffee';
+      var val = path.normalize('/test.coffee');
       var file = new File({ history: [val] });
       file.path.should.equal(val);
       file.history.should.eql([val]);
@@ -116,6 +117,83 @@ describe('File', function() {
       var file = new File({ sourceMap: sourceMap });
       file.sourceMap.should.equal(sourceMap);
       done();
+    });
+
+    it('should normalize path', function() {
+      var file = new File({ path: '/test/foo/../test.coffee' });
+
+      if (process.platform === 'win32') {
+        file.path.should.equal('\\test\\test.coffee');
+        file.history.should.eql(['\\test\\test.coffee']);
+      } else {
+        file.path.should.equal('/test/test.coffee');
+        file.history.should.eql(['/test/test.coffee']);
+      }
+    });
+
+    it('should correctly normalize and trail path when directory stat', function() {
+      var file = new File({
+        path: '/test/foo/../foo',
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+        },
+      });
+
+      if (process.platform === 'win32') {
+        file.path.should.equal('\\test\\foo\\');
+      } else {
+        file.path.should.equal('/test/foo/');
+      }
+    });
+
+    it('should correctly normalize and trail history when directory stat', function() {
+      var file = new File({
+        history: [
+          '/test/foo/../foo',
+          '/test/bar/../bar',
+        ],
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+        },
+      });
+
+      if (process.platform === 'win32') {
+        file.history.should.eql([
+          '\\test\\foo\\',
+          '\\test\\bar\\',
+        ]);
+      } else {
+        file.history.should.eql([
+          '/test/foo/',
+          '/test/bar/',
+        ]);
+      }
+    });
+
+    it('should normalize history', function() {
+      var history = [
+        '/test/bar/../bar/test.coffee',
+        '/test/foo/../test.coffee',
+      ];
+      var file = new File({ history: history });
+
+      if (process.platform === 'win32') {
+        file.path.should.equal('\\test\\test.coffee');
+        file.history.should.eql([
+          '\\test\\bar\\test.coffee',
+          '\\test\\test.coffee',
+        ]);
+      } else {
+        file.path.should.equal('/test/test.coffee');
+        file.history.should.eql([
+          '/test/bar/test.coffee',
+          '/test/test.coffee',
+        ]);
+      }
     });
   });
 
@@ -367,9 +445,9 @@ describe('File', function() {
 
     it('should properly clone the `history` property', function(done) {
       var options = {
-        cwd: '/',
-        base: '/test/',
-        path: '/test/test.js',
+        cwd: path.normalize('/'),
+        base: path.normalize('/test/'),
+        path: path.normalize('/test/test.js'),
         contents: new Buffer('test'),
         stat: fs.statSync(__filename),
       };
@@ -413,23 +491,20 @@ describe('File', function() {
         path: '/test/test.coffee',
         contents: null,
       };
+      var history = [
+        path.normalize('/test/test.coffee'),
+        path.normalize('/test/test.js'),
+        path.normalize('/test/test-938di2s.js'),
+      ];
 
       var file = new File(options);
-      file.path = '/test/test.js';
-      file.path = '/test/test-938di2s.js';
+      file.path = history[1];
+      file.path = history[2];
       var file2 = file.clone();
 
-      file2.history.should.eql([
-        '/test/test.coffee',
-        '/test/test.js',
-        '/test/test-938di2s.js',
-      ]);
-      file2.history.should.not.equal([
-        '/test/test.coffee',
-        '/test/test.js',
-        '/test/test-938di2s.js',
-      ]);
-      file2.path.should.eql('/test/test-938di2s.js');
+      file2.history.should.eql(history);
+      file2.history.should.not.equal(history);
+      file2.path.should.eql(history[2]);
 
       done();
     });
@@ -652,18 +727,6 @@ describe('File', function() {
       done();
     });
 
-    it('should return correct format when Buffer and only path and no base', function(done) {
-      var val = new Buffer('test');
-      var file = new File({
-        cwd: '/',
-        path: '/test/test.coffee',
-        contents: val,
-      });
-      delete file.base;
-      file.inspect().should.equal('<File "/test/test.coffee" <Buffer 74 65 73 74>>');
-      done();
-    });
-
     it('should return correct format when Stream and relative path', function(done) {
       var file = new File({
         cwd: '/',
@@ -724,23 +787,136 @@ describe('File', function() {
     });
   });
 
+  describe('cwd get/set', function() {
+    it('should return _cwd', function() {
+      var file = new File();
+      file._cwd = '/test/';
+      file.cwd.should.equal('/test/');
+    });
+
+    it('should set cwd', function() {
+      var file = new File();
+      file.cwd = '/test/';
+      file.cwd.should.equal(path.normalize('/test/'));
+    });
+
+    it('should normalize and add trailing sep on set', function() {
+      var file = new File();
+
+      file.cwd = '/test/foo/../foo';
+
+      if (process.platform === 'win32') {
+        file.cwd.should.equal('\\test\\foo\\');
+      } else {
+        file.cwd.should.equal('/test/foo/');
+      }
+
+      file.cwd = '\\test\\foo\\..\\foo';
+
+      if (process.platform === 'win32') {
+        file.cwd.should.equal('\\test\\foo\\');
+      } else {
+        file.cwd.should.equal('\\test\\foo\\..\\foo/');
+      }
+    });
+
+    it('should throw on set when value is empty or not a string', function() {
+      var notAllowed = [
+        '', null, undefined, true, false, 0, Infinity, NaN, {}, [],
+      ];
+      notAllowed.forEach(function(val) {
+        (function() {
+          new File().cwd = val;
+        }).should.throw('cwd must be a non-empty string.');
+      });
+    });
+  });
+
+  describe('base get/set', function() {
+    it('should proxy to cwd when omitted', function() {
+      var file = new File({
+        cwd: '/test',
+      });
+      file.base.should.equal(path.normalize('/test/'));
+    });
+
+    it('should proxy to cwd when same', function() {
+      var file = new File({
+        cwd: '/test',
+        base: '/test',
+      });
+      file.cwd = '/foo/';
+      file.base.should.equal(path.normalize('/foo/'));
+
+      var file2 = new File({
+        cwd: '/test',
+      });
+      file2.base = '/test/';
+      file2.cwd = '/foo/';
+      file2.base.should.equal(path.normalize('/foo/'));
+    });
+
+    it('should proxy to cwd when null or undefined', function() {
+      var file = new File({
+        cwd: '/foo',
+        base: '/bar',
+      });
+      file.base.should.equal(path.normalize('/bar/'));
+      file.base = null;
+      file.base.should.equal(path.normalize('/foo/'));
+      file.base = '/bar/';
+      file.base.should.equal(path.normalize('/bar/'));
+      file.base = undefined;
+      file.base.should.equal(path.normalize('/foo/'));
+    });
+
+    it('should return _base', function() {
+      var file = new File();
+      file._base = '/test/';
+      file.base.should.equal('/test/');
+    });
+
+    it('should set base', function() {
+      var file = new File();
+      file.base = '/test/foo';
+      file.base.should.equal(path.normalize('/test/foo/'));
+    });
+
+    it('should normalize and add trailing sep on set', function() {
+      var file = new File();
+
+      file.base = '/test/foo/../foo';
+
+      if (process.platform === 'win32') {
+        file.base.should.equal('\\test\\foo\\');
+      } else {
+        file.base.should.equal('/test/foo/');
+      }
+
+      file.base = '\\test\\foo\\..\\foo';
+
+      if (process.platform === 'win32') {
+        file.base.should.equal('\\test\\foo\\');
+      } else {
+        file.base.should.equal('\\test\\foo\\..\\foo/');
+      }
+    });
+
+    it('should throw on set when not null/undefined or a non-empty string', function() {
+      var notStrings = [true, false, 1, 0, Infinity, NaN, '', {}, []];
+      notStrings.forEach(function(val) {
+        (function() {
+          new File().base = val;
+        }).should.throw('base must be a non-empty string, or null/undefined.');
+      });
+    });
+  });
+
   describe('relative get/set', function() {
     it('should error on set', function(done) {
       var file = new File();
       try {
         file.relative = 'test';
-      } catch (err) {
-        should.exist(err);
-        done();
-      }
-    });
-
-    it('should error on get when no base', function(done) {
-      var a;
-      var file = new File();
-      delete file.base;
-      try {
-        a = file.relative;
       } catch (err) {
         should.exist(err);
         done();
@@ -790,13 +966,13 @@ describe('File', function() {
       }
     });
 
-    it('should return the dirname of the path', function(done) {
+    it('should return the path with trailing sep', function(done) {
       var file = new File({
         cwd: '/',
-        base: '/test/',
+        base: '/test',
         path: '/test/test.coffee',
       });
-      file.dirname.should.equal('/test');
+      file.dirname.should.equal(path.normalize('/test/'));
       done();
     });
 
@@ -817,7 +993,7 @@ describe('File', function() {
         path: '/test/test.coffee',
       });
       file.dirname = '/test/foo';
-      file.path.should.equal('/test/foo/test.coffee');
+      file.path.should.equal(path.normalize('/test/foo/test.coffee'));
       done();
     });
   });
@@ -844,6 +1020,19 @@ describe('File', function() {
       done();
     });
 
+    it('should ensure trailing sep when directory', function(done) {
+      var file = new File({
+        path: '/test/foo',
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+        },
+      });
+      file.basename.should.equal(path.normalize('foo/'));
+      done();
+    });
+
     it('should error on set when no path', function(done) {
       var file = new File();
       try {
@@ -861,7 +1050,7 @@ describe('File', function() {
         path: '/test/test.coffee',
       });
       file.basename = 'foo.png';
-      file.path.should.equal('/test/foo.png');
+      file.path.should.equal(path.normalize('/test/foo.png'));
       done();
     });
   });
@@ -905,7 +1094,7 @@ describe('File', function() {
         path: '/test/test.coffee',
       });
       file.stem = 'foo';
-      file.path.should.equal('/test/foo.coffee');
+      file.path.should.equal(path.normalize('/test/foo.coffee'));
       done();
     });
   });
@@ -949,21 +1138,21 @@ describe('File', function() {
         path: '/test/test.coffee',
       });
       file.extname = '.png';
-      file.path.should.equal('/test/test.png');
+      file.path.should.equal(path.normalize('/test/test.png'));
       done();
     });
   });
 
   describe('path get/set', function() {
-
     it('should record history when instantiation', function() {
       var file = new File({
         cwd: '/',
         path: '/test/test.coffee',
       });
+      var history = [path.normalize('/test/test.coffee')];
 
-      file.path.should.eql('/test/test.coffee');
-      file.history.should.eql(['/test/test.coffee']);
+      file.path.should.eql(history[0]);
+      file.history.should.eql(history);
     });
 
     it('should record history when path change', function() {
@@ -971,31 +1160,38 @@ describe('File', function() {
         cwd: '/',
         path: '/test/test.coffee',
       });
+      var history = [
+        path.normalize('/test/test.coffee'),
+        path.normalize('/test/test.js'),
+      ];
 
-      file.path = '/test/test.js';
-      file.path.should.eql('/test/test.js');
-      file.history.should.eql(['/test/test.coffee', '/test/test.js']);
+      file.path = history[history.length - 1];
+      file.path.should.eql(history[history.length - 1]);
+      file.history.should.eql(history);
 
-      file.path = '/test/test.coffee';
-      file.path.should.eql('/test/test.coffee');
-      file.history.should.eql(['/test/test.coffee', '/test/test.js', '/test/test.coffee']);
+      history.push(path.normalize('/test/test.es6'));
+
+      file.path = history[history.length - 1];
+      file.path.should.eql(history[history.length - 1]);
+      file.history.should.eql(history);
     });
 
     it('should not record history when set the same path', function() {
+      var val = path.normalize('/test/test.coffee');
       var file = new File({
         cwd: '/',
-        path: '/test/test.coffee',
+        path: val,
       });
 
-      file.path = '/test/test.coffee';
-      file.path = '/test/test.coffee';
-      file.path.should.eql('/test/test.coffee');
-      file.history.should.eql(['/test/test.coffee']);
+      file.path = val;
+      file.path = val;
+      file.path.should.eql(val);
+      file.history.should.eql([val]);
 
       // Ignore when set empty string
       file.path = '';
-      file.path.should.eql('/test/test.coffee');
-      file.history.should.eql(['/test/test.coffee']);
+      file.path.should.eql(val);
+      file.history.should.eql([val]);
     });
 
     it('should throw when set path null', function() {
@@ -1009,7 +1205,35 @@ describe('File', function() {
 
       (function() {
         file.path = null;
-      }).should.throw('path should be string');
+      }).should.throw('path should be a string.');
+    });
+
+    it('should normalize the path on set', function() {
+      var file = new File();
+
+      file.path = '/test/foo/../test.coffee';
+
+      if (process.platform === 'win32') {
+        file.path.should.equal('\\test\\test.coffee');
+        file.history.should.eql(['\\test\\test.coffee']);
+      } else {
+        file.path.should.equal('/test/test.coffee');
+        file.history.should.eql(['/test/test.coffee']);
+      }
+    });
+
+    it('should set path with trailing sep when directory', function() {
+      var file = new File({
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+        },
+      });
+
+      file.path = '/test';
+      file.path.should.eql(path.normalize('/test/'));
+      file.history.should.eql([path.normalize('/test/')]);
     });
   });
 
@@ -1051,6 +1275,31 @@ describe('File', function() {
       file.symlink = './test.coffee';
       file.symlink.should.equal('./test.coffee');
       done();
+    });
+  });
+
+  describe('concatenated', function() {
+    it('dirname + basename should equal path', function() {
+      var file = new File({ path: '/test/foo/bar.jpg' });
+      file.path.should.equal(file.dirname + file.basename);
+    });
+
+    it('base + relative should equal path', function() {
+      var file = new File({
+        path: '/test/foo/bar.jpg',
+        base: '/test',
+      });
+      file.path.should.equal(file.base + file.relative);
+    });
+
+    it('dirname + stem + extname should equal path', function() {
+      var file = new File({ path: '/test/foo/bar.jpg' });
+      file.path.should.equal(file.dirname + file.stem + file.extname);
+    });
+
+    it('stem + extname should equal basename', function() {
+      var file = new File({ path: '/test/foo/bar.jpg' });
+      file.basename.should.equal(file.stem + file.extname);
     });
   });
 });
