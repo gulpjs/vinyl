@@ -10,7 +10,7 @@ var Stream = require('stream');
 var replaceExt = require('replace-ext');
 
 var builtInFields = [
-  '_contents', 'contents', 'stat', 'history', 'path', 'base', 'cwd',
+  '_contents', '_symlink', 'contents', 'stat', 'history', 'path', 'base', 'cwd',
 ];
 
 function File(file) {
@@ -35,6 +35,8 @@ function File(file) {
 
   this._isVinyl = true;
 
+  this._symlink = null;
+
   // Set custom properties
   Object.keys(file).forEach(function(key) {
     if (self.constructor.isCustomProp(key)) {
@@ -55,9 +57,28 @@ File.prototype.isNull = function() {
   return isNull(this.contents);
 };
 
-// TODO: Should this be moved to vinyl-fs?
 File.prototype.isDirectory = function() {
-  return this.isNull() && this.stat && this.stat.isDirectory();
+  if (!this.isNull()) {
+    return false;
+  }
+
+  if (this.stat && typeof this.stat.isDirectory === 'function') {
+    return this.stat.isDirectory();
+  }
+
+  return false;
+};
+
+File.prototype.isSymbolic = function() {
+  if (!this.isNull()) {
+    return false;
+  }
+
+  if (this.stat && typeof this.stat.isSymbolicLink === 'function') {
+    return this.stat.isSymbolicLink();
+  }
+
+  return false;
 };
 
 File.prototype.clone = function(opt) {
@@ -264,6 +285,20 @@ Object.defineProperty(File.prototype, 'path', {
     if (path && path !== this.path) {
       this.history.push(path);
     }
+  },
+});
+
+Object.defineProperty(File.prototype, 'symlink', {
+  get: function() {
+    return this._symlink;
+  },
+  set: function(symlink) {
+    // TODO: should this set the mode to symbolic if set?
+    if (typeof symlink !== 'string') {
+      throw new Error('symlink should be a string');
+    }
+
+    this._symlink = symlink;
   },
 });
 
