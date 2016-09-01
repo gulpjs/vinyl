@@ -952,6 +952,35 @@ describe('File', function() {
       file.relative.should.equal(path.join('test','test.coffee'));
       done();
     });
+
+    it('should append sep when directory', function() {
+      var file = new File({
+        base: '/test',
+        path: '/test/foo/bar',
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+        },
+      });
+      file.relative.should.equal(path.normalize('foo/bar/'));
+    });
+
+    it('should not append sep when directory & simlink', function() {
+      var file = new File({
+        base: '/test',
+        path: '/test/foo/bar',
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+          isSymbolicLink: function() {
+            return true;
+          },
+        },
+      });
+      file.relative.should.equal(path.normalize('foo/bar'));
+    });
   });
 
   describe('dirname get/set', function() {
@@ -1020,17 +1049,33 @@ describe('File', function() {
       done();
     });
 
-    it('should ensure trailing sep when directory', function(done) {
+    it('should ensure trailing sep when directory', function() {
       var file = new File({
-        path: '/test/foo',
         stat: {
           isDirectory: function() {
             return true;
           },
         },
       });
+      file.path = '/test/foo';
       file.basename.should.equal(path.normalize('foo/'));
-      done();
+      file.path = '/test/foo/';
+      file.basename.should.equal(path.normalize('foo/'));
+    });
+
+    it('should not append trailing sep when directory & simlink', function() {
+      var file = new File({
+        path: '/test/foo',
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+          isSymbolicLink: function() {
+            return true;
+          },
+        },
+      });
+      file.basename.should.equal('foo');
     });
 
     it('should error on set when no path', function(done) {
@@ -1234,6 +1279,23 @@ describe('File', function() {
       file.path = '/test';
       file.path.should.eql(path.normalize('/test/'));
       file.history.should.eql([path.normalize('/test/')]);
+    });
+
+    it('should not set with trailing sep when directory & simlink', function() {
+      var file = new File({
+        path: '/test',
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+          isSymbolicLink: function() {
+            return true;
+          },
+        },
+      });
+
+      file.path.should.eql(path.normalize('/test'));
+      file.history.should.eql([path.normalize('/test')]);
     });
   });
 

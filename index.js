@@ -239,7 +239,7 @@ Object.defineProperty(File.prototype, 'relative', {
       throw new Error('No path specified! Can not get relative.');
     }
     var relative = path.relative(this.base, this.path);
-    return this.isDirectory() ? endWithSep(relative) : relative;
+    return this.isDirectory() && !this.isSymbolic() ? endWithSep(relative) : relative;
   },
   set: function() {
     throw new Error('File.relative is generated from the base and path attributes. Do not modify it.');
@@ -267,7 +267,7 @@ Object.defineProperty(File.prototype, 'basename', {
       throw new Error('No path specified! Can not get basename.');
     }
     var basename = path.basename(this.path);
-    return this.isDirectory() ? endWithSep(basename) : basename;
+    return this.isDirectory() && !this.isSymbolic() ? endWithSep(basename) : basename;
   },
   set: function(basename) {
     if (!this.path) {
@@ -319,7 +319,7 @@ Object.defineProperty(File.prototype, 'path', {
     path = normalize(path);
 
     // Add trailing separator when non-empty directory
-    if (path && this.isDirectory()) {
+    if (path && this.isDirectory() && !this.isSymbolic()) {
       path = endWithSep(path);
     }
 
