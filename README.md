@@ -242,6 +242,9 @@ console.log(file.extname); // .js
 console.log(file.path); // /test/file.js
 ```
 
+### symlink
+Path where the file points to in case it's a symbolic link. Will always be normalized and stripped off a trailing separator.
+
 ## Normalization and concatenation
 Since all properties are normalized in their setters, you can just concatenate with `/`, and normalization takes care of it properly on all platforms.
 

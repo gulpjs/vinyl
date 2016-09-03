@@ -333,7 +333,7 @@ Object.defineProperty(File.prototype, 'symlink', {
       throw new Error('symlink should be a string');
     }
 
-    this._symlink = symlink;
+    this._symlink = stripTrailingSep(normalize(symlink));
   },
 });
 

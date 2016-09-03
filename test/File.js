@@ -1291,7 +1291,7 @@ describe('File', function() {
       var file = new File({
         symlink: '/test/test.coffee',
       });
-      file.symlink.should.equal('/test/test.coffee');
+      file.symlink.should.equal(path.normalize('/test/test.coffee'));
       done();
     });
 
@@ -1308,15 +1308,27 @@ describe('File', function() {
     it('should set the symlink', function(done) {
       var file = new File();
       file.symlink = '/test/test.coffee';
-      file.symlink.should.equal('/test/test.coffee');
+      file.symlink.should.equal(path.normalize('/test/test.coffee'));
       done();
     });
 
     it('should set the relative symlink', function(done) {
       var file = new File();
-      file.symlink = './test.coffee';
-      file.symlink.should.equal('./test.coffee');
+      file.symlink = 'test.coffee';
+      file.symlink.should.equal('test.coffee');
       done();
+    });
+
+    it('should be normalized and stripped off a trailing sep on set', function() {
+      var file = new File();
+
+      file.symlink = '/test/foo/../bar/';
+
+      if (process.platform === 'win32') {
+        file.symlink.should.equal('\\test\\bar');
+      } else {
+        file.symlink.should.equal('/test/bar');
+      }
     });
   });
 });
