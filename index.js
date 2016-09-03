@@ -2,7 +2,7 @@ var path = require('path');
 var clone = require('clone');
 var cloneStats = require('clone-stats');
 var cloneBuffer = require('./lib/cloneBuffer');
-var endWithSep = require('./lib/endWithSep');
+var stripTrailingSep = require('./lib/stripTrailingSep');
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
@@ -209,7 +209,7 @@ Object.defineProperty(File.prototype, 'cwd', {
     if (!cwd || typeof cwd !== 'string') {
       throw new Error('cwd must be a non-empty string.');
     }
-    this._cwd = endWithSep(normalize(cwd));
+    this._cwd = stripTrailingSep(normalize(cwd));
   },
 });
 
@@ -225,7 +225,7 @@ Object.defineProperty(File.prototype, 'base', {
     if (typeof base !== 'string' || !base) {
       throw new Error('base must be a non-empty string, or null/undefined.');
     }
-    base = endWithSep(normalize(base));
+    base = stripTrailingSep(normalize(base));
     if (base !== this._cwd) {
       this._base = base;
     }
@@ -238,8 +238,7 @@ Object.defineProperty(File.prototype, 'relative', {
     if (!this.path) {
       throw new Error('No path specified! Can not get relative.');
     }
-    var relative = path.relative(this.base, this.path);
-    return this.isDirectory() && !this.isSymbolic() ? endWithSep(relative) : relative;
+    return path.relative(this.base, this.path);
   },
   set: function() {
     throw new Error('File.relative is generated from the base and path attributes. Do not modify it.');
@@ -251,13 +250,13 @@ Object.defineProperty(File.prototype, 'dirname', {
     if (!this.path) {
       throw new Error('No path specified! Can not get dirname.');
     }
-    return endWithSep(path.dirname(this.path));
+    return path.dirname(this.path);
   },
   set: function(dirname) {
     if (!this.path) {
       throw new Error('No path specified! Can not set dirname.');
     }
-    this.path = path.join(dirname, path.basename(this.path));
+    this.path = path.join(dirname, this.basename);
   },
 });
 
@@ -266,14 +265,13 @@ Object.defineProperty(File.prototype, 'basename', {
     if (!this.path) {
       throw new Error('No path specified! Can not get basename.');
     }
-    var basename = path.basename(this.path);
-    return this.isDirectory() && !this.isSymbolic() ? endWithSep(basename) : basename;
+    return path.basename(this.path);
   },
   set: function(basename) {
     if (!this.path) {
       throw new Error('No path specified! Can not set basename.');
     }
-    this.path = path.join(path.dirname(this.path), basename);
+    this.path = path.join(this.dirname, basename);
   },
 });
 
@@ -289,7 +287,7 @@ Object.defineProperty(File.prototype, 'stem', {
     if (!this.path) {
       throw new Error('No path specified! Can not set stem.');
     }
-    this.path = path.join(path.dirname(this.path), stem + this.extname);
+    this.path = path.join(this.dirname, stem + this.extname);
   },
 });
 
@@ -316,12 +314,7 @@ Object.defineProperty(File.prototype, 'path', {
     if (typeof path !== 'string') {
       throw new Error('path should be a string.');
     }
-    path = normalize(path);
-
-    // Add trailing separator when non-empty directory
-    if (path && this.isDirectory() && !this.isSymbolic()) {
-      path = endWithSep(path);
-    }
+    path = stripTrailingSep(normalize(path));
 
     // Record history only when path changed
     if (path && path !== this.path) {

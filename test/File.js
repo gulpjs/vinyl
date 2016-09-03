@@ -3,7 +3,6 @@ var fs = require('fs');
 var path = require('path');
 var es = require('event-stream');
 var File = require('../');
-var endWithSep = require('../lib/endWithSep');
 
 var should = require('should');
 require('mocha');
@@ -27,7 +26,7 @@ describe('File', function() {
   describe('constructor()', function() {
     it('should default cwd to process.cwd', function(done) {
       var file = new File();
-      file.cwd.should.equal(endWithSep(process.cwd()));
+      file.cwd.should.equal(process.cwd());
       done();
     });
 
@@ -40,7 +39,7 @@ describe('File', function() {
 
     it('should default base to cwd even when none is given', function(done) {
       var file = new File();
-      file.base.should.equal(endWithSep(process.cwd()));
+      file.base.should.equal(process.cwd());
       done();
     });
 
@@ -131,45 +130,33 @@ describe('File', function() {
       }
     });
 
-    it('should correctly normalize and trail path when directory stat', function() {
-      var file = new File({
-        path: '/test/foo/../foo',
-        stat: {
-          isDirectory: function() {
-            return true;
-          },
-        },
-      });
+    it('should correctly normalize and strip trailing sep from path', function() {
+      var file = new File({ path: '/test/foo/../foo/' });
 
       if (process.platform === 'win32') {
-        file.path.should.equal('\\test\\foo\\');
+        file.path.should.equal('\\test\\foo');
       } else {
-        file.path.should.equal('/test/foo/');
+        file.path.should.equal('/test/foo');
       }
     });
 
-    it('should correctly normalize and trail history when directory stat', function() {
+    it('should correctly normalize and strip trailing sep from history', function() {
       var file = new File({
         history: [
-          '/test/foo/../foo',
-          '/test/bar/../bar',
+          '/test/foo/../foo/',
+          '/test/bar/../bar/',
         ],
-        stat: {
-          isDirectory: function() {
-            return true;
-          },
-        },
       });
 
       if (process.platform === 'win32') {
         file.history.should.eql([
-          '\\test\\foo\\',
-          '\\test\\bar\\',
+          '\\test\\foo',
+          '\\test\\bar',
         ]);
       } else {
         file.history.should.eql([
-          '/test/foo/',
-          '/test/bar/',
+          '/test/foo',
+          '/test/bar',
         ]);
       }
     });
@@ -790,33 +777,33 @@ describe('File', function() {
   describe('cwd get/set', function() {
     it('should return _cwd', function() {
       var file = new File();
-      file._cwd = '/test/';
-      file.cwd.should.equal('/test/');
+      file.cwd = '/test';
+      file.cwd.should.equal(file._cwd);
     });
 
     it('should set cwd', function() {
       var file = new File();
-      file.cwd = '/test/';
-      file.cwd.should.equal(path.normalize('/test/'));
+      file.cwd = '/test';
+      file._cwd.should.equal(path.normalize('/test'));
     });
 
-    it('should normalize and add trailing sep on set', function() {
+    it('should normalize and strip trailing sep on set', function() {
       var file = new File();
 
-      file.cwd = '/test/foo/../foo';
+      file.cwd = '/test/foo/../foo/';
 
       if (process.platform === 'win32') {
-        file.cwd.should.equal('\\test\\foo\\');
+        file.cwd.should.equal('\\test\\foo');
       } else {
-        file.cwd.should.equal('/test/foo/');
+        file.cwd.should.equal('/test/foo');
       }
 
-      file.cwd = '\\test\\foo\\..\\foo';
+      file.cwd = '\\test\\foo\\..\\foo\\';
 
       if (process.platform === 'win32') {
-        file.cwd.should.equal('\\test\\foo\\');
+        file.cwd.should.equal('\\test\\foo');
       } else {
-        file.cwd.should.equal('\\test\\foo\\..\\foo/');
+        file.cwd.should.equal('\\test\\foo\\..\\foo');
       }
     });
 
@@ -837,7 +824,7 @@ describe('File', function() {
       var file = new File({
         cwd: '/test',
       });
-      file.base.should.equal(path.normalize('/test/'));
+      file.base.should.equal(path.normalize('/test'));
     });
 
     it('should proxy to cwd when same', function() {
@@ -846,14 +833,14 @@ describe('File', function() {
         base: '/test',
       });
       file.cwd = '/foo/';
-      file.base.should.equal(path.normalize('/foo/'));
+      file.base.should.equal(path.normalize('/foo'));
 
       var file2 = new File({
         cwd: '/test',
       });
       file2.base = '/test/';
       file2.cwd = '/foo/';
-      file2.base.should.equal(path.normalize('/foo/'));
+      file2.base.should.equal(path.normalize('/foo'));
     });
 
     it('should proxy to cwd when null or undefined', function() {
@@ -861,13 +848,13 @@ describe('File', function() {
         cwd: '/foo',
         base: '/bar',
       });
-      file.base.should.equal(path.normalize('/bar/'));
+      file.base.should.equal(path.normalize('/bar'));
       file.base = null;
-      file.base.should.equal(path.normalize('/foo/'));
+      file.base.should.equal(path.normalize('/foo'));
       file.base = '/bar/';
-      file.base.should.equal(path.normalize('/bar/'));
+      file.base.should.equal(path.normalize('/bar'));
       file.base = undefined;
-      file.base.should.equal(path.normalize('/foo/'));
+      file.base.should.equal(path.normalize('/foo'));
     });
 
     it('should return _base', function() {
@@ -879,26 +866,26 @@ describe('File', function() {
     it('should set base', function() {
       var file = new File();
       file.base = '/test/foo';
-      file.base.should.equal(path.normalize('/test/foo/'));
+      file.base.should.equal(path.normalize('/test/foo'));
     });
 
-    it('should normalize and add trailing sep on set', function() {
+    it('should normalize and strip trailing sep on set', function() {
       var file = new File();
 
-      file.base = '/test/foo/../foo';
+      file.base = '/test/foo/../foo/';
 
       if (process.platform === 'win32') {
-        file.base.should.equal('\\test\\foo\\');
+        file.base.should.equal('\\test\\foo');
       } else {
-        file.base.should.equal('/test/foo/');
+        file.base.should.equal('/test/foo');
       }
 
-      file.base = '\\test\\foo\\..\\foo';
+      file.base = '\\test\\foo\\..\\foo\\';
 
       if (process.platform === 'win32') {
-        file.base.should.equal('\\test\\foo\\');
+        file.base.should.equal('\\test\\foo');
       } else {
-        file.base.should.equal('\\test\\foo\\..\\foo/');
+        file.base.should.equal('\\test\\foo\\..\\foo');
       }
     });
 
@@ -953,7 +940,7 @@ describe('File', function() {
       done();
     });
 
-    it('should append sep when directory', function() {
+    it('should not append sep when directory', function() {
       var file = new File({
         base: '/test',
         path: '/test/foo/bar',
@@ -963,7 +950,7 @@ describe('File', function() {
           },
         },
       });
-      file.relative.should.equal(path.normalize('foo/bar/'));
+      file.relative.should.equal(path.normalize('foo/bar'));
     });
 
     it('should not append sep when directory & simlink', function() {
@@ -995,13 +982,13 @@ describe('File', function() {
       }
     });
 
-    it('should return the path with trailing sep', function(done) {
+    it('should return the path without trailing sep', function(done) {
       var file = new File({
         cwd: '/',
         base: '/test',
         path: '/test/test.coffee',
       });
-      file.dirname.should.equal(path.normalize('/test/'));
+      file.dirname.should.equal(path.normalize('/test'));
       done();
     });
 
@@ -1049,22 +1036,28 @@ describe('File', function() {
       done();
     });
 
-    it('should ensure trailing sep when directory', function() {
+    it('should not append trailing sep', function() {
       var file = new File({
+        path: '/test/foo',
         stat: {
           isDirectory: function() {
             return true;
           },
         },
       });
-      file.path = '/test/foo';
-      file.basename.should.equal(path.normalize('foo/'));
-      file.path = '/test/foo/';
-      file.basename.should.equal(path.normalize('foo/'));
-    });
+      file.basename.should.equal('foo');
 
-    it('should not append trailing sep when directory & simlink', function() {
-      var file = new File({
+      var file2 = new File({
+        path: '/test/foo',
+        stat: {
+          isSymbolicLink: function() {
+            return true;
+          },
+        },
+      });
+      file2.basename.should.equal('foo');
+
+      var file3 = new File({
         path: '/test/foo',
         stat: {
           isDirectory: function() {
@@ -1075,7 +1068,7 @@ describe('File', function() {
           },
         },
       });
-      file.basename.should.equal('foo');
+      file3.basename.should.equal('foo');
     });
 
     it('should error on set when no path', function(done) {
@@ -1267,35 +1260,22 @@ describe('File', function() {
       }
     });
 
-    it('should set path with trailing sep when directory', function() {
-      var file = new File({
-        stat: {
-          isDirectory: function() {
-            return true;
-          },
-        },
-      });
-
-      file.path = '/test';
-      file.path.should.eql(path.normalize('/test/'));
-      file.history.should.eql([path.normalize('/test/')]);
-    });
-
-    it('should not set with trailing sep when directory & simlink', function() {
-      var file = new File({
-        path: '/test',
-        stat: {
-          isDirectory: function() {
-            return true;
-          },
-          isSymbolicLink: function() {
-            return true;
-          },
-        },
-      });
-
+    it('should strip trailing sep', function() {
+      var file = new File();
+      file.path = '/test/';
       file.path.should.eql(path.normalize('/test'));
       file.history.should.eql([path.normalize('/test')]);
+
+      var file2 = new File({
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+        },
+      });
+      file2.path = '/test/';
+      file2.path.should.eql(path.normalize('/test'));
+      file2.history.should.eql([path.normalize('/test')]);
     });
   });
 
@@ -1337,31 +1317,6 @@ describe('File', function() {
       file.symlink = './test.coffee';
       file.symlink.should.equal('./test.coffee');
       done();
-    });
-  });
-
-  describe('concatenated', function() {
-    it('dirname + basename should equal path', function() {
-      var file = new File({ path: '/test/foo/bar.jpg' });
-      file.path.should.equal(file.dirname + file.basename);
-    });
-
-    it('base + relative should equal path', function() {
-      var file = new File({
-        path: '/test/foo/bar.jpg',
-        base: '/test',
-      });
-      file.path.should.equal(file.base + file.relative);
-    });
-
-    it('dirname + stem + extname should equal path', function() {
-      var file = new File({ path: '/test/foo/bar.jpg' });
-      file.path.should.equal(file.dirname + file.stem + file.extname);
-    });
-
-    it('stem + extname should equal basename', function() {
-      var file = new File({ path: '/test/foo/bar.jpg' });
-      file.basename.should.equal(file.stem + file.extname);
     });
   });
 });

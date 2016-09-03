@@ -45,8 +45,7 @@ File.isCustomProp('path'); // false -> internal getter/setter
 Read more in [Extending Vinyl](#extending-vinyl).
 
 ### constructor(options)
-
-All internally managed paths (`cwd`, `base`, `path`, `[history]`) are normalized & have `path.sep` appended when appropriate either in constructor or their specific setters.
+All internally managed paths (`cwd`, `base`, `path`, `[history]`) are normalized and stripped off a trailing separator.
 
 #### options.cwd
 Type: `String`<br><br>Default: `process.cwd()`
@@ -102,7 +101,7 @@ Returns true if file is a directory. File is considered a directory when:
 - `file.stat` is an object
 - `file.stat.isDirectory()` returns `true`
 
-When constructing a Vinyl object, pass in a valid `fs.Stats` object via `options.stat`. Vinyl needs to know the file is a directory from the get go, or it might result in an inconsistent path history (some entries ending in separator, some not). If you are mocking the `fs.Stats` object, ensure it has the `isDirectory()` method.
+When constructing a Vinyl object, pass in a valid `fs.Stats` object via `options.stat`. Some operations in Vinyl might need to know the file is a directory from the get go. If you are mocking the `fs.Stats` object, ensure it has the `isDirectory()` method.
 
 ### clone([opt])
 Returns a new File object with all attributes cloned.<br>By default custom attributes are deep-cloned.
@@ -137,19 +136,19 @@ if (file.isBuffer()) {
 ```
 
 ### cwd
-Gets and sets current working directory. Defaults to `process.cwd`. Will always be normalized, and end in a `path.sep`.
+Ges and sets current working directory. Defaults to `process.cwd`. Will always be normalized and stripped off a trailing separator.
 
 ### base
-Gets and sets base directory. Used for relative pathing (typically where a glob starts). When `null` or `undefined`, it simply proxies the `file.cwd` property. Will always be normalized, and end in a `path.sep`.
+Gets and sets base directory. Used for relative pathing (typically where a glob starts). When `nll` or `undefined`, it simply proxies the `file.cwd` property. Will always be normalized and stripped off a trailing separator.
 
 ### path
-Absolute pathname string or `undefined`. Setting to a different value pushes the old value to `history`. All new values are normalized, and end in `path.sep` when `file.isDirectory()` is `true`.
+Absolute pathname string or `undefined`. etting to a different value pushes the old value to `history`. All new values are normalized and stripped off a trailing separator.
 
 ### history
 Array of `path` values the file object has had, from `history[0]` (original) through `history[history.length - 1]` (current). `history` and its elements should normally be treated as read-only and only altered indirectly by setting `path`.
 
 ### relative
-Returns path.relative for the file base and file path. Ends with `path.sep` when `file.isDirectory()` is `true`.
+Returns path.relative for the file base and file path.
 
 Example:
 
@@ -164,7 +163,7 @@ console.log(file.relative); // file.coffee
 ```
 
 ### dirname
-Gets and sets path.dirname for the file path. Will always be normalized, and end in a `path.sep`.
+Gets and sets path.dirname for the file path. Will always be normalized and stripped off a trailing separator.
 
 Example:
 
@@ -184,7 +183,7 @@ console.log(file.path); // /specs/file.coffee
 ```
 
 ### basename
-Gets and sets path.basename for the file path. Retrieved basename will end with `path.sep` when `file.isDirectory()` is `true`.
+Gets and sets path.basename for the file path.
 
 Example:
 
@@ -243,24 +242,20 @@ console.log(file.extname); // .js
 console.log(file.path); // /test/file.js
 ```
 
-## Property concatenation
-
-As all paths are normalized and end in `path.sep` when directories, you can just concatenate without the need to use `path.join()`.
+## Normalization and concatenation
+Since all properties are normalized in their setters, you can just concatenate with `/`, and normalization takes care of it properly on all platforms.
 
 Example:
 
 ```javascript
-var file = new File({
-  cwd: "/foo",
-  base: "/foo/bar/",
-  path: "/foo/bar/baz/file.coffee"
-});
-
-file.path === file.dirname + file.basename;
-file.path === file.base + file.relative;
-file.path === file.dirname + file.stem + file.extname;
-file.basename === file.stem + file.extname;
+var file = new File();
+file.path = '/' + 'test' + '/' + 'foo.bar';
+console.log(file.path);
+// posix => /test/foo.bar
+// win32 => \\test\\foo.bar
 ```
+
+But never concatenate with `\`, since that is a valid filename character on posix system.
 
 ## Extending Vinyl
 When extending Vinyl into your own class with extra features, you need to think about a few things.
