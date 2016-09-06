@@ -2,15 +2,18 @@ var path = require('path');
 var clone = require('clone');
 var cloneStats = require('clone-stats');
 var cloneBuffer = require('./lib/cloneBuffer');
+var stripTrailingSep = require('./lib/stripTrailingSep');
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
 var inspectStream = require('./lib/inspectStream');
+var normalize = require('./lib/normalize');
 var Stream = require('stream');
 var replaceExt = require('replace-ext');
 
 var builtInFields = [
-  '_contents', '_symlink', 'contents', 'stat', 'history', 'path', 'base', 'cwd',
+  '_contents', '_symlink', 'contents', 'stat', 'history', 'path',
+  '_base', 'base', '_cwd', 'cwd',
 ];
 
 function File(file) {
@@ -20,18 +23,21 @@ function File(file) {
     file = {};
   }
 
-  // Record path change
-  var history = file.path ? [file.path] : file.history;
-  this.history = history || [];
-
-  this.cwd = file.cwd || process.cwd();
-  this.base = file.base || this.cwd;
-
   // Stat = files stats object
   this.stat = file.stat || null;
 
   // Contents = stream, buffer, or null if not read
   this.contents = file.contents || null;
+
+  // Replay path history to ensure proper normalization and trailing sep
+  var history = file.path ? [file.path] : file.history || [];
+  this.history = [];
+  history.forEach(function(path) {
+    self.path = path;
+  });
+
+  this.cwd = file.cwd || process.cwd();
+  this.base = file.base;
 
   this._isVinyl = true;
 
@@ -156,7 +162,7 @@ File.prototype.inspect = function() {
   var inspect = [];
 
   // Use relative path if possible
-  var filePath = (this.base && this.path) ? this.relative : this.path;
+  var filePath = this.path ? this.relative : null;
 
   if (filePath) {
     inspect.push('"' + filePath + '"');
@@ -195,12 +201,40 @@ Object.defineProperty(File.prototype, 'contents', {
   },
 });
 
+Object.defineProperty(File.prototype, 'cwd', {
+  get: function() {
+    return this._cwd;
+  },
+  set: function(cwd) {
+    if (!cwd || typeof cwd !== 'string') {
+      throw new Error('cwd must be a non-empty string.');
+    }
+    this._cwd = stripTrailingSep(normalize(cwd));
+  },
+});
+
+Object.defineProperty(File.prototype, 'base', {
+  get: function() {
+    return this._base || this._cwd;
+  },
+  set: function(base) {
+    if (base == null) {
+      delete this._base;
+      return;
+    }
+    if (typeof base !== 'string' || !base) {
+      throw new Error('base must be a non-empty string, or null/undefined.');
+    }
+    base = stripTrailingSep(normalize(base));
+    if (base !== this._cwd) {
+      this._base = base;
+    }
+  },
+});
+
 // TODO: Should this be moved to vinyl-fs?
 Object.defineProperty(File.prototype, 'relative', {
   get: function() {
-    if (!this.base) {
-      throw new Error('No base specified! Can not get relative.');
-    }
     if (!this.path) {
       throw new Error('No path specified! Can not get relative.');
     }
@@ -222,7 +256,7 @@ Object.defineProperty(File.prototype, 'dirname', {
     if (!this.path) {
       throw new Error('No path specified! Can not set dirname.');
     }
-    this.path = path.join(dirname, path.basename(this.path));
+    this.path = path.join(dirname, this.basename);
   },
 });
 
@@ -237,7 +271,7 @@ Object.defineProperty(File.prototype, 'basename', {
     if (!this.path) {
       throw new Error('No path specified! Can not set basename.');
     }
-    this.path = path.join(path.dirname(this.path), basename);
+    this.path = path.join(this.dirname, basename);
   },
 });
 
@@ -253,7 +287,7 @@ Object.defineProperty(File.prototype, 'stem', {
     if (!this.path) {
       throw new Error('No path specified! Can not set stem.');
     }
-    this.path = path.join(path.dirname(this.path), stem + this.extname);
+    this.path = path.join(this.dirname, stem + this.extname);
   },
 });
 
@@ -278,8 +312,9 @@ Object.defineProperty(File.prototype, 'path', {
   },
   set: function(path) {
     if (typeof path !== 'string') {
-      throw new Error('path should be string');
+      throw new Error('path should be a string.');
     }
+    path = stripTrailingSep(normalize(path));
 
     // Record history only when path changed
     if (path && path !== this.path) {
@@ -298,7 +333,7 @@ Object.defineProperty(File.prototype, 'symlink', {
       throw new Error('symlink should be a string');
     }
 
-    this._symlink = symlink;
+    this._symlink = stripTrailingSep(normalize(symlink));
   },
 });
 
