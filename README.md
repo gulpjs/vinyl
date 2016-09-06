@@ -45,6 +45,8 @@ File.isCustomProp('path'); // false -> internal getter/setter
 Read more in [Extending Vinyl](#extending-vinyl).
 
 ### constructor(options)
+All internally managed paths (`cwd`, `base`, `path`, `[history]`) are normalized and remove a trailing separator.
+
 #### options.cwd
 Type: `String`<br><br>Default: `process.cwd()`
 
@@ -64,7 +66,7 @@ Path history. Has no effect if `options.path` is passed.
 Type: `Array`<br><br>Default: `options.path ? [options.path] : []`
 
 #### options.stat
-The result of an fs.stat call. See [fs.Stats](http://nodejs.org/api/fs.html#fs_class_fs_stats) for more information.
+The result of an fs.stat call. This is how you mark the file as a directory. See [isDirectory()](#isDirectory) and [fs.Stats](http://nodejs.org/api/fs.html#fs_class_fs_stats) for more information.
 
 Type: `fs.Stats`<br><br>Default: `null`
 
@@ -91,6 +93,15 @@ Returns true if file.contents is a Stream.
 
 ### isNull()
 Returns true if file.contents is null.
+
+### isDirectory()
+Returns true if file is a directory. File is considered a directory when:
+
+- `file.isNull()` is `true`
+- `file.stat` is an object
+- `file.stat.isDirectory()` returns `true`
+
+When constructing a Vinyl object, pass in a valid `fs.Stats` object via `options.stat`. Some operations in Vinyl might need to know the file is a directory from the get go. If you are mocking the `fs.Stats` object, ensure it has the `isDirectory()` method.
 
 ### clone([opt])
 Returns a new File object with all attributes cloned.<br>By default custom attributes are deep-cloned.
@@ -124,8 +135,14 @@ if (file.isBuffer()) {
 }
 ```
 
+### cwd
+Gets and sets current working directory. Defaults to `process.cwd`. Will always be normalized and remove a trailing separator.
+
+### base
+Gets and sets base directory. Used for relative pathing (typically where a glob starts). When `null` or `undefined`, it simply proxies the `file.cwd` property. Will always be normalized and remove a trailing separator.
+
 ### path
-Absolute pathname string or `undefined`. Setting to a different value pushes the old value to `history`.
+Absolute pathname string or `undefined`. Setting to a different value pushes the old value to `history`. All new values are normalized and remove a trailing separator.
 
 ### history
 Array of `path` values the file object has had, from `history[0]` (original) through `history[history.length - 1]` (current). `history` and its elements should normally be treated as read-only and only altered indirectly by setting `path`.
@@ -146,7 +163,7 @@ console.log(file.relative); // file.coffee
 ```
 
 ### dirname
-Gets and sets path.dirname for the file path.
+Gets and sets path.dirname for the file path. Will always be normalized and remove a trailing separator.
 
 Example:
 
@@ -224,6 +241,24 @@ file.extname = '.js';
 console.log(file.extname); // .js
 console.log(file.path); // /test/file.js
 ```
+
+### symlink
+Path where the file points to in case it's a symbolic link. Will always be normalized and remove a trailing separator.
+
+## Normalization and concatenation
+Since all properties are normalized in their setters, you can just concatenate with `/`, and normalization takes care of it properly on all platforms.
+
+Example:
+
+```javascript
+var file = new File();
+file.path = '/' + 'test' + '/' + 'foo.bar';
+console.log(file.path);
+// posix => /test/foo.bar
+// win32 => \\test\\foo.bar
+```
+
+But never concatenate with `\`, since that is a valid filename character on posix system.
 
 ## Extending Vinyl
 When extending Vinyl into your own class with extra features, you need to think about a few things.
