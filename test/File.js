@@ -182,6 +182,52 @@ describe('File', function() {
         ]);
       }
     });
+
+    it('appends path to history if both exist and different from last', function(done) {
+      var p = path.normalize('/test/baz/test.coffee');
+      var history = [
+        path.normalize('/test/bar/test.coffee'),
+        path.normalize('/test/foo/test.coffee'),
+      ];
+      var file = new File({ path: p, history: history });
+
+      var expectedHistory = history.concat(p);
+
+      file.path.should.equal(path.normalize('/test/baz/test.coffee'));
+      file.history.should.eql(expectedHistory);
+      done();
+    });
+
+    it('does not append path to history if both exist and same as last', function(done) {
+      var history = [
+        path.normalize('/test/bar/test.coffee'),
+        path.normalize('/test/foo/test.coffee'),
+        path.normalize('/test/baz/test.coffee'),
+      ];
+      var file = new File({ path: history[history.length - 1], history: history });
+
+      file.path.should.equal(path.normalize('/test/baz/test.coffee'));
+      file.history.should.eql(history);
+      done();
+    });
+
+    it('does not mutate history array passed in', function(done) {
+      var p = path.normalize('/test/baz/test.coffee');
+      var history = [
+        path.normalize('/test/bar/test.coffee'),
+        path.normalize('/test/foo/test.coffee'),
+      ];
+      var historyCopy = Array.prototype.slice.call(history);
+      var file = new File({ path: p, history: history });
+
+      var expectedHistory = history.concat(p);
+
+      file.path.should.equal(path.normalize('/test/baz/test.coffee'));
+      file.history.should.eql(expectedHistory);
+      history.should.eql(historyCopy);
+      done();
+    });
+
   });
 
   describe('isBuffer()', function() {

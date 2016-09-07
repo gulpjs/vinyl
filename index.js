@@ -30,7 +30,10 @@ function File(file) {
   this.contents = file.contents || null;
 
   // Replay path history to ensure proper normalization and trailing sep
-  var history = file.path ? [file.path] : file.history || [];
+  var history = Array.prototype.slice.call(file.history || []);
+  if (file.path) {
+    history.push(file.path);
+  }
   this.history = [];
   history.forEach(function(path) {
     self.path = path;
