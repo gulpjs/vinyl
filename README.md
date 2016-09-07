@@ -101,7 +101,16 @@ Returns true if file is a directory. File is considered a directory when:
 - `file.stat` is an object
 - `file.stat.isDirectory()` returns `true`
 
-When constructing a Vinyl object, pass in a valid `fs.Stats` object via `options.stat`. Some operations in Vinyl might need to know the file is a directory from the get go. If you are mocking the `fs.Stats` object, ensure it has the `isDirectory()` method.
+When constructing a Vinyl object, pass in a valid `fs.Stats` object via `options.stat`. If you are mocking the `fs.Stats` object, you may need to stub the `isDirectory()` method.
+
+### isSymbolic()
+Returns true if file is a symbolic link. File is considered symbolic when:
+
+- `file.isNull()` is `true`
+- `file.stat` is an object
+- `file.stat.isSymbolicLink()` returns `true`
+
+When constructing a Vinyl object, pass in a valid `fs.Stats` object via `options.stat`. If you are mocking the `fs.Stats` object, you may need to stub the `isSymbolicLink()` method.
 
 ### clone([opt])
 Returns a new File object with all attributes cloned.<br>By default custom attributes are deep-cloned.
