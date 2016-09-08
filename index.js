@@ -134,33 +134,6 @@ File.prototype.clone = function(opt) {
   return file;
 };
 
-File.prototype.pipe = function(stream, opt) {
-  if (!opt) {
-    opt = {};
-  }
-  if (typeof opt.end === 'undefined') {
-    opt.end = true;
-  }
-
-  if (this.isStream()) {
-    return this.contents.pipe(stream, opt);
-  }
-  if (this.isBuffer()) {
-    if (opt.end) {
-      stream.end(this.contents);
-    } else {
-      stream.write(this.contents);
-    }
-    return stream;
-  }
-
-  // Check if isNull
-  if (opt.end) {
-    stream.end();
-  }
-  return stream;
-};
-
 File.prototype.inspect = function() {
   var inspect = [];
 
