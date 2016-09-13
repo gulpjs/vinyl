@@ -13,6 +13,7 @@
   "dependencies": {
     "clone": "^1.0.0",
     "clone-stats": "^1.0.0",
+    "readable-stream": "^2.1.0",
     "replace-ext": "^1.0.0"
   },
   "devDependencies": {
