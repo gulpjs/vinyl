@@ -13,7 +13,7 @@
   "dependencies": {
     "clone": "^1.0.0",
     "clone-stats": "^1.0.0",
-    "cloneable-readable": "^0.2.0",
+    "cloneable-readable": "^0.3.0",
     "readable-stream": "^2.1.0",
     "replace-ext": "^1.0.0"
   },

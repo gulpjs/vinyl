@@ -479,6 +479,49 @@ describe('File', function() {
       file.contents.on('end', latch);
     });
 
+    it('should not start flowing until all clones flows', function(done) {
+      var contents = new Stream.PassThrough();
+      var options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+        contents: contents,
+      };
+      var file = new File(options);
+      var file2 = file.clone();
+      var ends = 2;
+
+      function latch() {
+        if (--ends === 0) {
+          done();
+        }
+      }
+
+      contents.write(new Buffer('wa'));
+
+      process.nextTick(function() {
+        contents.write(new Buffer('dup'));
+        contents.end();
+      });
+
+      // Start flowing file2
+      file2.contents.on('readable', function() {
+        this.read();
+      });
+
+      file2.contents.once('readable', function() {
+        process.nextTick(function() {
+          // Starts flowing file
+          file.contents.on('readable', function() {
+            ends.should.equal(2);
+          });
+        });
+      });
+
+      file2.contents.on('end', latch);
+      file.contents.on('end', latch);
+    });
+
     it('should copy all attributes over with null', function(done) {
       var options = {
         cwd: '/',
