@@ -1,36 +1,45 @@
+'use strict';
+
+var expect = require('expect');
+
 var stripTrailingSep = require('../lib/stripTrailingSep');
-require('should');
-require('mocha');
 
 describe('stripTrailingSep()', function() {
-  it('should strip trailing separator', function() {
-    stripTrailingSep('foo/').should.equal('foo');
-    stripTrailingSep('foo\\').should.equal('foo');
+
+  it('strips trailing separator', function(done) {
+    expect(stripTrailingSep('foo/')).toEqual('foo');
+    expect(stripTrailingSep('foo\\')).toEqual('foo');
+    done();
   });
 
-  it('should not strip when the only char in the string', function() {
-    stripTrailingSep('/').should.equal('/');
-    stripTrailingSep('\\').should.equal('\\');
+  it('does not strip when separator is only char in the string', function(done) {
+    expect(stripTrailingSep('/')).toEqual('/');
+    expect(stripTrailingSep('\\')).toEqual('\\');
+    done();
   });
 
-  it('should strip only the trailing separator', function() {
-    stripTrailingSep('/test/foo/bar/').should.equal('/test/foo/bar');
-    stripTrailingSep('\\test\\foo\\bar\\').should.equal('\\test\\foo\\bar');
+  it('strips only the trailing separator', function(done) {
+    expect(stripTrailingSep('/test/foo/bar/')).toEqual('/test/foo/bar');
+    expect(stripTrailingSep('\\test\\foo\\bar\\')).toEqual('\\test\\foo\\bar');
+    done();
   });
 
-  it('should strip multiple trailing separators', function() {
-    stripTrailingSep('/test//').should.equal('/test');
-    stripTrailingSep('\\test\\\\').should.equal('\\test');
+  it('strips multiple trailing separators', function(done) {
+    expect(stripTrailingSep('/test//')).toEqual('/test');
+    expect(stripTrailingSep('\\test\\\\')).toEqual('\\test');
+    done();
   });
 
-  it('should leave 1st separator in a string of only separators', function() {
-    stripTrailingSep('//').should.equal('/');
-    stripTrailingSep('////').should.equal('/');
-    stripTrailingSep('\\\\').should.equal('\\');
-    stripTrailingSep('\\\\\\\\').should.equal('\\');
+  it('leaves the 1st separator in a string of only separators', function(done) {
+    expect(stripTrailingSep('//')).toEqual('/');
+    expect(stripTrailingSep('////')).toEqual('/');
+    expect(stripTrailingSep('\\\\')).toEqual('\\');
+    expect(stripTrailingSep('\\\\\\\\')).toEqual('\\');
+    done();
   });
 
-  it('should return back empty string', function() {
-    stripTrailingSep('').should.equal('');
+  it('does not change an empty string', function(done) {
+    expect(stripTrailingSep('')).toEqual('');
+    done();
   });
 });

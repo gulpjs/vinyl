@@ -1,297 +1,330 @@
-var Stream = require('readable-stream');
+'use strict';
+
 var fs = require('fs');
 var path = require('path');
-var es = require('event-stream');
+var expect = require('expect');
+var Stream = require('readable-stream');
+var miss = require('mississippi');
+
 var File = require('../');
 
 var should = require('should');
-require('mocha');
+
+var pipe = miss.pipe;
+var from = miss.from;
+var concat = miss.concat;
 
 describe('File', function() {
+
   describe('isVinyl()', function() {
-    it('should return true on a vinyl object', function(done) {
+
+    it('returns true for a Vinyl object', function(done) {
       var file = new File();
-      File.isVinyl(file).should.equal(true);
+      var result = File.isVinyl(file);
+      expect(result).toEqual(true);
       done();
     });
-    it('should return false on a normal object', function(done) {
-      File.isVinyl({}).should.equal(false);
+
+    it('returns false for a normal object', function(done) {
+      var result = File.isVinyl({});
+      expect(result).toEqual(false);
       done();
     });
-    it('should return false on a null object', function(done) {
-      File.isVinyl(null).should.equal(false);
+
+    it('returns false for null', function(done) {
+      var result = File.isVinyl(null);
+      expect(result).toEqual(false);
+      done();
+    });
+
+    it('returns false for a string', function(done) {
+      var result = File.isVinyl('foobar');
+      expect(result).toEqual(false);
+      done();
+    });
+
+    it('returns false for a String object', function(done) {
+      var result = File.isVinyl(new String('foobar'));
+      expect(result).toEqual(false);
+      done();
+    });
+
+    it('returns false for a number', function(done) {
+      var result = File.isVinyl(1);
+      expect(result).toEqual(false);
+      done();
+    });
+
+    it('returns false for a Number object', function(done) {
+      var result = File.isVinyl(new Number(1));
+      expect(result).toEqual(false);
+      done();
+    });
+
+    // This is based on current implementation
+    // A test was added to document and make aware during internal changes
+    // TODO: decide if this should be leak-able
+    it('returns true for a mocked object', function(done) {
+      var result = File.isVinyl({ _isVinyl: true });
+      expect(result).toEqual(true);
       done();
     });
   });
-  describe('constructor()', function() {
-    it('should default cwd to process.cwd', function(done) {
+
+  describe('defaults', function() {
+
+    it('defaults cwd to process.cwd', function(done) {
       var file = new File();
-      file.cwd.should.equal(process.cwd());
+      expect(file.cwd).toEqual(process.cwd());
       done();
     });
 
-    it('should default base to cwd', function(done) {
+    it('defaults base to process.cwd', function(done) {
+      var file = new File();
+      expect(file.base).toEqual(process.cwd());
+      done();
+    });
+
+    it('defaults base to cwd property', function(done) {
       var cwd = path.normalize('/');
       var file = new File({ cwd: cwd });
-      file.base.should.equal(cwd);
+      expect(file.base).toEqual(cwd);
       done();
     });
 
-    it('should default base to cwd even when none is given', function(done) {
+    it('defaults path to null', function(done) {
       var file = new File();
-      file.base.should.equal(process.cwd());
+      expect(file.path).toNotExist();
+      expect(file.path).toEqual(null);
       done();
     });
 
-    it('should default path to null', function(done) {
+    it('defaults history to an empty array', function(done) {
       var file = new File();
-      should.not.exist(file.path);
+      expect(file.history).toEqual([]);
       done();
     });
 
-    it('should default history to []', function(done) {
+    it('defaults stat to null', function(done) {
       var file = new File();
-      file.history.should.eql([]);
+      expect(file.stat).toNotExist();
+      expect(file.stat).toEqual(null);
       done();
     });
 
-    it('should default stat to null', function(done) {
+    it('defaults contents to null', function(done) {
       var file = new File();
-      should.not.exist(file.stat);
+      expect(file.contents).toNotExist();
+      expect(file.contents).toEqual(null);
       done();
     });
+  });
 
-    it('should default contents to null', function(done) {
-      var file = new File();
-      should.not.exist(file.contents);
-      done();
-    });
+  describe('constructor()', function() {
 
-    it('should set base to given value', function(done) {
+    it('sets base', function(done) {
       var val = path.normalize('/');
       var file = new File({ base: val });
-      file.base.should.equal(val);
+      expect(file.base).toEqual(val);
       done();
     });
 
-    it('should set cwd to given value', function(done) {
+    it('sets cwd', function(done) {
       var val = path.normalize('/');
       var file = new File({ cwd: val });
-      file.cwd.should.equal(val);
+      expect(file.cwd).toEqual(val);
       done();
     });
 
-    it('should set path to given value', function(done) {
+    it('sets path (and history)', function(done) {
       var val = path.normalize('/test.coffee');
       var file = new File({ path: val });
-      file.path.should.equal(val);
-      file.history.should.eql([val]);
+      expect(file.path).toEqual(val);
+      expect(file.history).toEqual([val]);
       done();
     });
 
-    it('should set history to given value', function(done) {
+    it('sets history (and path)', function(done) {
       var val = path.normalize('/test.coffee');
       var file = new File({ history: [val] });
-      file.path.should.equal(val);
-      file.history.should.eql([val]);
+      expect(file.path).toEqual(val);
+      expect(file.history).toEqual([val]);
       done();
     });
 
-    it('should set stat to given value', function(done) {
+    it('sets stat', function(done) {
       var val = {};
       var file = new File({ stat: val });
-      file.stat.should.equal(val);
+      expect(file.stat).toEqual(val);
       done();
     });
 
-    it('should set contents to given value', function(done) {
+    it('sets contents', function(done) {
       var val = new Buffer('test');
       var file = new File({ contents: val });
-      file.contents.should.equal(val);
+      expect(file.contents).toEqual(val);
       done();
     });
 
-    it('should set custom properties', function(done) {
+    it('sets custom properties', function(done) {
       var sourceMap = {};
       var file = new File({ sourceMap: sourceMap });
-      file.sourceMap.should.equal(sourceMap);
+      expect(file.sourceMap).toEqual(sourceMap);
       done();
     });
 
-    it('should normalize path', function() {
-      var file = new File({ path: '/test/foo/../test.coffee' });
-
-      if (process.platform === 'win32') {
-        file.path.should.equal('\\test\\test.coffee');
-        file.history.should.eql(['\\test\\test.coffee']);
-      } else {
-        file.path.should.equal('/test/test.coffee');
-        file.history.should.eql(['/test/test.coffee']);
-      }
+    it('normalizes path', function() {
+      var val = '/test/foo/../test.coffee';
+      var expected = path.normalize(val);
+      var file = new File({ path: val });
+      expect(file.path).toEqual(expected);
+      expect(file.history).toEqual([expected]);
     });
 
-    it('should correctly normalize and strip trailing sep from path', function() {
-      var file = new File({ path: '/test/foo/../foo/' });
-
-      if (process.platform === 'win32') {
-        file.path.should.equal('\\test\\foo');
-      } else {
-        file.path.should.equal('/test/foo');
-      }
+    it('normalizes and strips trailing separator from path', function() {
+      var val = '/test/foo/../foo/';
+      var expected = path.normalize(val.slice(0, -1));
+      var file = new File({ path: val });
+      expect(file.path).toEqual(expected);
     });
 
-    it('should correctly normalize and strip trailing sep from history', function() {
-      var file = new File({
-        history: [
-          '/test/foo/../foo/',
-          '/test/bar/../bar/',
-        ],
-      });
-
-      if (process.platform === 'win32') {
-        file.history.should.eql([
-          '\\test\\foo',
-          '\\test\\bar',
-        ]);
-      } else {
-        file.history.should.eql([
-          '/test/foo',
-          '/test/bar',
-        ]);
-      }
-    });
-
-    it('should normalize history', function() {
-      var history = [
+    it('normalizes history', function() {
+      var val = [
         '/test/bar/../bar/test.coffee',
         '/test/foo/../test.coffee',
       ];
-      var file = new File({ history: history });
+      var expected = val.map(function(p) {
+        return path.normalize(p);
+      });
+      var file = new File({ history: val });
+      expect(file.path).toEqual(expected[1]);
+      expect(file.history).toEqual(expected);
+    });
 
-      if (process.platform === 'win32') {
-        file.path.should.equal('\\test\\test.coffee');
-        file.history.should.eql([
-          '\\test\\bar\\test.coffee',
-          '\\test\\test.coffee',
-        ]);
-      } else {
-        file.path.should.equal('/test/test.coffee');
-        file.history.should.eql([
-          '/test/bar/test.coffee',
-          '/test/test.coffee',
-        ]);
-      }
+    it('normalizes and strips trailing separator from history', function() {
+      var val = [
+        '/test/foo/../foo/',
+        '/test/bar/../bar/',
+      ];
+      var expected = val.map(function(p) {
+        return path.normalize(p.slice(0, -1));
+      });
+      var file = new File({ history: val });
+      expect(file.history).toEqual(expected);
     });
 
     it('appends path to history if both exist and different from last', function(done) {
-      var p = path.normalize('/test/baz/test.coffee');
+      var val = path.normalize('/test/baz/test.coffee');
       var history = [
         path.normalize('/test/bar/test.coffee'),
         path.normalize('/test/foo/test.coffee'),
       ];
-      var file = new File({ path: p, history: history });
+      var file = new File({ path: val, history: history });
 
-      var expectedHistory = history.concat(p);
+      var expectedHistory = history.concat(val);
 
-      file.path.should.equal(path.normalize('/test/baz/test.coffee'));
-      file.history.should.eql(expectedHistory);
+      expect(file.path).toEqual(val);
+      expect(file.history).toEqual(expectedHistory);
       done();
     });
 
     it('does not append path to history if both exist and same as last', function(done) {
+      var val = path.normalize('/test/baz/test.coffee');
       var history = [
         path.normalize('/test/bar/test.coffee'),
         path.normalize('/test/foo/test.coffee'),
-        path.normalize('/test/baz/test.coffee'),
+        val,
       ];
-      var file = new File({ path: history[history.length - 1], history: history });
+      var file = new File({ path: val, history: history });
 
-      file.path.should.equal(path.normalize('/test/baz/test.coffee'));
-      file.history.should.eql(history);
+      expect(file.path).toEqual(val);
+      expect(file.history).toEqual(history);
       done();
     });
 
     it('does not mutate history array passed in', function(done) {
-      var p = path.normalize('/test/baz/test.coffee');
+      var val = path.normalize('/test/baz/test.coffee');
       var history = [
         path.normalize('/test/bar/test.coffee'),
         path.normalize('/test/foo/test.coffee'),
       ];
       var historyCopy = Array.prototype.slice.call(history);
-      var file = new File({ path: p, history: history });
+      var file = new File({ path: val, history: history });
 
-      var expectedHistory = history.concat(p);
+      var expectedHistory = history.concat(val);
 
-      file.path.should.equal(path.normalize('/test/baz/test.coffee'));
-      file.history.should.eql(expectedHistory);
-      history.should.eql(historyCopy);
+      expect(file.path).toEqual(val);
+      expect(file.history).toEqual(expectedHistory);
+      expect(history).toEqual(historyCopy);
       done();
     });
-
   });
 
   describe('isBuffer()', function() {
-    it('should return true when the contents are a Buffer', function(done) {
+
+    it('returns true when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
       var file = new File({ contents: val });
-      file.isBuffer().should.equal(true);
+      expect(file.isBuffer()).toEqual(true);
       done();
     });
 
-    it('should return false when the contents are a Stream', function(done) {
+    it('returns false when the contents are a Stream', function(done) {
       var val = new Stream();
       var file = new File({ contents: val });
-      file.isBuffer().should.equal(false);
+      expect(file.isBuffer()).toEqual(false);
       done();
     });
 
-    it('should return false when the contents are a null', function(done) {
+    it('returns false when the contents are null', function(done) {
       var file = new File({ contents: null });
-      file.isBuffer().should.equal(false);
+      expect(file.isBuffer()).toEqual(false);
       done();
     });
   });
 
   describe('isStream()', function() {
-    it('should return false when the contents are a Buffer', function(done) {
+
+    it('returns false when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
       var file = new File({ contents: val });
-      file.isStream().should.equal(false);
+      expect(file.isStream()).toEqual(false);
       done();
     });
 
-    it('should return true when the contents are a Stream', function(done) {
+    it('returns true when the contents are a Stream', function(done) {
       var val = new Stream();
       var file = new File({ contents: val });
-      file.isStream().should.equal(true);
+      expect(file.isStream()).toEqual(true);
       done();
     });
 
-    it('should return false when the contents are a null', function(done) {
+    it('returns false when the contents are null', function(done) {
       var file = new File({ contents: null });
-      file.isStream().should.equal(false);
+      expect(file.isStream()).toEqual(false);
       done();
     });
   });
 
   describe('isNull()', function() {
-    it('should return false when the contents are a Buffer', function(done) {
+
+    it('returns false when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
       var file = new File({ contents: val });
-      file.isNull().should.equal(false);
+      expect(file.isNull()).toEqual(false);
       done();
     });
 
-    it('should return false when the contents are a Stream', function(done) {
+    it('returns false when the contents are a Stream', function(done) {
       var val = new Stream();
       var file = new File({ contents: val });
-      file.isNull().should.equal(false);
+      expect(file.isNull()).toEqual(false);
       done();
     });
 
-    it('should return true when the contents are a null', function(done) {
+    it('returns true when the contents are null', function(done) {
       var file = new File({ contents: null });
-      file.isNull().should.equal(true);
+      expect(file.isNull()).toEqual(true);
       done();
     });
   });
@@ -303,29 +336,35 @@ describe('File', function() {
       },
     };
 
-    it('should return false when the contents are a Buffer', function(done) {
+    it('returns false when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
       var file = new File({ contents: val, stat: fakeStat });
-      file.isDirectory().should.equal(false);
+      expect(file.isDirectory()).toEqual(false);
       done();
     });
 
-    it('should return false when the contents are a Stream', function(done) {
+    it('returns false when the contents are a Stream', function(done) {
       var val = new Stream();
       var file = new File({ contents: val, stat: fakeStat });
-      file.isDirectory().should.equal(false);
+      expect(file.isDirectory()).toEqual(false);
       done();
     });
 
-    it('should return true when the contents are a null', function(done) {
+    it('returns true when the contents are null & stat.isDirectory is true', function(done) {
       var file = new File({ contents: null, stat: fakeStat });
-      file.isDirectory().should.equal(true);
+      expect(file.isDirectory()).toEqual(true);
       done();
     });
 
-    it('returns false when the stats exist but do not contain isDirectory method', function(done) {
+    it('returns false when stat exists but does not contain an isDirectory method', function(done) {
       var file = new File({ contents: null, stat: {} });
-      file.isDirectory().should.equal(false);
+      expect(file.isDirectory()).toEqual(false);
+      done();
+    });
+
+    it('returns false when stat does not exist', function(done) {
+      var file = new File({ contents: null });
+      expect(file.isDirectory()).toEqual(false);
       done();
     });
   });
@@ -337,35 +376,42 @@ describe('File', function() {
       },
     };
 
-    it('should return false when the contents are a Buffer', function(done) {
+    it('returns false when the contents are a Buffer', function(done) {
       var val = new Buffer('test');
       var file = new File({ contents: val, stat: fakeStat });
-      file.isSymbolic().should.equal(false);
+      expect(file.isSymbolic()).toEqual(false);
       done();
     });
 
-    it('should return false when the contents are a Stream', function(done) {
+    it('returns false when the contents are a Stream', function(done) {
       var val = new Stream();
       var file = new File({ contents: val, stat: fakeStat });
-      file.isSymbolic().should.equal(false);
+      expect(file.isSymbolic()).toEqual(false);
       done();
     });
 
-    it('should return true when the contents are a null', function(done) {
+    it('returns true when the contents are null & stat.isSymbolicLink is true', function(done) {
       var file = new File({ contents: null, stat: fakeStat });
-      file.isSymbolic().should.equal(true);
+      expect(file.isSymbolic()).toEqual(true);
       done();
     });
 
-    it('returns false when the stats exist but do not contain isSymbolicLink method', function(done) {
+    it('returns false when stat exists but does not contain an isSymbolicLink method', function(done) {
       var file = new File({ contents: null, stat: {} });
-      file.isSymbolic().should.equal(false);
+      expect(file.isSymbolic()).toEqual(false);
+      done();
+    });
+
+    it('returns false when stat does not exist', function(done) {
+      var file = new File({ contents: null });
+      expect(file.isSymbolic()).toEqual(false);
       done();
     });
   });
 
   describe('clone()', function() {
-    it('should copy all attributes over with Buffer', function(done) {
+
+    it('copies all attributes over with Buffer contents', function(done) {
       var options = {
         cwd: '/',
         base: '/test/',
@@ -375,67 +421,67 @@ describe('File', function() {
       var file = new File(options);
       var file2 = file.clone();
 
-      file2.should.not.equal(file, 'refs should be different');
-      file2.cwd.should.equal(file.cwd);
-      file2.base.should.equal(file.base);
-      file2.path.should.equal(file.path);
-      file2.contents.should.not.equal(file.contents, 'buffer ref should be different');
-      file2.contents.toString('utf8').should.equal(file.contents.toString('utf8'));
+      expect(file2).toNotBe(file);
+      expect(file2.cwd).toEqual(file.cwd);
+      expect(file2.base).toEqual(file.base);
+      expect(file2.path).toEqual(file.path);
+      expect(file2.contents).toNotBe(file.contents);
+      expect(file2.contents.toString('utf8')).toEqual(file.contents.toString('utf8'));
       done();
     });
 
-    it('should copy buffer\'s reference with option contents: false', function(done) {
+    it('assigns Buffer content reference when contents option is false', function(done) {
       var options = {
         cwd: '/',
         base: '/test/',
         path: '/test/test.js',
         contents: new Buffer('test'),
       };
-
       var file = new File(options);
 
       var copy1 = file.clone({ contents: false });
-      copy1.contents.should.equal(file.contents);
+      expect(copy1.contents).toBe(file.contents);
 
-      var copy2 = file.clone({});
-      copy2.contents.should.not.equal(file.contents);
+      var copy2 = file.clone();
+      expect(copy2.contents).toNotBe(file.contents);
 
-      var copy3 = file.clone({ contents: 'any string' });
-      copy3.contents.should.not.equal(file.contents);
-
+      var copy3 = file.clone({ contents: 'invalid' });
+      expect(copy3.contents).toNotBe(file.contents);
       done();
     });
 
-    it('should copy all attributes over with Stream', function(done) {
-      var contents = new Stream.PassThrough();
+    it('copies all attributes over with Stream contents', function(done) {
       var options = {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: contents,
+        contents: from(['wa', 'dup']),
       };
       var file = new File(options);
       var file2 = file.clone();
 
-      contents.write(new Buffer('wa'));
+      expect(file2).toNotBe(file);
+      expect(file2.cwd).toEqual(file.cwd);
+      expect(file2.base).toEqual(file.base);
+      expect(file2.path).toEqual(file.path);
+      expect(file2.contents).toNotBe(file.contents);
 
-      process.nextTick(function() {
-        contents.write(new Buffer('dup'));
-        contents.end();
-      });
+      function combine(data) {
+        pipe([
+          file2.contents,
+          concat(assert),
+        ], done);
 
-      file2.should.not.equal(file, 'refs should be different');
-      file2.cwd.should.equal(file.cwd);
-      file2.base.should.equal(file.base);
-      file2.path.should.equal(file.path);
-      file2.contents.should.not.equal(file.contents, 'stream ref should not be the same');
-      file.contents.pipe(es.wait(function(err, data) {
-        file2.contents.pipe(es.wait(function(err, data2) {
-          data2.should.not.equal(data, 'stream contents ref should not be the same');
-          data2.should.eql(data, 'stream contents should be the same');
-        }));
-      }));
-      done();
+        function assert(data2) {
+          expect(data).toNotBe(data2);
+          expect(data.toString('utf8')).toEqual(data2.toString('utf8'));
+        }
+      }
+
+      pipe([
+        file.contents,
+        concat(combine),
+      ]);
     });
 
     it('should not start flowing until all clones flows', function(done) {

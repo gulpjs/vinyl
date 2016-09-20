@@ -1,30 +1,37 @@
-var isStream = require('../lib/isStream');
+'use strict';
+
+var expect = require('expect');
 // Use node stream to test readable-stream inherits from it
 var Stream = require('stream');
-require('should');
-require('mocha');
+
+var isStream = require('../lib/isStream');
 
 describe('isStream()', function() {
-  it('should return true on a Stream', function(done) {
+
+  it('returns true for a Stream', function(done) {
     var testStream = new Stream();
-    isStream(testStream).should.equal(true);
+    var result = isStream(testStream);
+    expect(result).toEqual(true);
     done();
   });
 
-  it('should return false on a Buffer', function(done) {
+  it('returns false for a Buffer', function(done) {
     var testBuffer = new Buffer('test');
-    isStream(testBuffer).should.equal(false);
+    var result = isStream(testBuffer);
+    expect(result).toEqual(false);
     done();
   });
 
-  it('should return false on a null', function(done) {
-    isStream(null).should.equal(false);
+  it('returns false for null', function(done) {
+    var result = isStream(null);
+    expect(result).toEqual(false);
     done();
   });
 
-  it('should return false on a array of numbers', function(done) {
+  it('returns false for an array of numbers', function(done) {
     var testArray = [1, 2, 3];
-    isStream(testArray).should.equal(false);
+    var result = isStream(testArray);
+    expect(result).toEqual(false);
     done();
   });
 });

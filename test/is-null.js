@@ -1,22 +1,25 @@
+'use strict';
+
+var expect = require('expect');
+
 var isNull = require('../lib/isNull');
-require('should');
-require('mocha');
 
 describe('isNull()', function() {
-  it('should return true on null', function(done) {
-    isNull(null).should.equal(true);
+
+  it('returns true for null', function(done) {
+    expect(isNull(null)).toEqual(true);
     done();
   });
 
-  it('should return false on undefined', function(done) {
-    isNull().should.equal(false);
-    isNull(undefined).should.equal(false);
+  it('returns false for undefined', function(done) {
+    expect(isNull()).toEqual(false);
+    expect(isNull(undefined)).toEqual(false);
     done();
   });
 
-  it('should return false on defined values', function(done) {
-    isNull(1).should.equal(false);
-    isNull('test').should.equal(false);
+  it('returns false for defined values', function(done) {
+    expect(isNull(1)).toEqual(false);
+    expect(isNull('test')).toEqual(false);
     done();
   });
 });

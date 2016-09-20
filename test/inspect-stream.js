@@ -1,53 +1,78 @@
-var inspectStream = require('../lib/inspectStream');
+'use strict';
+
+var expect = require('expect');
 var Stream = require('readable-stream');
-var should = require('should');
-require('mocha');
+var Cloneable = require('cloneable-readable');
+
+var inspectStream = require('../lib/inspectStream');
 
 describe('inspectStream()', function() {
-  it('should work on a core Stream', function(done) {
+
+  it('works on a Stream', function(done) {
     var testStream = new Stream.Stream();
-    inspectStream(testStream).should.equal('<Stream>');
+    var result = inspectStream(testStream);
+    expect(result).toEqual('<Stream>');
     done();
   });
 
-  it('should work on a core Readable Stream', function(done) {
+  it('works on a Readable Stream', function(done) {
     var testStream = new Stream.Readable();
-    inspectStream(testStream).should.equal('<ReadableStream>');
+    var result = inspectStream(testStream);
+    expect(result).toEqual('<ReadableStream>');
     done();
   });
 
-  it('should work on a core Writable Stream', function(done) {
+  it('works on a Writable Stream', function(done) {
     var testStream = new Stream.Writable();
-    inspectStream(testStream).should.equal('<WritableStream>');
+    var result = inspectStream(testStream);
+    expect(result).toEqual('<WritableStream>');
     done();
   });
 
-  it('should work on a core Duplex Stream', function(done) {
+  it('works on a Duplex Stream', function(done) {
     var testStream = new Stream.Duplex();
-    inspectStream(testStream).should.equal('<DuplexStream>');
+    var result = inspectStream(testStream);
+    expect(result).toEqual('<DuplexStream>');
     done();
   });
 
-  it('should work on a core Transform Stream', function(done) {
+  it('works on a Transform Stream', function(done) {
     var testStream = new Stream.Transform();
-    inspectStream(testStream).should.equal('<TransformStream>');
+    var result = inspectStream(testStream);
+    expect(result).toEqual('<TransformStream>');
     done();
   });
 
-  it('should work on a core PassThrough Stream', function(done) {
+  it('works on a PassThrough Stream', function(done) {
     var testStream = new Stream.PassThrough();
-    inspectStream(testStream).should.equal('<PassThroughStream>');
+    var result = inspectStream(testStream);
+    expect(result).toEqual('<PassThroughStream>');
     done();
   });
 
-  it('should not work on a Buffer', function(done) {
+  it('works on a custom Stream', function(done) {
+    var testStream = new Cloneable(new Stream.Readable());
+    var result = inspectStream(testStream);
+    expect(result).toEqual('<CloneableStream>');
+    done();
+  });
+
+  it('returns nothing for a Buffer', function(done) {
     var testBuffer = new Buffer('test');
-    should.not.exist(inspectStream(testBuffer));
+    var result = inspectStream(testBuffer);
+    expect(result).toNotExist();
     done();
   });
 
-  it('should not work on a null', function(done) {
-    should.not.exist(inspectStream(null));
+  it('returns nothing for null', function(done) {
+    var result = inspectStream(null);
+    expect(result).toNotExist();
+    done();
+  });
+
+  it('returns nothing for a String', function(done) {
+    var result = inspectStream('foobar');
+    expect(result).toNotExist();
     done();
   });
 });

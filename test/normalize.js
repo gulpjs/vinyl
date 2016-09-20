@@ -1,15 +1,22 @@
-var normalize = require('../lib/normalize');
+'use strict';
+
 var path = require('path');
-require('should');
-require('mocha');
+var expect = require('expect');
+
+var normalize = require('../lib/normalize');
 
 describe('normalize()', function() {
-  it('should leave empty strings unmodified', function() {
-    normalize('').should.equal('');
+
+  it('should leave empty strings unmodified', function(done) {
+    var result = normalize('');
+    expect(result).toEqual('');
+    done();
   });
 
-  it('should apply path.normalize for everything else', function() {
+  it('should apply path.normalize for everything else', function(done) {
     var str = '/foo//../bar/baz';
-    normalize(str).should.equal(path.normalize(str));
+    var result = normalize(str);
+    expect(result).toEqual(path.normalize(str));
+    done();
   });
 });
