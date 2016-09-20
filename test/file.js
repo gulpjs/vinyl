@@ -466,22 +466,36 @@ describe('File', function() {
       expect(file2.path).toEqual(file.path);
       expect(file2.contents).toNotBe(file.contents);
 
-      function combine(data) {
-        pipe([
-          file2.contents,
-          concat(assert),
-        ], done);
+      var ends = 2;
+      var data = null;
+      var data2 = null;
 
-        function assert(data2) {
+      function latch(err) {
+        if (err) {
+          done(err);
+          return;
+        }
+
+        if (--ends === 0) {
           expect(data).toNotBe(data2);
           expect(data.toString('utf8')).toEqual(data2.toString('utf8'));
+          done();
         }
       }
 
       pipe([
         file.contents,
-        concat(combine),
-      ]);
+        concat(function(d) {
+          data = d;
+        }),
+      ], latch);
+
+      pipe([
+        file2.contents,
+        concat(function(d) {
+          data2 = d;
+        }),
+      ], latch);
     });
 
     it('does not start flowing until all clones flows', function(done) {
@@ -510,7 +524,11 @@ describe('File', function() {
         data2 += chunk.toString('utf8');
       });
 
-      file2.contents.once('data', function() {
+      process.nextTick(function() {
+        // Nothing was written yet
+        expect(data).toEqual('');
+        expect(data2).toEqual('');
+
         // Starts flowing file
         file.contents.on('data', function(chunk) {
           data += chunk.toString('utf8');
@@ -551,12 +569,10 @@ describe('File', function() {
         this.read();
       });
 
-      file2.contents.once('readable', function() {
-        process.nextTick(function() {
-          // Starts flowing file
-          file.contents.on('readable', function() {
-            ends.should.equal(2);
-          });
+      process.nextTick(function() {
+        // Starts flowing file
+        file.contents.on('readable', function() {
+          ends.should.equal(2);
         });
       });
 
