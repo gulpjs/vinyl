@@ -484,40 +484,36 @@ describe('File', function() {
       ]);
     });
 
-    it('should not start flowing until all clones flows', function(done) {
-      var contents = new Stream.PassThrough();
+    it('does not start flowing until all clones flows', function(done) {
       var options = {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: contents,
+        contents: from(['wa', 'dup']),
       };
       var file = new File(options);
       var file2 = file.clone();
       var ends = 2;
 
+      var data = '';
+      var data2 = '';
+
       function latch() {
         if (--ends === 0) {
+          expect(data).toEqual(data2);
           done();
         }
       }
 
-      contents.write(new Buffer('wa'));
-
-      process.nextTick(function() {
-        contents.write(new Buffer('dup'));
-        contents.end();
+      // Start flowing file2
+      file2.contents.on('data', function(chunk) {
+        data2 += chunk.toString('utf8');
       });
 
-      // Start flowing file2
-      file2.contents.on('data', function() {});
-
       file2.contents.once('data', function() {
-        process.nextTick(function() {
-          // Starts flowing file
-          file.contents.on('data', function() {
-            ends.should.equal(2);
-          });
+        // Starts flowing file
+        file.contents.on('data', function(chunk) {
+          data += chunk.toString('utf8');
         });
       });
 
