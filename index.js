@@ -111,10 +111,6 @@ File.prototype.clone = function(opt) {
   // Clone our file contents
   var contents;
   if (this.isStream()) {
-    if (typeof this.contents.clone !== 'function') {
-      this.contents = cloneable(this.contents);
-    }
-
     contents = this.contents.clone();
   } else if (this.isBuffer()) {
     contents = opt.contents ? cloneBuffer(this.contents) : this.contents;
@@ -177,7 +173,10 @@ Object.defineProperty(File.prototype, 'contents', {
       throw new Error('File.contents can only be a Buffer, a Stream, or null.');
     }
 
-    if (isStream(val)) {
+    // Ask cloneable if the stream is a already a cloneable
+    // this avoid piping into many streams
+    // reducing the overhead of cloning
+    if (isStream(val) && !cloneable.isCloneable(val)) {
       val = cloneable(val);
     }
 
