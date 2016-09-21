@@ -173,7 +173,10 @@ Object.defineProperty(File.prototype, 'contents', {
       throw new Error('File.contents can only be a Buffer, a Stream, or null.');
     }
 
-    if (isStream(val) && typeof val.clone !== 'function') {
+    // ask cloneable if the stream is a already a cloneable
+    // this avoid piping into many streams
+    // reducing the overhead of cloning
+    if (isStream(val) && !cloneable.isCloneable(val)) {
       val = cloneable(val);
     }
 
