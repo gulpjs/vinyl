@@ -470,7 +470,7 @@ describe('File', function() {
       var data = null;
       var data2 = null;
 
-      function latch(err) {
+      function assert(err) {
         if (err) {
           done(err);
           return;
@@ -488,17 +488,17 @@ describe('File', function() {
         concat(function(d) {
           data = d;
         }),
-      ], latch);
+      ], assert);
 
       pipe([
         file2.contents,
         concat(function(d) {
           data2 = d;
         }),
-      ], latch);
+      ], assert);
     });
 
-    it('does not start flowing until all clones flows', function(done) {
+    it('does not start flowing until all clones flows (data)', function(done) {
       var options = {
         cwd: '/',
         base: '/test/',
@@ -512,7 +512,7 @@ describe('File', function() {
       var data = '';
       var data2 = '';
 
-      function latch() {
+      function assert() {
         if (--ends === 0) {
           expect(data).toEqual(data2);
           done();
@@ -535,52 +535,41 @@ describe('File', function() {
         });
       });
 
-      file2.contents.on('end', latch);
-      file.contents.on('end', latch);
+      file2.contents.on('end', assert);
+      file.contents.on('end', assert);
     });
 
-    it('should not start flowing until all clones flows', function(done) {
-      var contents = new Stream.PassThrough();
+    it('does not start flowing until all clones flows (readable)', function(done) {
       var options = {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: contents,
+        contents: from(['wa', 'dup']),
       };
       var file = new File(options);
       var file2 = file.clone();
-      var ends = 2;
 
-      function latch() {
-        if (--ends === 0) {
-          done();
-        }
+      var data2 = '';
+
+      function assert(data) {
+        expect(data.toString('utf8')).toEqual(data2);
       }
-
-      contents.write(new Buffer('wa'));
-
-      process.nextTick(function() {
-        contents.write(new Buffer('dup'));
-        contents.end();
-      });
 
       // Start flowing file2
       file2.contents.on('readable', function() {
-        this.read();
+        var chunk;
+        while ((chunk = this.read()) !== null) {
+          data2 += chunk.toString();
+        }
       });
 
-      process.nextTick(function() {
-        // Starts flowing file
-        file.contents.on('readable', function() {
-          ends.should.equal(2);
-        });
-      });
-
-      file2.contents.on('end', latch);
-      file.contents.on('end', latch);
+      pipe([
+        file.contents,
+        concat(assert),
+      ], done);
     });
 
-    it('should copy all attributes over with null', function(done) {
+    it('copies all attributes over with null contents', function(done) {
       var options = {
         cwd: '/',
         base: '/test/',
@@ -590,15 +579,15 @@ describe('File', function() {
       var file = new File(options);
       var file2 = file.clone();
 
-      file2.should.not.equal(file, 'refs should be different');
-      file2.cwd.should.equal(file.cwd);
-      file2.base.should.equal(file.base);
-      file2.path.should.equal(file.path);
-      should.not.exist(file2.contents);
+      expect(file2).toNotBe(file);
+      expect(file2.cwd).toEqual(file.cwd);
+      expect(file2.base).toEqual(file.base);
+      expect(file2.path).toEqual(file.path);
+      expect(file2.contents).toNotExist();
       done();
     });
 
-    it('should properly clone the `stat` property', function(done) {
+    it('properly clones the `stat` property', function(done) {
       var options = {
         cwd: '/',
         base: '/test/',
@@ -610,56 +599,53 @@ describe('File', function() {
       var file = new File(options);
       var copy = file.clone();
 
-      copy.stat.isFile().should.equal(true);
-      copy.stat.isDirectory().should.equal(false);
-      should(file.stat instanceof fs.Stats).equal(true);
-      should(copy.stat instanceof fs.Stats).equal(true);
-
+      expect(copy.stat.isFile()).toEqual(true);
+      expect(copy.stat.isDirectory()).toEqual(false);
+      expect(file.stat).toBeAn(fs.Stats);
+      expect(copy.stat).toBeAn(fs.Stats);
       done();
     });
 
-    it('should properly clone the `history` property', function(done) {
+    it('properly clones the `history` property', function(done) {
       var options = {
         cwd: path.normalize('/'),
         base: path.normalize('/test/'),
         path: path.normalize('/test/test.js'),
         contents: new Buffer('test'),
-        stat: fs.statSync(__filename),
       };
 
       var file = new File(options);
       var copy = file.clone();
 
-      copy.history[0].should.equal(options.path);
+      expect(copy.history[0]).toEqual(options.path);
       copy.path = 'lol';
-      file.path.should.not.equal(copy.path);
+      expect(file.path).toNotEqual(copy.path);
       done();
     });
 
-    it('should copy custom properties', function(done) {
+    it('copies custom properties', function(done) {
       var options = {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
         contents: null,
+        custom: { meta: {} },
       };
 
       var file = new File(options);
-      file.custom = { a: 'custom property' };
-
       var file2 = file.clone();
 
-      file2.should.not.equal(file, 'refs should be different');
-      file2.cwd.should.equal(file.cwd);
-      file2.base.should.equal(file.base);
-      file2.path.should.equal(file.path);
-      file2.custom.should.not.equal(file.custom);
-      file2.custom.a.should.equal(file.custom.a);
-
+      expect(file2).toNotBe(file);
+      expect(file2.cwd).toEqual(file.cwd);
+      expect(file2.base).toEqual(file.base);
+      expect(file2.path).toEqual(file.path);
+      expect(file2.custom).toNotBe(file.custom);
+      expect(file2.custom.meta).toNotBe(file.custom.meta);
+      expect(file2.custom).toEqual(file.custom);
       done();
     });
 
-    it('should copy history', function(done) {
+    it('copies history', function(done) {
       var options = {
         cwd: '/',
         base: '/test/',
@@ -677,54 +663,62 @@ describe('File', function() {
       file.path = history[2];
       var file2 = file.clone();
 
-      file2.history.should.eql(history);
-      file2.history.should.not.equal(history);
-      file2.path.should.eql(history[2]);
-
+      expect(file2.history).toEqual(history);
+      expect(file2.history).toNotBe(file.history);
+      expect(file2.path).toEqual(history[2]);
       done();
     });
 
-    it('should copy all attributes deeply', function(done) {
+    it('supports deep & shallow copy of all attributes', function(done) {
       var options = {
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
         contents: null,
+        custom: { meta: {} },
       };
 
       var file = new File(options);
-      file.custom = { a: 'custom property' };
 
-      var file2 = file.clone(true);
-      file2.custom.should.eql(file.custom);
-      file2.custom.should.not.equal(file.custom);
-      file2.custom.a.should.equal(file.custom.a);
+      var file2 = file.clone();
+      expect(file2.custom).toEqual(file.custom);
+      expect(file2.custom).toNotBe(file.custom);
+      expect(file2.custom.meta).toEqual(file.custom.meta);
+      expect(file2.custom.meta).toNotBe(file.custom.meta);
 
-      var file3 = file.clone({ deep: true });
-      file3.custom.should.eql(file.custom);
-      file3.custom.should.not.equal(file.custom);
-      file3.custom.a.should.equal(file.custom.a);
+      var file3 = file.clone(true);
+      expect(file3.custom).toEqual(file.custom);
+      expect(file3.custom).toNotBe(file.custom);
+      expect(file3.custom.meta).toEqual(file.custom.meta);
+      expect(file3.custom.meta).toNotBe(file.custom.meta);
 
-      var file4 = file.clone(false);
-      file4.custom.should.eql(file.custom);
-      file4.custom.should.equal(file.custom);
-      file4.custom.a.should.equal(file.custom.a);
+      var file4 = file.clone({ deep: true });
+      expect(file4.custom).toEqual(file.custom);
+      expect(file4.custom).toNotBe(file.custom);
+      expect(file4.custom.meta).toEqual(file.custom.meta);
+      expect(file4.custom.meta).toNotBe(file.custom.meta);
 
-      var file5 = file.clone({ deep: false });
-      file5.custom.should.eql(file.custom);
-      file5.custom.should.equal(file.custom);
-      file5.custom.a.should.equal(file.custom.a);
+      var file5 = file.clone(false);
+      expect(file5.custom).toEqual(file.custom);
+      expect(file5.custom).toBe(file.custom);
+      expect(file5.custom.meta).toEqual(file.custom.meta);
+      expect(file5.custom.meta).toBe(file.custom.meta);
+
+      var file6 = file.clone({ deep: false });
+      expect(file6.custom).toEqual(file.custom);
+      expect(file6.custom).toBe(file.custom);
+      expect(file6.custom.meta).toEqual(file.custom.meta);
+      expect(file6.custom.meta).toBe(file.custom.meta);
 
       done();
     });
 
-    it('should work with extended files', function(done) {
+    it('supports inheritance', function(done) {
       function ExtendedFile() {
         File.apply(this, arguments);
       }
       ExtendedFile.prototype = Object.create(File.prototype);
       ExtendedFile.prototype.constructor = ExtendedFile;
-      // Object.setPrototypeOf(ExtendedFile, File);
       // Just copy static stuff since Object.setPrototypeOf is node >=0.12
       Object.keys(File).forEach(function(key) {
         ExtendedFile[key] = File[key];
@@ -733,12 +727,12 @@ describe('File', function() {
       var file = new ExtendedFile();
       var file2 = file.clone();
 
-      file2.should.not.equal(file, 'refs should be different');
-      file2.constructor.should.equal(ExtendedFile);
-      (file2 instanceof ExtendedFile).should.equal(true);
-      (file2 instanceof File).should.equal(true);
-      ExtendedFile.prototype.isPrototypeOf(file2).should.equal(true);
-      File.prototype.isPrototypeOf(file2).should.equal(true);
+      expect(file2).toNotBe(file);
+      expect(file2.constructor).toBe(ExtendedFile);
+      expect(file2).toBeAn(ExtendedFile);
+      expect(file2).toBeA(File);
+      expect(ExtendedFile.prototype.isPrototypeOf(file2)).toEqual(true);
+      expect(File.prototype.isPrototypeOf(file2)).toEqual(true);
       done();
     });
   });
