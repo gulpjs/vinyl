@@ -5,6 +5,7 @@ var path = require('path');
 var expect = require('expect');
 var Stream = require('readable-stream');
 var miss = require('mississippi');
+var cloneable = require('cloneable-readable');
 
 var File = require('../');
 
@@ -13,6 +14,7 @@ var should = require('should');
 var pipe = miss.pipe;
 var from = miss.from;
 var concat = miss.concat;
+var isCloneable = cloneable.isCloneable;
 
 describe('File', function() {
 
@@ -738,22 +740,21 @@ describe('File', function() {
   });
 
   describe('inspect()', function() {
-    it('should return correct format when no contents and no path', function(done) {
+
+    it('returns correct format when no contents and no path', function(done) {
       var file = new File();
-      file.inspect().should.equal('<File >');
+      expect(file.inspect()).toEqual('<File >');
       done();
     });
 
-    it('should return correct format when Buffer and no path', function(done) {
+    it('returns correct format when Buffer contents and no path', function(done) {
       var val = new Buffer('test');
-      var file = new File({
-        contents: val,
-      });
-      file.inspect().should.equal('<File <Buffer 74 65 73 74>>');
+      var file = new File({ contents: val });
+      expect(file.inspect()).toEqual('<File <Buffer 74 65 73 74>>');
       done();
     });
 
-    it('should return correct format when Buffer and relative path', function(done) {
+    it('returns correct format when Buffer contents and relative path', function(done) {
       var val = new Buffer('test');
       var file = new File({
         cwd: '/',
@@ -761,192 +762,253 @@ describe('File', function() {
         path: '/test/test.coffee',
         contents: val,
       });
-      file.inspect().should.equal('<File "test.coffee" <Buffer 74 65 73 74>>');
+      expect(file.inspect()).toEqual('<File "test.coffee" <Buffer 74 65 73 74>>');
       done();
     });
 
-    it('should return correct format when Stream and relative path', function(done) {
+    it('returns correct format when Stream contents and relative path', function(done) {
       var file = new File({
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
-        contents: new Stream.PassThrough(),
+        contents: from([]),
       });
-      file.inspect().should.equal('<File "test.coffee" <CloneableStream>>');
+      expect(file.inspect()).toEqual('<File "test.coffee" <CloneableStream>>');
       done();
     });
 
-    it('should return correct format when null and relative path', function(done) {
+    it('returns correct format when null contents and relative path', function(done) {
       var file = new File({
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
         contents: null,
       });
-      file.inspect().should.equal('<File "test.coffee">');
+      expect(file.inspect()).toEqual('<File "test.coffee">');
       done();
     });
   });
 
   describe('contents get/set', function() {
-    it('should work with Buffer', function(done) {
+
+    it('returns _contents', function(done) {
+      var val = new Buffer('test');
+      var file = new File();
+      file._contents = val;
+      expect(file.contents).toEqual(val);
+      done();
+    });
+
+    it('sets _contents', function(done) {
       var val = new Buffer('test');
       var file = new File();
       file.contents = val;
-      file.contents.should.equal(val);
+      expect(file._contents).toEqual(val);
       done();
     });
 
-    it('should wrap Stream in Cloneable', function(done) {
-      var val = new Stream();
+    it('sets a Buffer', function(done) {
+      var val = new Buffer('test');
       var file = new File();
       file.contents = val;
-      (typeof file.contents.clone).should.equal('function');
+      expect(file.contents).toEqual(val);
       done();
     });
 
-    it('should work with null', function(done) {
+    it('wraps Stream in Cloneable', function(done) {
+      var val = from([]);
+      var file = new File();
+      file.contents = val;
+      expect(isCloneable(file.contents)).toEqual(true);
+      done();
+    });
+
+    it('does not double wrap a Cloneable', function(done) {
+      var val = from([]);
+      var clone = cloneable(val);
+      var file = new File();
+      file.contents = clone;
+      expect(file.contents._original).toBe(val);
+      done();
+    });
+
+    it('sets null', function(done) {
       var val = null;
       var file = new File();
       file.contents = val;
-      (file.contents === null).should.equal(true);
+      expect(file.contents).toEqual(null);
       done();
     });
 
-    it('should not work with string', function(done) {
+    it('does not set a string', function(done) {
       var val = 'test';
       var file = new File();
-      try {
+      function invalid() {
         file.contents = val;
-      } catch (err) {
-        should.exist(err);
-        done();
       }
+      expect(invalid).toThrow();
+      done();
     });
   });
 
   describe('cwd get/set', function() {
-    it('should return _cwd', function() {
+
+    it('returns _cwd', function(done) {
+      var val = '/test';
       var file = new File();
-      file.cwd = '/test';
-      file.cwd.should.equal(file._cwd);
+      file._cwd = val;
+      expect(file.cwd).toEqual(val);
+      done();
     });
 
-    it('should set cwd', function() {
+    it('sets _cwd', function(done) {
+      var val = '/test';
       var file = new File();
-      file.cwd = '/test';
-      file._cwd.should.equal(path.normalize('/test'));
+      file.cwd = val;
+      expect(file._cwd).toEqual(path.normalize(val));
+      done();
     });
 
-    it('should normalize and strip trailing sep on set', function() {
+    it('normalizes and removes trailing separator on set', function(done) {
+      var val = '/test/foo/../foo/';
+      var expected = path.normalize(val.slice(0, -1));
       var file = new File();
 
-      file.cwd = '/test/foo/../foo/';
+      file.cwd = val;
 
-      if (process.platform === 'win32') {
-        file.cwd.should.equal('\\test\\foo');
-      } else {
-        file.cwd.should.equal('/test/foo');
-      }
+      expect(file.cwd).toEqual(expected);
 
-      file.cwd = '\\test\\foo\\..\\foo\\';
+      var val2 = '\\test\\foo\\..\\foo\\';
+      var expected2 = path.normalize(val2.slice(0, -1));
 
-      if (process.platform === 'win32') {
-        file.cwd.should.equal('\\test\\foo');
-      } else {
-        file.cwd.should.equal('\\test\\foo\\..\\foo');
-      }
+      file.cwd = val2;
+
+      expect(file.cwd).toEqual(expected2);
+      done();
     });
 
-    it('should throw on set when value is empty or not a string', function() {
-      var notAllowed = [
-        '', null, undefined, true, false, 0, Infinity, NaN, {}, [],
+    it('throws on set with invalid values', function(done) {
+      var invalidValues = [
+        '',
+        null,
+        undefined,
+        true,
+        false,
+        0,
+        Infinity,
+        NaN,
+        {},
+        [],
       ];
-      notAllowed.forEach(function(val) {
-        (function() {
-          new File().cwd = val;
-        }).should.throw('cwd must be a non-empty string.');
+      var file = new File();
+
+      invalidValues.forEach(function(val) {
+        function invalid() {
+          file.cwd = val;
+        }
+        expect(invalid).toThrow('cwd must be a non-empty string.');
       });
+
+      done();
     });
   });
 
   describe('base get/set', function() {
-    it('should proxy to cwd when omitted', function() {
-      var file = new File({
-        cwd: '/test',
-      });
-      file.base.should.equal(path.normalize('/test'));
+
+    it('proxies cwd when omitted', function(done) {
+      var file = new File({ cwd: '/test' });
+      expect(file.base).toEqual(file.cwd);
+      done();
     });
 
-    it('should proxy to cwd when same', function() {
+    it('proxies cwd when same', function(done) {
       var file = new File({
         cwd: '/test',
         base: '/test',
       });
       file.cwd = '/foo/';
-      file.base.should.equal(path.normalize('/foo'));
+      expect(file.base).toEqual(file.cwd);
 
       var file2 = new File({
         cwd: '/test',
       });
       file2.base = '/test/';
       file2.cwd = '/foo/';
-      file2.base.should.equal(path.normalize('/foo'));
+      expect(file2.base).toEqual(file.cwd);
+      done();
     });
 
-    it('should proxy to cwd when null or undefined', function() {
+    it('proxies to cwd when null or undefined', function(done) {
       var file = new File({
         cwd: '/foo',
         base: '/bar',
       });
-      file.base.should.equal(path.normalize('/bar'));
+      expect(file.base).toNotEqual(file.cwd);
       file.base = null;
-      file.base.should.equal(path.normalize('/foo'));
+      expect(file.base).toEqual(file.cwd);
       file.base = '/bar/';
-      file.base.should.equal(path.normalize('/bar'));
+      expect(file.base).toNotEqual(file.cwd);
       file.base = undefined;
-      file.base.should.equal(path.normalize('/foo'));
+      expect(file.base).toEqual(file.cwd);
+      done();
     });
 
-    it('should return _base', function() {
+    it('returns _base', function(done) {
+      var val = '/test/';
       var file = new File();
-      file._base = '/test/';
-      file.base.should.equal('/test/');
+      file._base = val;
+      expect(file.base).toEqual(val);
+      done();
     });
 
-    it('should set base', function() {
+    it('sets _base', function(done) {
+      var val = '/test/foo';
       var file = new File();
-      file.base = '/test/foo';
-      file.base.should.equal(path.normalize('/test/foo'));
+      file.base = val;
+      expect(file._base).toEqual(path.normalize(val));
+      done();
     });
 
-    it('should normalize and strip trailing sep on set', function() {
+    it('normalizes and removes trailing separator on set', function(done) {
+      var val = '/test/foo/../foo/';
+      var expected = path.normalize(val.slice(0, -1));
       var file = new File();
 
-      file.base = '/test/foo/../foo/';
+      file.base = val;
 
-      if (process.platform === 'win32') {
-        file.base.should.equal('\\test\\foo');
-      } else {
-        file.base.should.equal('/test/foo');
-      }
+      expect(file.base).toEqual(expected);
 
-      file.base = '\\test\\foo\\..\\foo\\';
+      var val2 = '\\test\\foo\\..\\foo\\';
+      var expected2 = path.normalize(val2.slice(0, -1));
 
-      if (process.platform === 'win32') {
-        file.base.should.equal('\\test\\foo');
-      } else {
-        file.base.should.equal('\\test\\foo\\..\\foo');
-      }
+      file.base = val2;
+
+      expect(file.base).toEqual(expected2);
+      done();
     });
 
-    it('should throw on set when not null/undefined or a non-empty string', function() {
-      var notStrings = [true, false, 1, 0, Infinity, NaN, '', {}, []];
-      notStrings.forEach(function(val) {
-        (function() {
-          new File().base = val;
-        }).should.throw('base must be a non-empty string, or null/undefined.');
+    it('throws on set with invalid values', function(done) {
+      var invalidValues = [
+        true,
+        false,
+        1,
+        0,
+        Infinity,
+        NaN,
+        '',
+        {},
+        [],
+      ];
+      var file = new File();
+
+      invalidValues.forEach(function(val) {
+        function invalid() {
+          file.base = val;
+        }
+        expect(invalid).toThrow('base must be a non-empty string, or null/undefined.');
       });
+
+      done();
     });
   });
 
