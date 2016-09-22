@@ -1013,47 +1013,50 @@ describe('File', function() {
   });
 
   describe('relative get/set', function() {
-    it('should error on set', function(done) {
+
+    it('throws on set', function(done) {
       var file = new File();
-      try {
+
+      function invalid() {
         file.relative = 'test';
-      } catch (err) {
-        should.exist(err);
-        done();
       }
+
+      expect(invalid).toThrow('File.relative is generated from the base and path attributes. Do not modify it.');
+      done();
     });
 
-    it('should error on get when no path', function(done) {
-      var a;
+    it('throws on get with no path', function(done) {
       var file = new File();
-      try {
-        a = file.relative;
-      } catch (err) {
-        should.exist(err);
-        done();
+
+      function invalid() {
+        file.relative;
       }
+
+      expect(invalid).toThrow('No path specified! Can not get relative.');
+      done();
     });
 
-    it('should return a relative path from base', function(done) {
+    it('returns a relative path from base', function(done) {
       var file = new File({
-        cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
       });
-      file.relative.should.equal('test.coffee');
+
+      expect(file.relative).toEqual('test.coffee');
       done();
     });
 
-    it('should return a relative path from cwd', function(done) {
+    it('returns a relative path from cwd', function(done) {
       var file = new File({
         cwd: '/',
         path: '/test/test.coffee',
       });
-      file.relative.should.equal(path.join('test','test.coffee'));
+
+      expect(file.relative).toEqual(path.normalize('test/test.coffee'));
       done();
     });
 
-    it('should not append sep when directory', function() {
+    it('does not append separator when directory', function(done) {
       var file = new File({
         base: '/test',
         path: '/test/foo/bar',
@@ -1063,10 +1066,27 @@ describe('File', function() {
           },
         },
       });
-      file.relative.should.equal(path.normalize('foo/bar'));
+
+      expect(file.relative).toEqual(path.normalize('foo/bar'));
+      done();
     });
 
-    it('should not append sep when directory & simlink', function() {
+    it('does not append separator when symlink', function(done) {
+      var file = new File({
+        base: '/test',
+        path: '/test/foo/bar',
+        stat: {
+          isSymbolicLink: function() {
+            return true;
+          },
+        },
+      });
+
+      expect(file.relative).toEqual(path.normalize('foo/bar'));
+      done();
+    });
+
+    it('does not append separator when directory & symlink', function(done) {
       var file = new File({
         base: '/test',
         path: '/test/foo/bar',
@@ -1079,173 +1099,251 @@ describe('File', function() {
           },
         },
       });
-      file.relative.should.equal(path.normalize('foo/bar'));
+
+      expect(file.relative).toEqual(path.normalize('foo/bar'));
+      done();
     });
   });
 
   describe('dirname get/set', function() {
-    it('should error on get when no path', function(done) {
-      var a;
+
+    it('throws on get with no path', function(done) {
       var file = new File();
-      try {
-        a = file.dirname;
-      } catch (err) {
-        should.exist(err);
-        done();
+
+      function invalid() {
+        file.dirname;
       }
+
+      expect(invalid).toThrow('No path specified! Can not get dirname.');
+      done();
     });
 
-    it('should return the path without trailing sep', function(done) {
+    it('returns the dirname without trailing separator', function(done) {
       var file = new File({
         cwd: '/',
         base: '/test',
         path: '/test/test.coffee',
       });
-      file.dirname.should.equal(path.normalize('/test'));
+
+      expect(file.dirname).toEqual(path.normalize('/test'));
       done();
     });
 
-    it('should error on set when no path', function(done) {
+    it('throws on set with no path', function(done) {
       var file = new File();
-      try {
+
+      function invalid() {
         file.dirname = '/test';
-      } catch (err) {
-        should.exist(err);
-        done();
       }
+
+      expect(invalid).toThrow('No path specified! Can not set dirname.');
+      done();
     });
 
-    it('should set the dirname of the path', function(done) {
+    it('replaces the dirname of the path', function(done) {
       var file = new File({
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
       });
+
       file.dirname = '/test/foo';
-      file.path.should.equal(path.normalize('/test/foo/test.coffee'));
+      expect(file.path).toEqual(path.normalize('/test/foo/test.coffee'));
       done();
     });
   });
 
   describe('basename get/set', function() {
-    it('should error on get when no path', function(done) {
-      var a;
-      var file = new File();
-      try {
-        a = file.basename;
-      } catch (err) {
-        should.exist(err);
-        done();
-      }
-    });
 
-    it('should return the basename of the path', function(done) {
-      var file = new File({
-        cwd: '/',
-        base: '/test/',
-        path: '/test/test.coffee',
-      });
-      file.basename.should.equal('test.coffee');
+    it('throws on get with no path', function(done) {
+      var file = new File();
+
+      function invalid() {
+        a = file.basename;
+      }
+
+      expect(invalid).toThrow('No path specified! Can not get basename.');
       done();
     });
 
-    it('should not append trailing sep', function() {
-      var file = new File({
-        path: '/test/foo',
-        stat: {
-          isDirectory: function() {
-            return true;
-          },
-        },
-      });
-      file.basename.should.equal('foo');
-
-      var file2 = new File({
-        path: '/test/foo',
-        stat: {
-          isSymbolicLink: function() {
-            return true;
-          },
-        },
-      });
-      file2.basename.should.equal('foo');
-
-      var file3 = new File({
-        path: '/test/foo',
-        stat: {
-          isDirectory: function() {
-            return true;
-          },
-          isSymbolicLink: function() {
-            return true;
-          },
-        },
-      });
-      file3.basename.should.equal('foo');
-    });
-
-    it('should error on set when no path', function(done) {
-      var file = new File();
-      try {
-        file.basename = 'test.coffee';
-      } catch (err) {
-        should.exist(err);
-        done();
-      }
-    });
-
-    it('should set the basename of the path', function(done) {
+    it('returns the basename of the path', function(done) {
       var file = new File({
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
       });
+
+      expect(file.basename).toEqual('test.coffee');
+      done();
+    });
+
+    it('does not append trailing separator when directory', function(done) {
+      var file = new File({
+        path: '/test/foo',
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+        },
+      });
+
+      expect(file.basename).toEqual('foo');
+      done();
+    });
+
+    it('does not append trailing separator when symlink', function(done) {
+      var file = new File({
+        path: '/test/foo',
+        stat: {
+          isSymbolicLink: function() {
+            return true;
+          },
+        },
+      });
+
+      expect(file.basename).toEqual('foo');
+      done();
+    });
+
+    it('does not append trailing separator when directory & symlink', function(done) {
+      var file = new File({
+        path: '/test/foo',
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+          isSymbolicLink: function() {
+            return true;
+          },
+        },
+      });
+
+      expect(file.basename).toEqual('foo');
+      done();
+    });
+
+    it('removes trailing separator', function(done) {
+      var file = new File({
+        path: '/test/foo/',
+      });
+
+      expect(file.basename).toEqual('foo');
+      done();
+    });
+
+    it('removes trailing separator when directory', function(done) {
+      var file = new File({
+        path: '/test/foo/',
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+        },
+      });
+
+      expect(file.basename).toEqual('foo');
+      done();
+    });
+
+    it('removes trailing separator when symlink', function(done) {
+      var file = new File({
+        path: '/test/foo/',
+        stat: {
+          isSymbolicLink: function() {
+            return true;
+          },
+        },
+      });
+
+      expect(file.basename).toEqual('foo');
+      done();
+    });
+
+    it('removes trailing separator when directory & symlink', function(done) {
+      var file = new File({
+        path: '/test/foo/',
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+          isSymbolicLink: function() {
+            return true;
+          },
+        },
+      });
+
+      expect(file.basename).toEqual('foo');
+      done();
+    });
+
+    it('throws on set with no path', function(done) {
+      var file = new File();
+
+      function invalid() {
+        file.basename = 'test.coffee';
+      }
+
+      expect(invalid).toThrow('No path specified! Can not set basename.');
+      done();
+    });
+
+    it('replaces the basename of the path', function(done) {
+      var file = new File({
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+      });
+
       file.basename = 'foo.png';
-      file.path.should.equal(path.normalize('/test/foo.png'));
+      expect(file.path).toEqual(path.normalize('/test/foo.png'));
       done();
     });
   });
 
   describe('stem get/set', function() {
-    it('should error on get when no path', function(done) {
-      var a;
-      var file = new File();
-      try {
-        a = file.stem;
-      } catch (err) {
-        should.exist(err);
-        done();
-      }
-    });
 
-    it('should return the stem of the path', function(done) {
-      var file = new File({
-        cwd: '/',
-        base: '/test/',
-        path: '/test/test.coffee',
-      });
-      file.stem.should.equal('test');
+    it('throws on get with no path', function(done) {
+      var file = new File();
+
+      function invalid() {
+        file.stem;
+      }
+
+      expect(invalid).toThrow('No path specified! Can not get stem.');
       done();
     });
 
-    it('should error on set when no path', function(done) {
-      var file = new File();
-      try {
-        file.stem = 'test.coffee';
-      } catch (err) {
-        should.exist(err);
-        done();
-      }
-    });
-
-    it('should set the stem of the path', function(done) {
+    it('returns the stem of the path', function(done) {
       var file = new File({
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
       });
+
+      expect(file.stem).toEqual('test');
+      done();
+    });
+
+    it('throws on set with no path', function(done) {
+      var file = new File();
+
+      function invalid() {
+        file.stem = 'test.coffee';
+      }
+
+      expect(invalid).toThrow('No path specified! Can not set stem.');
+      done();
+    });
+
+    it('replaces the stem of the path', function(done) {
+      var file = new File({
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+      });
+
       file.stem = 'foo';
-      file.path.should.equal(path.normalize('/test/foo.coffee'));
+      expect(file.path).toEqual(path.normalize('/test/foo.coffee'));
       done();
     });
   });
