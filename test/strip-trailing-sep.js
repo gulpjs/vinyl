@@ -6,7 +6,7 @@ var stripTrailingSep = require('../lib/stripTrailingSep');
 
 describe('stripTrailingSep()', function() {
 
-  it('strips trailing separator', function(done) {
+  it('removes trailing separator', function(done) {
     expect(stripTrailingSep('foo/')).toEqual('foo');
     expect(stripTrailingSep('foo\\')).toEqual('foo');
     done();
@@ -18,13 +18,13 @@ describe('stripTrailingSep()', function() {
     done();
   });
 
-  it('strips only the trailing separator', function(done) {
+  it('removes only the trailing separator', function(done) {
     expect(stripTrailingSep('/test/foo/bar/')).toEqual('/test/foo/bar');
     expect(stripTrailingSep('\\test\\foo\\bar\\')).toEqual('\\test\\foo\\bar');
     done();
   });
 
-  it('strips multiple trailing separators', function(done) {
+  it('removes multiple trailing separators', function(done) {
     expect(stripTrailingSep('/test//')).toEqual('/test');
     expect(stripTrailingSep('\\test\\\\')).toEqual('\\test');
     done();

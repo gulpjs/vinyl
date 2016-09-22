@@ -3,13 +3,10 @@
 var fs = require('fs');
 var path = require('path');
 var expect = require('expect');
-var Stream = require('readable-stream');
 var miss = require('mississippi');
 var cloneable = require('cloneable-readable');
 
 var File = require('../');
-
-var should = require('should');
 
 var pipe = miss.pipe;
 var from = miss.from;
@@ -175,22 +172,24 @@ describe('File', function() {
       done();
     });
 
-    it('normalizes path', function() {
+    it('normalizes path', function(done) {
       var val = '/test/foo/../test.coffee';
       var expected = path.normalize(val);
       var file = new File({ path: val });
       expect(file.path).toEqual(expected);
       expect(file.history).toEqual([expected]);
+      done();
     });
 
-    it('normalizes and strips trailing separator from path', function() {
+    it('normalizes and removes trailing separator from path', function(done) {
       var val = '/test/foo/../foo/';
       var expected = path.normalize(val.slice(0, -1));
       var file = new File({ path: val });
       expect(file.path).toEqual(expected);
+      done();
     });
 
-    it('normalizes history', function() {
+    it('normalizes history', function(done) {
       var val = [
         '/test/bar/../bar/test.coffee',
         '/test/foo/../test.coffee',
@@ -201,9 +200,10 @@ describe('File', function() {
       var file = new File({ history: val });
       expect(file.path).toEqual(expected[1]);
       expect(file.history).toEqual(expected);
+      done();
     });
 
-    it('normalizes and strips trailing separator from history', function() {
+    it('normalizes and removes trailing separator from history', function(done) {
       var val = [
         '/test/foo/../foo/',
         '/test/bar/../bar/',
@@ -213,6 +213,7 @@ describe('File', function() {
       });
       var file = new File({ history: val });
       expect(file.history).toEqual(expected);
+      done();
     });
 
     it('appends path to history if both exist and different from last', function(done) {
@@ -272,7 +273,7 @@ describe('File', function() {
     });
 
     it('returns false when the contents are a Stream', function(done) {
-      var val = new Stream();
+      var val = from([]);
       var file = new File({ contents: val });
       expect(file.isBuffer()).toEqual(false);
       done();
@@ -295,7 +296,7 @@ describe('File', function() {
     });
 
     it('returns true when the contents are a Stream', function(done) {
-      var val = new Stream();
+      var val = from([]);
       var file = new File({ contents: val });
       expect(file.isStream()).toEqual(true);
       done();
@@ -318,7 +319,7 @@ describe('File', function() {
     });
 
     it('returns false when the contents are a Stream', function(done) {
-      var val = new Stream();
+      var val = from([]);
       var file = new File({ contents: val });
       expect(file.isNull()).toEqual(false);
       done();
@@ -346,7 +347,7 @@ describe('File', function() {
     });
 
     it('returns false when the contents are a Stream', function(done) {
-      var val = new Stream();
+      var val = from([]);
       var file = new File({ contents: val, stat: fakeStat });
       expect(file.isDirectory()).toEqual(false);
       done();
@@ -386,7 +387,7 @@ describe('File', function() {
     });
 
     it('returns false when the contents are a Stream', function(done) {
-      var val = new Stream();
+      var val = from([]);
       var file = new File({ contents: val, stat: fakeStat });
       expect(file.isSymbolic()).toEqual(false);
       done();
@@ -1349,197 +1350,266 @@ describe('File', function() {
   });
 
   describe('extname get/set', function() {
-    it('should error on get when no path', function(done) {
-      var a;
-      var file = new File();
-      try {
-        a = file.extname;
-      } catch (err) {
-        should.exist(err);
-        done();
-      }
-    });
 
-    it('should return the extname of the path', function(done) {
-      var file = new File({
-        cwd: '/',
-        base: '/test/',
-        path: '/test/test.coffee',
-      });
-      file.extname.should.equal('.coffee');
+    it('throws on get with no path', function(done) {
+      var file = new File();
+
+      function invalid() {
+        file.extname;
+      }
+
+      expect(invalid).toThrow('No path specified! Can not get extname.');
       done();
     });
 
-    it('should error on set when no path', function(done) {
-      var file = new File();
-      try {
-        file.extname = '.coffee';
-      } catch (err) {
-        should.exist(err);
-        done();
-      }
-    });
-
-    it('should set the extname of the path', function(done) {
+    it('returns the extname of the path', function(done) {
       var file = new File({
         cwd: '/',
         base: '/test/',
         path: '/test/test.coffee',
       });
+
+      expect(file.extname).toEqual('.coffee');
+      done();
+    });
+
+    it('throws on set with no path', function(done) {
+      var file = new File();
+
+      function invalid() {
+        file.extname = '.coffee';
+      }
+
+      expect(invalid).toThrow('No path specified! Can not set extname.');
+      done();
+    });
+
+    it('replaces the extname of the path', function(done) {
+      var file = new File({
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+      });
+
       file.extname = '.png';
-      file.path.should.equal(path.normalize('/test/test.png'));
+      expect(file.path).toEqual(path.normalize('/test/test.png'));
       done();
     });
   });
 
   describe('path get/set', function() {
-    it('should record history when instantiation', function() {
-      var file = new File({
-        cwd: '/',
-        path: '/test/test.coffee',
-      });
-      var history = [path.normalize('/test/test.coffee')];
 
-      file.path.should.eql(history[0]);
-      file.history.should.eql(history);
-    });
-
-    it('should record history when path change', function() {
+    it('records path in history upon instantiation', function(done) {
       var file = new File({
         cwd: '/',
         path: '/test/test.coffee',
       });
       var history = [
         path.normalize('/test/test.coffee'),
-        path.normalize('/test/test.js'),
       ];
 
-      file.path = history[history.length - 1];
-      file.path.should.eql(history[history.length - 1]);
-      file.history.should.eql(history);
-
-      history.push(path.normalize('/test/test.es6'));
-
-      file.path = history[history.length - 1];
-      file.path.should.eql(history[history.length - 1]);
-      file.history.should.eql(history);
+      expect(file.path).toEqual(history[0]);
+      expect(file.history).toEqual(history);
+      done();
     });
 
-    it('should not record history when set the same path', function() {
+    it('records path in history when set', function(done) {
+      var val = path.normalize('/test/test.js');
+      var file = new File({
+        cwd: '/',
+        path: '/test/test.coffee',
+      });
+      var history = [
+        path.normalize('/test/test.coffee'),
+        val,
+      ];
+
+      file.path = val;
+      expect(file.path).toEqual(val);
+      expect(file.history).toEqual(history);
+
+      var val2 = path.normalize('/test/test.es6');
+      history.push(val2);
+
+      file.path = val2;
+      expect(file.path).toEqual(val2);
+      expect(file.history).toEqual(history);
+      done();
+    });
+
+    it('does not record path in history when set to the current path', function(done) {
       var val = path.normalize('/test/test.coffee');
       var file = new File({
         cwd: '/',
         path: val,
       });
+      var history = [
+        val,
+      ];
 
       file.path = val;
       file.path = val;
-      file.path.should.eql(val);
-      file.history.should.eql([val]);
-
-      // Ignore when set empty string
-      file.path = '';
-      file.path.should.eql(val);
-      file.history.should.eql([val]);
+      expect(file.path).toEqual(val);
+      expect(file.history).toEqual(history);
+      done();
     });
 
-    it('should throw when set path null', function() {
+    it('does not record path in history when set to empty string', function(done) {
+      var val = path.normalize('/test/test.coffee');
       var file = new File({
         cwd: '/',
-        path: null,
+        path: val,
       });
+      var history = [
+        val,
+      ];
 
-      should.not.exist(file.path);
-      file.history.should.eql([]);
-
-      (function() {
-        file.path = null;
-      }).should.throw('path should be a string.');
+      file.path = '';
+      expect(file.path).toEqual(val);
+      expect(file.history).toEqual(history);
+      done();
     });
 
-    it('should normalize the path on set', function() {
+    it('throws on set with null path', function(done) {
       var file = new File();
 
-      file.path = '/test/foo/../test.coffee';
+      expect(file.path).toNotExist();
+      expect(file.history).toEqual([]);
 
-      if (process.platform === 'win32') {
-        file.path.should.equal('\\test\\test.coffee');
-        file.history.should.eql(['\\test\\test.coffee']);
-      } else {
-        file.path.should.equal('/test/test.coffee');
-        file.history.should.eql(['/test/test.coffee']);
+      function invalid() {
+        file.path = null;
       }
+
+      expect(invalid).toThrow('path should be a string.');
+      done();
     });
 
-    it('should strip trailing sep', function() {
+    it('normalizes the path upon set', function(done) {
+      var val = '/test/foo/../test.coffee';
+      var expected = path.normalize(val);
+      var file = new File();
+
+      file.path = val;
+
+      expect(file.path).toEqual(expected);
+      expect(file.history).toEqual([expected]);
+      done();
+    });
+
+    it('removes the trailing separator upon set', function(done) {
       var file = new File();
       file.path = '/test/';
-      file.path.should.eql(path.normalize('/test'));
-      file.history.should.eql([path.normalize('/test')]);
 
-      var file2 = new File({
+      expect(file.path).toEqual(path.normalize('/test'));
+      expect(file.history).toEqual([path.normalize('/test')]);
+      done();
+    });
+
+    it('removes the trailing separator upon set when directory', function(done) {
+      var file = new File({
         stat: {
           isDirectory: function() {
             return true;
           },
         },
       });
-      file2.path = '/test/';
-      file2.path.should.eql(path.normalize('/test'));
-      file2.history.should.eql([path.normalize('/test')]);
+      file.path = '/test/';
+
+      expect(file.path).toEqual(path.normalize('/test'));
+      expect(file.history).toEqual([path.normalize('/test')]);
+      done();
+    });
+
+    it('removes the trailing separator upon set when symlink', function(done) {
+      var file = new File({
+        stat: {
+          isSymbolicLink: function() {
+            return true;
+          },
+        },
+      });
+      file.path = '/test/';
+
+      expect(file.path).toEqual(path.normalize('/test'));
+      expect(file.history).toEqual([path.normalize('/test')]);
+      done();
+    });
+
+    it('removes the trailing separator upon set when directory & symlink', function(done) {
+      var file = new File({
+        stat: {
+          isDirectory: function() {
+            return true;
+          },
+          isSymbolicLink: function() {
+            return true;
+          },
+        },
+      });
+      file.path = '/test/';
+
+      expect(file.path).toEqual(path.normalize('/test'));
+      expect(file.history).toEqual([path.normalize('/test')]);
+      done();
     });
   });
 
   describe('symlink get/set', function() {
-    it('should return null on get when no symlink', function(done) {
+
+    it('return null on get with no symlink', function(done) {
       var file = new File();
-      var a = file.symlink;
-      should.not.exist(a);
+
+      expect(file.symlink).toEqual(null);
       done();
     });
 
-    it('should return the symlink if set', function(done) {
-      var file = new File({
-        symlink: '/test/test.coffee',
-      });
-      file.symlink.should.equal(path.normalize('/test/test.coffee'));
+    it('returns _symlink', function(done) {
+      var val = '/test/test.coffee';
+      var file = new File();
+      file._symlink = val;
+
+      expect(file.symlink).toEqual(val);
       done();
     });
 
-    it('should error on set with non-string symlink', function(done) {
+    it('throws on set with non-string', function(done) {
       var file = new File();
-      try {
+
+      function invalid() {
         file.symlink = null;
-      } catch (err) {
-        should.exist(err);
-        done();
       }
-    });
 
-    it('should set the symlink', function(done) {
-      var file = new File();
-      file.symlink = '/test/test.coffee';
-      file.symlink.should.equal(path.normalize('/test/test.coffee'));
+      expect(invalid).toThrow('symlink should be a string');
       done();
     });
 
-    it('should set the relative symlink', function(done) {
+    it('sets _symlink', function(done) {
+      var val = '/test/test.coffee';
+      var expected = path.normalize(val);
       var file = new File();
-      file.symlink = 'test.coffee';
-      file.symlink.should.equal('test.coffee');
+      file.symlink = val;
+
+      expect(file._symlink).toEqual(expected);
       done();
     });
 
-    it('should be normalized and stripped off a trailing sep on set', function() {
+    it('allows relative symlink', function(done) {
+      var val = 'test.coffee';
       var file = new File();
+      file.symlink = val;
 
-      file.symlink = '/test/foo/../bar/';
+      expect(file.symlink).toEqual(val);
+      done();
+    });
 
-      if (process.platform === 'win32') {
-        file.symlink.should.equal('\\test\\bar');
-      } else {
-        file.symlink.should.equal('/test/bar');
-      }
+    it('normalizes and removes trailing separator upon set', function(done) {
+      var val = '/test/foo/../bar/';
+      var expected = path.normalize(val.slice(0, -1));
+      var file = new File();
+      file.symlink = val;
+
+      expect(file.symlink).toEqual(expected);
+      done();
     });
   });
 });
