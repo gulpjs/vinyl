@@ -14,8 +14,8 @@
     "clone": "^1.0.0",
     "clone-stats": "^1.0.0",
     "cloneable-readable": "^0.5.0",
-    "readable-stream": "^2.1.0",
     "remove-trailing-separator": "^1.0.1",
+    "is-stream": "^1.1.0",
     "replace-ext": "^1.0.0"
   },
   "devDependencies": {
@@ -28,7 +28,8 @@
     "jscs": "^2.3.5",
     "jscs-preset-gulp": "^1.0.0",
     "mississippi": "^1.2.0",
-    "mocha": "^2.4.5"
+    "mocha": "^2.4.5",
+    "readable-stream": "^2.1.0"
   },
   "scripts": {
     "lint": "eslint . && jscs index.js lib/ test/",
