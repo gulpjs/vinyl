@@ -5,7 +5,6 @@ var cloneBuffer = require('./lib/cloneBuffer');
 var removeTrailingSep = require('remove-trailing-separator');
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('is-stream');
-var isNull = require('./lib/isNull');
 var inspectStream = require('./lib/inspectStream');
 var normalize = require('./lib/normalize');
 var replaceExt = require('replace-ext');
@@ -63,7 +62,7 @@ File.prototype.isStream = function() {
 };
 
 File.prototype.isNull = function() {
-  return isNull(this.contents);
+  return (this.contents === null);
 };
 
 File.prototype.isDirectory = function() {
@@ -169,7 +168,7 @@ Object.defineProperty(File.prototype, 'contents', {
     return this._contents;
   },
   set: function(val) {
-    if (!isBuffer(val) && !isStream(val) && !isNull(val)) {
+    if (!isBuffer(val) && !isStream(val) && (val !== null)) {
       throw new Error('File.contents can only be a Buffer, a Stream, or null.');
     }
 
