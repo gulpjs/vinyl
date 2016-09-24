@@ -2,7 +2,7 @@ var path = require('path');
 var clone = require('clone');
 var cloneStats = require('clone-stats');
 var cloneBuffer = require('./lib/cloneBuffer');
-var stripTrailingSep = require('./lib/stripTrailingSep');
+var removeTrailingSep = require('remove-trailing-separator');
 var isBuffer = require('./lib/isBuffer');
 var isStream = require('./lib/isStream');
 var isNull = require('./lib/isNull');
@@ -193,7 +193,7 @@ Object.defineProperty(File.prototype, 'cwd', {
     if (!cwd || typeof cwd !== 'string') {
       throw new Error('cwd must be a non-empty string.');
     }
-    this._cwd = stripTrailingSep(normalize(cwd));
+    this._cwd = removeTrailingSep(normalize(cwd));
   },
 });
 
@@ -209,7 +209,7 @@ Object.defineProperty(File.prototype, 'base', {
     if (typeof base !== 'string' || !base) {
       throw new Error('base must be a non-empty string, or null/undefined.');
     }
-    base = stripTrailingSep(normalize(base));
+    base = removeTrailingSep(normalize(base));
     if (base !== this._cwd) {
       this._base = base;
     }
@@ -298,7 +298,7 @@ Object.defineProperty(File.prototype, 'path', {
     if (typeof path !== 'string') {
       throw new Error('path should be a string.');
     }
-    path = stripTrailingSep(normalize(path));
+    path = removeTrailingSep(normalize(path));
 
     // Record history only when path changed
     if (path && path !== this.path) {
@@ -317,7 +317,7 @@ Object.defineProperty(File.prototype, 'symlink', {
       throw new Error('symlink should be a string');
     }
 
-    this._symlink = stripTrailingSep(normalize(symlink));
+    this._symlink = removeTrailingSep(normalize(symlink));
   },
 });
 
