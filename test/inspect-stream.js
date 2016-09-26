@@ -1,15 +1,15 @@
 'use strict';
 
+var Stream = require('stream');
 var expect = require('expect');
-var Stream = require('readable-stream');
 var Cloneable = require('cloneable-readable');
 
-var inspectStream = require('../lib/inspectStream');
+var inspectStream = require('../lib/inspect-stream');
 
 describe('inspectStream()', function() {
 
   it('works on a Stream', function(done) {
-    var testStream = new Stream.Stream();
+    var testStream = new Stream();
     var result = inspectStream(testStream);
     expect(result).toEqual('<Stream>');
     done();
