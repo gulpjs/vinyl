@@ -1,15 +1,30 @@
 {
   "name": "vinyl",
-  "description": "A virtual file format",
   "version": "1.2.0",
-  "homepage": "http://github.com/gulpjs/vinyl",
-  "repository": "git://github.com/gulpjs/vinyl.git",
-  "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
-  "main": "./index.js",
+  "description": "Virtual file format.",
+  "author": "Gulp Team <team@gulpjs.com> (http://gulpjs.com/)",
+  "contributors": [
+    "Eric Schoffstall <yo@contra.io>",
+    "Blaine Bublitz <blaine.bublitz@gmail.com>"
+  ],
+  "repository": "gulpjs/vinyl",
+  "license": "MIT",
+  "engines": {
+    "node": ">= 0.10"
+  },
+  "main": "index.js",
   "files": [
+    "LICENSE",
     "index.js",
     "lib"
   ],
+  "scripts": {
+    "lint": "eslint . && jscs index.js lib/ test/",
+    "pretest": "npm run lint",
+    "test": "mocha --async-only",
+    "cover": "istanbul cover _mocha --report lcovonly",
+    "coveralls": "npm run cover && istanbul-coveralls"
+  },
   "dependencies": {
     "clone": "^1.0.0",
     "clone-buffer": "^1.0.0",
@@ -23,25 +38,19 @@
     "eslint": "^1.7.3",
     "eslint-config-gulp": "^2.0.0",
     "expect": "^1.20.2",
-    "github-changes": "^1.0.1",
     "istanbul": "^0.4.3",
     "istanbul-coveralls": "^1.0.3",
     "jscs": "^2.3.5",
     "jscs-preset-gulp": "^1.0.0",
     "mississippi": "^1.2.0",
-    "mocha": "^2.4.5",
-    "readable-stream": "^2.1.0"
+    "mocha": "^2.4.5"
   },
-  "scripts": {
-    "lint": "eslint . && jscs index.js lib/ test/",
-    "pretest": "npm run lint",
-    "test": "mocha --async-only",
-    "cover": "istanbul cover _mocha --report lcovonly",
-    "coveralls": "npm run cover && istanbul-coveralls",
-    "changelog": "github-changes -o gulpjs -r vinyl -b master -f ./CHANGELOG.md --order-semver --use-commit-body"
-  },
-  "engines": {
-    "node": ">= 0.9"
-  },
-  "license": "MIT"
+  "keywords": [
+    "virtual",
+    "filesystem",
+    "file",
+    "directory",
+    "stat",
+    "path"
+  ]
 }
