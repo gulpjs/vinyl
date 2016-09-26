@@ -13,6 +13,8 @@ var from = miss.from;
 var concat = miss.concat;
 var isCloneable = cloneable.isCloneable;
 
+var isWin = (process.platform === 'win32');
+
 describe('File', function() {
 
   describe('isVinyl()', function() {
@@ -880,7 +882,7 @@ describe('File', function() {
       expect(file.cwd).toEqual(expected);
 
       var val2 = '\\test\\foo\\..\\foo\\';
-      var expected2 = path.normalize(val2.slice(0, -1));
+      var expected2 = path.normalize(isWin ? val2.slice(0, -1) : val2);
 
       file.cwd = val2;
 
@@ -980,7 +982,7 @@ describe('File', function() {
       expect(file.base).toEqual(expected);
 
       var val2 = '\\test\\foo\\..\\foo\\';
-      var expected2 = path.normalize(val2.slice(0, -1));
+      var expected2 = path.normalize(isWin ? val2.slice(0, -1) : val2);
 
       file.base = val2;
 
