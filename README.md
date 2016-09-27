@@ -329,7 +329,7 @@ Throws when set to any value other than a string.
 
 Type: `String`
 
-### `Viny.isVinyl(file)`
+### `Vinyl.isVinyl(file)`
 
 Static method used for checking if an object is a Vinyl file. Use this method instead of `instanceof`.
 
