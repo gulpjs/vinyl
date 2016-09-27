@@ -7,20 +7,20 @@
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
   "main": "./index.js",
   "dependencies": {
-    "clone-stats": "~0.0.1",
+    "clone-stats": "^0.0.1",
     "lodash": "^2.4.1"
   },
   "devDependencies": {
-    "mocha": "~1.17.0",
-    "should": "~2.1.1",
-    "mocha-lcov-reporter": "0.0.1",
-    "coveralls": "~2.6.1",
-    "istanbul": "~0.2.3",
-    "rimraf": "~2.2.5",
-    "jshint": "~2.4.1",
-    "buffer-equal": "0.0.0",
-    "lodash.templatesettings": "~2.4.1",
-    "event-stream": "~3.1.0"
+    "mocha": "^1.17.0",
+    "should": "^4.0.4",
+    "mocha-lcov-reporter": "^0.0.1",
+    "coveralls": "^2.6.1",
+    "istanbul": "^0.3.0",
+    "rimraf": "^2.2.5",
+    "jshint": "^2.4.1",
+    "buffer-equal": "0.0.1",
+    "lodash.templatesettings": "^2.4.1",
+    "event-stream": "^3.1.0"
   },
   "scripts": {
     "test": "mocha --reporter spec && jshint . --exclude node_modules",
