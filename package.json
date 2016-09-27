@@ -1,7 +1,7 @@
 {
   "name": "vinyl",
   "description": "A virtual file format",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "homepage": "http://github.com/wearefractal/vinyl",
   "repository": "git://github.com/wearefractal/vinyl.git",
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
