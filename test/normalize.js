@@ -26,7 +26,7 @@ describe('normalize()', function() {
       ['http://github.com/gulpjs/vinyl/issues///127', 'http://github.com/gulpjs/vinyl/issues/127'],
       ['https://github.com/gulpjs/vinyl/issues/../baz/bar', 'https://github.com/gulpjs/vinyl/baz/bar'],
       ['//github.com/gulpjs/vinyl/issues/../../gulp/', '//github.com/gulpjs/gulp/'],
-      ['www.github.com/gulpjs/vinyl/issues/../../gulp', 'www.github.com/gulpjs/gulp'],
+      ['www.github.com/gulpjs/vinyl/issues/../../gulp', path.normalize('www.github.com/gulpjs/vinyl/issues/../../gulp')],
     ];
 
     for (var i = 0; i < checks.length; i++) {
