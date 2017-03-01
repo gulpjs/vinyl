@@ -32,7 +32,9 @@
     "cloneable-readable": "^1.0.0",
     "is-stream": "^1.1.0",
     "remove-trailing-separator": "^1.0.1",
-    "replace-ext": "^1.0.0"
+    "replace-ext": "^1.0.0",
+    "normalize-url": "1.6.1",
+    "url-regex": "3.2.0"
   },
   "devDependencies": {
     "eslint": "^1.7.3",
