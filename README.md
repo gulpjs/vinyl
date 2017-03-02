@@ -93,6 +93,31 @@ Type: [`Stream`][stream], [`Buffer`][buffer], or `null`
 
 Default: `null`
 
+##### `options.normalize`
+
+Custom normalization function. The function is invoked on every setter call for `file.cwd`, `file.base`, `file.path` and `file.symlink`. It receives the value and the internal normalitzation function as the first and the second argument. Set `options.normalize` to `false` to disable normalization.
+
+Type: [`function`][function] or `Boolean`
+
+Default: [`path.normalize`][path-normalize]
+
+Example:
+
+```js
+var Vinyl = require('vinyl');
+
+var urlAwareNormalizer = function(str, normalize) {
+  return (/^([a-z]+:)?\/\/)/.test(str) && str) || normalize(str);
+}
+
+var file = new Vinyl({
+  normalize: urlAwareNormalizer,
+  history: ['https://test.it/file.js', '/test/../file.js']
+});
+
+console.log(file.history); // ['https://test.it/file.js', '/file.js']
+```
+
 ##### `options.{custom}`
 
 Any other option properties will be directly assigned to the new Vinyl object.
@@ -427,6 +452,7 @@ MIT
 [fs-stats]: http://nodejs.org/api/fs.html#fs_class_fs_stats
 [vinyl-fs]: https://github.com/gulpjs/vinyl-fs
 [cloneable-readable]: https://github.com/mcollina/cloneable-readable
+[path-normalize]: http://nodejs.org/api/path.html#path_class_path_normalize
 
 [downloads-image]: http://img.shields.io/npm/dm/vinyl.svg
 [npm-url]: https://www.npmjs.com/package/vinyl
