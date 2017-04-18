@@ -205,6 +205,57 @@ describe('File', function() {
       done();
     });
 
+    it('does not normalize history when it is disabled with option.normalize = false', function(done) {
+      var val = [
+        '/test/bar/../bar/test.coffee',
+        '/test/foo/../test.coffee',
+      ];
+
+      var file = new File({ history: val, normalize: false });
+      expect(file.path).toEqual(val[1]);
+      expect(file.history).toEqual(val);
+      done();
+    });
+
+    it('uses passed normalize function', function(done) {
+      var val = [
+        '/test/bar/../bar/test.coffee',
+        '/test/foo/../test.coffee',
+      ];
+
+      var expected = [
+        '/normalized/bar/../bar/normalized.coffee',
+        '/normalized/foo/../normalized.coffee',
+      ];
+
+      var normalize = function(str) {
+        return str.replace(/test/g, 'normalized');
+      };
+
+      var file = new File({ history: val, normalize: normalize });
+      expect(file.path).toEqual(expected[1]);
+      expect(file.history).toEqual(expected);
+      done();
+    });
+
+    it('uses passed normalize function with internal normalization', function(done) {
+      var val = [
+        '/test/foo/../foo/',
+        '/test/bar/../bar/',
+      ];
+      var expected = val.map(function(p) {
+        return path.normalize(p.slice(0, -1));
+      });
+
+      var normalizer = function(str, normalize) {
+        return normalize(str);
+      };
+
+      var file = new File({ history: val, normalize: normalizer, });
+      expect(file.history).toEqual(expected);
+      done();
+    });
+
     it('normalizes and removes trailing separator from history', function(done) {
       var val = [
         '/test/foo/../foo/',

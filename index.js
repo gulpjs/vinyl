@@ -9,7 +9,6 @@ var cloneable = require('cloneable-readable');
 var replaceExt = require('replace-ext');
 var cloneStats = require('clone-stats');
 var cloneBuffer = require('clone-buffer');
-var removeTrailingSep = require('remove-trailing-separator');
 
 var normalize = require('./lib/normalize');
 var inspectStream = require('./lib/inspect-stream');
@@ -24,6 +23,20 @@ function File(file) {
 
   if (!file) {
     file = {};
+  }
+
+  // Opt-in for normalization
+  if (typeof file.normalize === 'function') {
+    this._normalize = function(str) {
+      // Pass the 'super' to let the user stick with the default for fs paths
+      return file.normalize(str, normalize);
+    };
+  } else if (file.normalize === false) {
+    this._normalize = function(str) {
+      return str;
+    };
+  } else {
+    this._normalize = normalize;
   }
 
   // Stat = files stats object
@@ -125,6 +138,7 @@ File.prototype.clone = function(opt) {
     stat: (this.stat ? cloneStats(this.stat) : null),
     history: this.history.slice(),
     contents: contents,
+    normalize: this._normalize,
   });
 
   // Clone our custom properties
@@ -195,7 +209,7 @@ Object.defineProperty(File.prototype, 'cwd', {
     if (!cwd || typeof cwd !== 'string') {
       throw new Error('cwd must be a non-empty string.');
     }
-    this._cwd = removeTrailingSep(normalize(cwd));
+    this._cwd = this._normalize(cwd);
   },
 });
 
@@ -211,7 +225,7 @@ Object.defineProperty(File.prototype, 'base', {
     if (typeof base !== 'string' || !base) {
       throw new Error('base must be a non-empty string, or null/undefined.');
     }
-    base = removeTrailingSep(normalize(base));
+    base = this._normalize(base);
     if (base !== this._cwd) {
       this._base = base;
     } else {
@@ -302,7 +316,7 @@ Object.defineProperty(File.prototype, 'path', {
     if (typeof path !== 'string') {
       throw new Error('path should be a string.');
     }
-    path = removeTrailingSep(normalize(path));
+    path = this._normalize(path);
 
     // Record history only when path changed
     if (path && path !== this.path) {
@@ -321,7 +335,7 @@ Object.defineProperty(File.prototype, 'symlink', {
       throw new Error('symlink should be a string');
     }
 
-    this._symlink = removeTrailingSep(normalize(symlink));
+    this._symlink = this._normalize(symlink);
   },
 });
 
