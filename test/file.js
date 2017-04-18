@@ -941,6 +941,17 @@ describe('File', function() {
       done();
     });
 
+    it('proxies to cwd when set to same value', function(done) {
+      var file = new File({
+        cwd: '/foo',
+        base: '/bar',
+      });
+      expect(file.base).toNotEqual(file.cwd);
+      file.base = file.cwd;
+      expect(file.base).toEqual(file.cwd);
+      done();
+    });
+
     it('proxies to cwd when null or undefined', function(done) {
       var file = new File({
         cwd: '/foo',

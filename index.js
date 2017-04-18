@@ -214,6 +214,8 @@ Object.defineProperty(File.prototype, 'base', {
     base = removeTrailingSep(normalize(base));
     if (base !== this._cwd) {
       this._base = base;
+    } else {
+      delete this._base;
     }
   },
 });
