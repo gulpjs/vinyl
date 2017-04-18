@@ -201,6 +201,15 @@ Array of `file.path` values the Vinyl object has had, from `file.history[0]` (or
 
 Type: `Array`
 
+#### `file.stat`
+
+The result of an `fs.stat` call. This is how the file is marked as a directory
+or symbolic link. See [isDirectory()][is-directory],
+[isSymbolic()][is-symbolic] and [fs.Stats][fs-stats] for more information.
+
+Type: [`fs.Stats`][fs-stats]
+
+
 #### `file.relative`
 
 Gets the result of `path.relative(file.base, file.path)`.
