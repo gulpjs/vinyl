@@ -30,9 +30,11 @@
     "clone-buffer": "^1.0.0",
     "clone-stats": "^1.0.0",
     "cloneable-readable": "^1.0.0",
+    "iconv-lite": "^0.4.18",
     "is-stream": "^1.1.0",
     "remove-trailing-separator": "^1.0.1",
-    "replace-ext": "^1.0.0"
+    "replace-ext": "^1.0.0",
+    "shimmer": "^1.1.0"
   },
   "devDependencies": {
     "eslint": "^1.7.3",

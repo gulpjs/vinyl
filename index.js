@@ -4,6 +4,8 @@ var path = require('path');
 var isBuffer = require('buffer').Buffer.isBuffer;
 
 var clone = require('clone');
+var iconv = require('iconv-lite');
+var shimmer = require('shimmer');
 var isStream = require('is-stream');
 var cloneable = require('cloneable-readable');
 var replaceExt = require('replace-ext');
@@ -48,6 +50,8 @@ function File(file) {
   this._isVinyl = true;
 
   this._symlink = null;
+
+  this._encoding = 'utf8';
 
   // Set custom properties
   Object.keys(file).forEach(function(key) {
@@ -183,9 +187,33 @@ Object.defineProperty(File.prototype, 'contents', {
       val = cloneable(val);
     }
 
+    var self = this;;
+
+    if (isBuffer(val)) {
+      shimmer(val, 'toString', function(orig) {
+        return function() {
+          if (arguments.length) {
+            return orig.apply(this, arguments);
+          }
+
+          return iconv.decode(val, self.encoding);
+        };
+      });
+    }
+
     this._contents = val;
   },
 });
+
+Object.defineProperty(File.prototype, 'encoding', {
+  get: function() {
+    return this._encoding;
+  },
+  set: function(encoding) {
+    // TODO: validate encoding
+    this._encoding = encoding;
+  }
+})
 
 Object.defineProperty(File.prototype, 'cwd', {
   get: function() {
