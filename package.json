@@ -26,7 +26,7 @@
     "coveralls": "npm run cover && istanbul-coveralls"
   },
   "dependencies": {
-    "clone": "^1.0.0",
+    "clone": "^2.1.1",
     "clone-buffer": "^1.0.0",
     "clone-stats": "^1.0.0",
     "cloneable-readable": "^1.0.0",
