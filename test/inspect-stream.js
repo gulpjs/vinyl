@@ -56,23 +56,4 @@ describe('inspectStream()', function() {
     expect(result).toEqual('<CloneableStream>');
     done();
   });
-
-  it('returns nothing for a Buffer', function(done) {
-    var testBuffer = new Buffer('test');
-    var result = inspectStream(testBuffer);
-    expect(result).toNotExist();
-    done();
-  });
-
-  it('returns nothing for null', function(done) {
-    var result = inspectStream(null);
-    expect(result).toNotExist();
-    done();
-  });
-
-  it('returns nothing for a String', function(done) {
-    var result = inspectStream('foobar');
-    expect(result).toNotExist();
-    done();
-  });
 });
