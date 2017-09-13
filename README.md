@@ -355,7 +355,7 @@ Static method used by Vinyl when setting values inside the constructor or when c
 
 Takes a string `property` and returns `true` if the property is not used internally, otherwise returns `false`.
 
-This method is usefuly for inheritting from the Vinyl constructor. Read more in [Extending Vinyl][extending-vinyl].
+This method is useful for inheritting from the Vinyl constructor. Read more in [Extending Vinyl][extending-vinyl].
 
 Example:
 
