@@ -87,9 +87,9 @@ Default: `undefined`
 
 ##### `options.contents`
 
-The contents of the file.  If `options.contents` is a [`Stream`][stream], it is wrapped in a [`cloneable-readable`][cloneable-readable] stream.
+The contents of the file.  If `options.contents` is a [`ReadableStream`][readable-stream], it is wrapped in a [`cloneable-readable`][cloneable-readable] stream.
 
-Type: [`Stream`][stream], [`Buffer`][buffer], or `null`
+Type: [`ReadableStream`][readable-stream], [`Buffer`][buffer], or `null`
 
 Default: `null`
 
@@ -164,11 +164,11 @@ Each Vinyl object will have instance properties. Some may be unavailable based o
 
 #### `file.contents`
 
-Gets and sets the contents of the file. If set to a [`Stream`][stream], it is wrapped in a [`cloneable-readable`][cloneable-readable] stream.
+Gets and sets the contents of the file. If set to a [`ReadableStream`][readable-stream], it is wrapped in a [`cloneable-readable`][cloneable-readable] stream.
 
-Throws when set to any value other than a [`Stream`][stream], a [`Buffer`][buffer] or `null`.
+Throws when set to any value other than a [`ReadableStream`][readable-stream], a [`Buffer`][buffer] or `null`.
 
-Type: [`Stream`][stream], [`Buffer`][buffer] or `null`
+Type: [`ReadableStream`][readable-stream], [`Buffer`][buffer], or `null`
 
 #### `file.cwd`
 
@@ -423,6 +423,7 @@ MIT
 [normalization]: #normalization-and-concatenation
 [extending-vinyl]: #extending-vinyl
 [stream]: https://nodejs.org/api/stream.html#stream_stream
+[readable-stream]: https://nodejs.org/api/stream.html#stream_readable_streams
 [buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer
 [fs-stats]: http://nodejs.org/api/fs.html#fs_class_fs_stats
 [vinyl-fs]: https://github.com/gulpjs/vinyl-fs
