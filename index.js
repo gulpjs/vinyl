@@ -1,6 +1,7 @@
 'use strict';
 
 var path = require('path');
+var util = require('util');
 var isBuffer = require('buffer').Buffer.isBuffer;
 
 var clone = require('clone');
@@ -156,6 +157,11 @@ File.prototype.inspect = function() {
 
   return '<File ' + inspect.join(' ') + '>';
 };
+
+// Newer Node.js versions use this symbol for custom inspection.
+if (util.inspect.custom) {
+  File.prototype[util.inspect.custom] = File.prototype.inspect;
+}
 
 File.isCustomProp = function(key) {
   return builtInFields.indexOf(key) === -1;
