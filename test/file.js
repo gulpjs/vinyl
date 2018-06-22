@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var util = require('util');
 var expect = require('expect');
 var miss = require('mississippi');
 var cloneable = require('cloneable-readable');
@@ -746,7 +747,12 @@ describe('File', function() {
 
     it('returns correct format when no contents and no path', function(done) {
       var file = new File();
-      expect(file.inspect()).toEqual('<File >');
+      var expectation = '<File >';
+      expect(file.inspect()).toEqual(expectation);
+      expect(util.inspect(file)).toEqual(expectation);
+      if (util.inspect.custom) {
+        expect(file[util.inspect.custom]()).toEqual(expectation);
+      }
       done();
     });
 
