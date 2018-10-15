@@ -42,7 +42,8 @@
     "jscs": "^2.3.5",
     "jscs-preset-gulp": "^1.0.0",
     "mississippi": "^1.2.0",
-    "mocha": "^2.4.5"
+    "mocha": "^2.4.5",
+    "safer-buffer": "^2.1.2"
   },
   "keywords": [
     "virtual",

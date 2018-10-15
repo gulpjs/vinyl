@@ -27,7 +27,7 @@ var jsFile = new Vinyl({
   cwd: '/',
   base: '/test/',
   path: '/test/file.js',
-  contents: new Buffer('var x = 123')
+  contents: Buffer.from('var x = 123')
 });
 ```
 
