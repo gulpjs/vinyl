@@ -408,9 +408,12 @@ class SuperFile extends Vinyl {
     return super.isCustomProp(name) && builtInProps.indexOf(name) === -1;
   }
 }
+
+// `foo` won't be assigned to the object below
+new SuperFile({ foo: "something" });
 ```
 
-This makes properties `foo` and `_foo` ignored when cloning, and when passed in options to `constructor(options)` so they don't get assigned to the new object.
+This makes properties `foo` and `_foo` skipped when passed in options to `constructor(options)` so they don't get assigned to the new object and override your custom implementation. They also won't be copied when cloning. __Note:__ The `_foo` and `foo` properties will still exist on the created/cloned object because you are assigning `_foo` in the constructor and `foo` is defined on the prototype.
 
 Same goes for `clone()`. If you have your own internal stuff that needs special handling during cloning, you should extend it to do so.
 
