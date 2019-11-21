@@ -10,7 +10,7 @@
   "repository": "gulpjs/vinyl",
   "license": "MIT",
   "engines": {
-    "node": ">= 0.10"
+    "node": ">= 8"
   },
   "main": "index.js",
   "files": [
