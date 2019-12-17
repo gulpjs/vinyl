@@ -417,6 +417,12 @@ describe('File', function() {
 
   describe('clone()', function() {
 
+    var fakeStat = {
+      isSymbolicLink: function() {
+        return true;
+      },
+    };
+
     it('copies all attributes over with Buffer contents', function(done) {
       var options = {
         cwd: '/',
@@ -573,6 +579,24 @@ describe('File', function() {
         file.contents,
         concat(assert),
       ], done);
+    });
+
+    it('fixes file.symlink if file is a symbolic link', function(done) {
+      var val = '/test/test.js';
+      var options = {
+        cwd: '/',
+        base: '/test/',
+        path: '/test/test.coffee',
+        content: null,
+        stat: fakeStat,
+        symlink: val,
+      };
+      var file = new File(options);
+      var file2 = file.clone();
+
+      expect(file2).toNotBe(file);
+      expect(file2.symlink).toEqual(file.symlink);
+      done();
     });
 
     it('copies all attributes over with null contents', function(done) {
