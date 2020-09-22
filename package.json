@@ -2,7 +2,7 @@
   "name": "vinyl",
   "version": "2.2.0",
   "description": "Virtual file format.",
-  "author": "Gulp Team <team@gulpjs.com> (http://gulpjs.com/)",
+  "author": "Gulp Team <team@gulpjs.com> (https://gulpjs.com/)",
   "contributors": [
     "Eric Schoffstall <yo@contra.io>",
     "Blaine Bublitz <blaine.bublitz@gmail.com>"
@@ -19,11 +19,11 @@
     "lib"
   ],
   "scripts": {
-    "lint": "eslint . && jscs index.js lib/ test/",
+    "lint": "eslint .",
     "pretest": "npm run lint",
-    "test": "mocha --async-only",
-    "cover": "istanbul cover _mocha --report lcovonly",
-    "coveralls": "npm run cover && istanbul-coveralls"
+    "test": "nyc mocha --async-only",
+    "azure-pipelines": "nyc mocha --async-only --reporter xunit -O output=test.xunit",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
     "clone": "^2.1.1",
@@ -34,15 +34,13 @@
     "replace-ext": "^1.0.0"
   },
   "devDependencies": {
-    "eslint": "^1.7.3",
-    "eslint-config-gulp": "^2.0.0",
+    "coveralls": "github:phated/node-coveralls#2.x",
+    "eslint": "^2.13.1",
+    "eslint-config-gulp": "^3.0.1",
     "expect": "^1.20.2",
-    "istanbul": "^0.4.3",
-    "istanbul-coveralls": "^1.0.3",
-    "jscs": "^2.3.5",
-    "jscs-preset-gulp": "^1.0.0",
     "mississippi": "^1.2.0",
-    "mocha": "^2.4.5",
+    "mocha": "^3.0.0",
+    "nyc": "^10.3.2",
     "safer-buffer": "^2.1.2"
   },
   "keywords": [

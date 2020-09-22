@@ -1205,7 +1205,7 @@ describe('File', function() {
       var file = new File();
 
       function invalid() {
-        a = file.basename;
+        var a = file.basename;
       }
 
       expect(invalid).toThrow('No path specified! Can not get basename.');

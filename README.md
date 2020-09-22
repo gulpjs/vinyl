@@ -6,7 +6,7 @@
 
 # vinyl
 
-[![NPM version][npm-image]][npm-url] [![Downloads][downloads-image]][npm-url] [![Build Status][travis-image]][travis-url] [![AppVeyor Build Status][appveyor-image]][appveyor-url] [![Coveralls Status][coveralls-image]][coveralls-url] [![Gitter chat][gitter-image]][gitter-url]
+[![NPM version][npm-image]][npm-url] [![Downloads][downloads-image]][npm-url] [![Azure Pipelines Build Status][azure-pipelines-image]][azure-pipelines-url] [![Travis Build Status][travis-image]][travis-url] [![AppVeyor Build Status][appveyor-image]][appveyor-url] [![Coveralls Status][coveralls-image]][coveralls-url] [![Gitter chat][gitter-image]][gitter-url]
 
 Virtual file format.
 
@@ -432,18 +432,21 @@ MIT
 [vinyl-fs]: https://github.com/gulpjs/vinyl-fs
 [cloneable-readable]: https://github.com/mcollina/cloneable-readable
 
-[downloads-image]: http://img.shields.io/npm/dm/vinyl.svg
+[downloads-image]: https://img.shields.io/npm/dm/vinyl.svg
 [npm-url]: https://www.npmjs.com/package/vinyl
-[npm-image]: http://img.shields.io/npm/v/vinyl.svg
+[npm-image]: https://img.shields.io/npm/v/vinyl.svg
+
+[azure-pipelines-url]: https://dev.azure.com/gulpjs/gulp/_build/latest?definitionId=$PROJECT_ID&branchName=master
+[azure-pipelines-image]: https://dev.azure.com/gulpjs/gulp/_apis/build/status/vinyl?branchName=master
 
 [travis-url]: https://travis-ci.org/gulpjs/vinyl
-[travis-image]: http://img.shields.io/travis/gulpjs/vinyl.svg?label=travis-ci
+[travis-image]: https://img.shields.io/travis/gulpjs/vinyl.svg?label=travis-ci
 
 [appveyor-url]: https://ci.appveyor.com/project/gulpjs/vinyl
 [appveyor-image]: https://img.shields.io/appveyor/ci/gulpjs/vinyl.svg?label=appveyor
 
 [coveralls-url]: https://coveralls.io/r/gulpjs/vinyl
-[coveralls-image]: http://img.shields.io/coveralls/gulpjs/vinyl/master.svg
+[coveralls-image]: https://img.shields.io/coveralls/gulpjs/vinyl/master.svg
 
 [gitter-url]: https://gitter.im/gulpjs/gulp
 [gitter-image]: https://badges.gitter.im/gulpjs/gulp.svg
