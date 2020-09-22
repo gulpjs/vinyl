@@ -128,6 +128,10 @@ File.prototype.clone = function(opt) {
     contents: contents,
   });
 
+  if (this.isSymbolic()) {
+    file.symlink = this.symlink;
+  }
+
   // Clone our custom properties
   Object.keys(this).forEach(function(key) {
     if (self.constructor.isCustomProp(key)) {
