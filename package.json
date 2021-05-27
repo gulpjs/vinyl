@@ -1,6 +1,6 @@
 {
   "name": "@sigil/vinyl",
-  "version": "2.2.1-burt-0",
+  "version": "3.0.0-burt-0",
   "description": "Virtual file format.",
   "author": "Gulp Team <team@gulpjs.com> (https://gulpjs.com/)",
   "contributors": [

@@ -442,14 +442,14 @@ MIT
 [azure-pipelines-url]: https://dev.azure.com/gulpjs/gulp/_build/latest?definitionId=$PROJECT_ID&branchName=master
 [azure-pipelines-image]: https://dev.azure.com/gulpjs/gulp/_apis/build/status/burtharris/vinyl?branchName=master
 
-[travis-url]: https://travis-ci.org/gulpjs/burtharris/vinyl
-[travis-image]: https://img.shields.io/travis/gulpjs/burtharris/vinyl.svg?label=travis-ci
+[travis-url]: https://travis-ci.com/burtharris/vinyl
+[travis-image]: https://img.shields.io/travis/burtharris/vinyl.svg?label=travis-ci
 
-[appveyor-url]: https://ci.appveyor.com/project/gulpjs/burtharris/vinyl
-[appveyor-image]: https://img.shields.io/appveyor/ci/gulpjs/burtharris/vinyl.svg?label=appveyor
+[appveyor-url]: https://ci.appveyor.com/project/burtharris/vinyl
+[appveyor-image]: https://img.shields.io/appveyor/ci/burtharris/vinyl.svg?label=appveyor
 
 [coveralls-url]: https://coveralls.io/r/gulpjs/@sigil/vinyl
-[coveralls-image]: https://img.shields.io/coveralls/gulpjs/@sigil/vinyl/master.svg
+[coveralls-image]: https://img.shields.io/coveralls/@sigil/vinyl/master.svg
 
 [gitter-url]: https://gitter.im/gulpjs/gulp
 [gitter-image]: https://badges.gitter.im/gulpjs/gulp.svg
