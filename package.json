@@ -11,7 +11,7 @@
   "repository": "burtharris/vinyl",
   "license": "MIT",
   "engines": {
-    "node": ">= 0.10"
+    "node": ">= 14.17.0"
   },
   "main": "index.js",
   "files": [

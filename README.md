@@ -440,13 +440,13 @@ MIT
 [npm-image]: https://img.shields.io/npm/v/@sigil/vinyl.svg
 
 [azure-pipelines-url]: https://dev.azure.com/gulpjs/gulp/_build/latest?definitionId=$PROJECT_ID&branchName=master
-[azure-pipelines-image]: https://dev.azure.com/gulpjs/gulp/_apis/build/status/@sigil/vinyl?branchName=master
+[azure-pipelines-image]: https://dev.azure.com/gulpjs/gulp/_apis/build/status/burtharris/vinyl?branchName=master
 
-[travis-url]: https://travis-ci.org/gulpjs/@sigil/vinyl
-[travis-image]: https://img.shields.io/travis/gulpjs/@sigil/vinyl.svg?label=travis-ci
+[travis-url]: https://travis-ci.org/gulpjs/burtharris/vinyl
+[travis-image]: https://img.shields.io/travis/gulpjs/burtharris/vinyl.svg?label=travis-ci
 
-[appveyor-url]: https://ci.appveyor.com/project/gulpjs/@sigil/vinyl
-[appveyor-image]: https://img.shields.io/appveyor/ci/gulpjs/@sigil/vinyl.svg?label=appveyor
+[appveyor-url]: https://ci.appveyor.com/project/gulpjs/burtharris/vinyl
+[appveyor-image]: https://img.shields.io/appveyor/ci/gulpjs/burtharris/vinyl.svg?label=appveyor
 
 [coveralls-url]: https://coveralls.io/r/gulpjs/@sigil/vinyl
 [coveralls-image]: https://img.shields.io/coveralls/gulpjs/@sigil/vinyl/master.svg
