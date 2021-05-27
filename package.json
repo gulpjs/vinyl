@@ -27,12 +27,12 @@
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
-    "clone": "^2.1.1",
+    "clone": "^2.1.2",
     "clone-buffer": "^1.0.0",
     "clone-stats": "^1.0.0",
-    "cloneable-readable": "^1.0.0",
-    "remove-trailing-separator": "^1.0.1",
-    "replace-ext": "^1.0.0"
+    "cloneable-readable": "^2.1.0",
+    "remove-trailing-separator": "^1.1.0",
+    "replace-ext": "^2.0.0"
   },
   "devDependencies": {
     "coveralls": "^3.1.0",
