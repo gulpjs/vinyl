@@ -1,14 +1,17 @@
-<p align="center">
+<!-- <p align="center">
   <a href="http://gulpjs.com">
     <img height="257" width="114" src="https://raw.githubusercontent.com/gulpjs/artwork/master/gulp-2x.png">
   </a>
-</p>
+</p> -->
 
-# vinyl
+# @sigil/vinyl
+
+Virtual file format.
+
+Note: This is an experimental fork of the gulp team's [vinyl](https://github.com/gulpjs/vinyl) package
 
 [![NPM version][npm-image]][npm-url] [![Downloads][downloads-image]][npm-url] [![Azure Pipelines Build Status][azure-pipelines-image]][azure-pipelines-url] [![Travis Build Status][travis-image]][travis-url] [![AppVeyor Build Status][appveyor-image]][appveyor-url] [![Coveralls Status][coveralls-image]][coveralls-url] [![Gitter chat][gitter-image]][gitter-url]
 
-Virtual file format.
 
 ## What is Vinyl?
 
@@ -21,7 +24,7 @@ While Vinyl provides a clean way to describe a file, we also need a way to acces
 ## Usage
 
 ```js
-var Vinyl = require('vinyl');
+var Vinyl = require('@sigil/vinyl');
 
 var jsFile = new Vinyl({
   cwd: '/',
@@ -98,7 +101,7 @@ Default: `null`
 Any other option properties will be directly assigned to the new Vinyl object.
 
 ```js
-var Vinyl = require('vinyl');
+var Vinyl = require('@sigil/vinyl');
 
 var file = new Vinyl({ foo: 'bar' });
 file.foo === 'bar'; // true
@@ -340,7 +343,7 @@ __Note: This method uses an internal flag that some older versions of Vinyl didn
 Example:
 
 ```js
-var Vinyl = require('vinyl');
+var Vinyl = require('@sigil/vinyl');
 
 var file = new Vinyl();
 var notAFile = {};
@@ -390,7 +393,7 @@ When extending Vinyl into your own class with extra features, you need to think 
 When you have your own properties that are managed internally, you need to extend the static `isCustomProp` method to return `false` when one of these properties is queried.
 
 ```js
-var Vinyl = require('vinyl');
+var Vinyl = require('@sigil/vinyl');
 
 var builtInProps = ['foo', '_foo'];
 
@@ -432,21 +435,21 @@ MIT
 [vinyl-fs]: https://github.com/gulpjs/vinyl-fs
 [cloneable-readable]: https://github.com/mcollina/cloneable-readable
 
-[downloads-image]: https://img.shields.io/npm/dm/vinyl.svg
-[npm-url]: https://www.npmjs.com/package/vinyl
-[npm-image]: https://img.shields.io/npm/v/vinyl.svg
+[downloads-image]: https://img.shields.io/npm/dm/@sigil/vinyl.svg
+[npm-url]: https://www.npmjs.com/package/@sigil/vinyl
+[npm-image]: https://img.shields.io/npm/v/@sigil/vinyl.svg
 
 [azure-pipelines-url]: https://dev.azure.com/gulpjs/gulp/_build/latest?definitionId=$PROJECT_ID&branchName=master
-[azure-pipelines-image]: https://dev.azure.com/gulpjs/gulp/_apis/build/status/vinyl?branchName=master
+[azure-pipelines-image]: https://dev.azure.com/gulpjs/gulp/_apis/build/status/@sigil/vinyl?branchName=master
 
-[travis-url]: https://travis-ci.org/gulpjs/vinyl
-[travis-image]: https://img.shields.io/travis/gulpjs/vinyl.svg?label=travis-ci
+[travis-url]: https://travis-ci.org/gulpjs/@sigil/vinyl
+[travis-image]: https://img.shields.io/travis/gulpjs/@sigil/vinyl.svg?label=travis-ci
 
-[appveyor-url]: https://ci.appveyor.com/project/gulpjs/vinyl
-[appveyor-image]: https://img.shields.io/appveyor/ci/gulpjs/vinyl.svg?label=appveyor
+[appveyor-url]: https://ci.appveyor.com/project/gulpjs/@sigil/vinyl
+[appveyor-image]: https://img.shields.io/appveyor/ci/gulpjs/@sigil/vinyl.svg?label=appveyor
 
-[coveralls-url]: https://coveralls.io/r/gulpjs/vinyl
-[coveralls-image]: https://img.shields.io/coveralls/gulpjs/vinyl/master.svg
+[coveralls-url]: https://coveralls.io/r/gulpjs/@sigil/vinyl
+[coveralls-image]: https://img.shields.io/coveralls/gulpjs/@sigil/vinyl/master.svg
 
 [gitter-url]: https://gitter.im/gulpjs/gulp
 [gitter-image]: https://badges.gitter.im/gulpjs/gulp.svg

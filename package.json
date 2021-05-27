@@ -1,13 +1,14 @@
 {
-  "name": "vinyl",
+  "name": "@sigil/vinyl",
   "version": "2.2.1",
   "description": "Virtual file format.",
   "author": "Gulp Team <team@gulpjs.com> (https://gulpjs.com/)",
   "contributors": [
     "Eric Schoffstall <yo@contra.io>",
-    "Blaine Bublitz <blaine.bublitz@gmail.com>"
+    "Blaine Bublitz <blaine.bublitz@gmail.com>",
+    "Burt Harris"
   ],
-  "repository": "gulpjs/vinyl",
+  "repository": "burtharris/vinyl",
   "license": "MIT",
   "engines": {
     "node": ">= 0.10"
