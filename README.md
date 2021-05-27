@@ -4,14 +4,11 @@
   </a>
 </p> -->
 
-# @sigil/vinyl
-
-Virtual file format.
+# [@sigil/vinyl](./sigil) Virtual file format
 
 Note: This is an experimental fork of the gulp team's [vinyl](https://github.com/gulpjs/vinyl) package
 
 [![NPM version][npm-image]][npm-url] [![Downloads][downloads-image]][npm-url] [![Azure Pipelines Build Status][azure-pipelines-image]][azure-pipelines-url] [![Travis Build Status][travis-image]][travis-url] [![AppVeyor Build Status][appveyor-image]][appveyor-url] [![Coveralls Status][coveralls-image]][coveralls-url] [![Gitter chat][gitter-image]][gitter-url]
-
 
 ## What is Vinyl?
 
