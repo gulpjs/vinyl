@@ -35,13 +35,13 @@
     "replace-ext": "^1.0.0"
   },
   "devDependencies": {
-    "coveralls": "github:phated/node-coveralls#2.x",
-    "eslint": "^2.13.1",
-    "eslint-config-gulp": "^3.0.1",
-    "expect": "^1.20.2",
-    "mississippi": "^1.2.0",
-    "mocha": "^3.0.0",
-    "nyc": "^10.3.2",
+    "coveralls": "^3.1.0",
+    "eslint": "^7.27.0",
+    "eslint-config-gulp": "^5.0.1",
+    "expect": "^27.0.1",
+    "mississippi": "^4.0.0",
+    "mocha": "^8.4.0",
+    "nyc": "^15.1.0",
     "safer-buffer": "^2.1.2"
   },
   "keywords": [
