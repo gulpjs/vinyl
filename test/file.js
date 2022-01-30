@@ -96,10 +96,10 @@ describe('File', function() {
       done();
     });
 
-    it('defaults path to null', function(done) {
+    it('defaults path to undefined', function(done) {
       var file = new File();
-      expect(file.path).toNotExist();
-      expect(file.path).toEqual(null);
+      expect(file.path).toBeFalsy();
+      expect(file.path).toEqual(undefined);
       done();
     });
 
@@ -111,14 +111,14 @@ describe('File', function() {
 
     it('defaults stat to null', function(done) {
       var file = new File();
-      expect(file.stat).toNotExist();
+      expect(file.stat).toBeFalsy();
       expect(file.stat).toEqual(null);
       done();
     });
 
     it('defaults contents to null', function(done) {
       var file = new File();
-      expect(file.contents).toNotExist();
+      expect(file.contents).toBeFalsy();
       expect(file.contents).toEqual(null);
       done();
     });
@@ -435,11 +435,11 @@ describe('File', function() {
       var file = new File(options);
       var file2 = file.clone();
 
-      expect(file2).toNotBe(file);
+      expect(file2).not.toBe(file);
       expect(file2.cwd).toEqual(file.cwd);
       expect(file2.base).toEqual(file.base);
       expect(file2.path).toEqual(file.path);
-      expect(file2.contents).toNotBe(file.contents);
+      expect(file2.contents).not.toBe(file.contents);
       expect(file2.contents.toString('utf8')).toEqual(file.contents.toString('utf8'));
       done();
     });
@@ -457,10 +457,10 @@ describe('File', function() {
       expect(copy1.contents).toBe(file.contents);
 
       var copy2 = file.clone();
-      expect(copy2.contents).toNotBe(file.contents);
+      expect(copy2.contents).not.toBe(file.contents);
 
       var copy3 = file.clone({ contents: 'invalid' });
-      expect(copy3.contents).toNotBe(file.contents);
+      expect(copy3.contents).not.toBe(file.contents);
       done();
     });
 
@@ -474,11 +474,11 @@ describe('File', function() {
       var file = new File(options);
       var file2 = file.clone();
 
-      expect(file2).toNotBe(file);
+      expect(file2).not.toBe(file);
       expect(file2.cwd).toEqual(file.cwd);
       expect(file2.base).toEqual(file.base);
       expect(file2.path).toEqual(file.path);
-      expect(file2.contents).toNotBe(file.contents);
+      expect(file2.contents).not.toBe(file.contents);
 
       var ends = 2;
       var data = null;
@@ -491,7 +491,7 @@ describe('File', function() {
         }
 
         if (--ends === 0) {
-          expect(data).toNotBe(data2);
+          expect(data).not.toBe(data2);
           expect(data.toString('utf8')).toEqual(data2.toString('utf8'));
           done();
         }
@@ -596,7 +596,7 @@ describe('File', function() {
       var file = new File(options);
       var file2 = file.clone();
 
-      expect(file2).toNotBe(file);
+      expect(file2).not.toBe(file);
       expect(file2.symlink).toEqual(file.symlink);
       done();
     });
@@ -611,11 +611,11 @@ describe('File', function() {
       var file = new File(options);
       var file2 = file.clone();
 
-      expect(file2).toNotBe(file);
+      expect(file2).not.toBe(file);
       expect(file2.cwd).toEqual(file.cwd);
       expect(file2.base).toEqual(file.base);
       expect(file2.path).toEqual(file.path);
-      expect(file2.contents).toNotExist();
+      expect(file2.contents).toBeFalsy();
       done();
     });
 
@@ -633,8 +633,8 @@ describe('File', function() {
 
       expect(copy.stat.isFile()).toEqual(true);
       expect(copy.stat.isDirectory()).toEqual(false);
-      expect(file.stat).toBeAn(fs.Stats);
-      expect(copy.stat).toBeAn(fs.Stats);
+      expect(file.stat).toBeInstanceOf(fs.Stats);
+      expect(copy.stat).toBeInstanceOf(fs.Stats);
       done();
     });
 
@@ -651,7 +651,7 @@ describe('File', function() {
 
       expect(copy.history[0]).toEqual(options.path);
       copy.path = 'lol';
-      expect(file.path).toNotEqual(copy.path);
+      expect(file.path).not.toEqual(copy.path);
       done();
     });
 
@@ -667,12 +667,12 @@ describe('File', function() {
       var file = new File(options);
       var file2 = file.clone();
 
-      expect(file2).toNotBe(file);
+      expect(file2).not.toBe(file);
       expect(file2.cwd).toEqual(file.cwd);
       expect(file2.base).toEqual(file.base);
       expect(file2.path).toEqual(file.path);
-      expect(file2.custom).toNotBe(file.custom);
-      expect(file2.custom.meta).toNotBe(file.custom.meta);
+      expect(file2.custom).not.toBe(file.custom);
+      expect(file2.custom.meta).not.toBe(file.custom.meta);
       expect(file2.custom).toEqual(file.custom);
       done();
     });
@@ -696,7 +696,7 @@ describe('File', function() {
       var file2 = file.clone();
 
       expect(file2.history).toEqual(history);
-      expect(file2.history).toNotBe(file.history);
+      expect(file2.history).not.toBe(file.history);
       expect(file2.path).toEqual(history[2]);
       done();
     });
@@ -714,21 +714,21 @@ describe('File', function() {
 
       var file2 = file.clone();
       expect(file2.custom).toEqual(file.custom);
-      expect(file2.custom).toNotBe(file.custom);
+      expect(file2.custom).not.toBe(file.custom);
       expect(file2.custom.meta).toEqual(file.custom.meta);
-      expect(file2.custom.meta).toNotBe(file.custom.meta);
+      expect(file2.custom.meta).not.toBe(file.custom.meta);
 
       var file3 = file.clone(true);
       expect(file3.custom).toEqual(file.custom);
-      expect(file3.custom).toNotBe(file.custom);
+      expect(file3.custom).not.toBe(file.custom);
       expect(file3.custom.meta).toEqual(file.custom.meta);
-      expect(file3.custom.meta).toNotBe(file.custom.meta);
+      expect(file3.custom.meta).not.toBe(file.custom.meta);
 
       var file4 = file.clone({ deep: true });
       expect(file4.custom).toEqual(file.custom);
-      expect(file4.custom).toNotBe(file.custom);
+      expect(file4.custom).not.toBe(file.custom);
       expect(file4.custom.meta).toEqual(file.custom.meta);
-      expect(file4.custom.meta).toNotBe(file.custom.meta);
+      expect(file4.custom.meta).not.toBe(file.custom.meta);
 
       var file5 = file.clone(false);
       expect(file5.custom).toEqual(file.custom);
@@ -759,12 +759,12 @@ describe('File', function() {
       var file = new ExtendedFile();
       var file2 = file.clone();
 
-      expect(file2).toNotBe(file);
+      expect(file2).not.toBe(file);
       expect(file2.constructor).toBe(ExtendedFile);
-      expect(file2).toBeAn(ExtendedFile);
-      expect(file2).toBeA(File);
-      expect(ExtendedFile.prototype.isPrototypeOf(file2)).toEqual(true);
-      expect(File.prototype.isPrototypeOf(file2)).toEqual(true);
+      expect(file2).toBeInstanceOf(ExtendedFile);
+      expect(file2).toBeInstanceOf(File);
+      expect(Object.prototype.isPrototypeOf.call(ExtendedFile.prototype, file2)).toEqual(true);
+      expect(Object.prototype.isPrototypeOf.call(File.prototype, file2)).toEqual(true);
       done();
     });
   });
@@ -978,7 +978,7 @@ describe('File', function() {
         cwd: '/foo',
         base: '/bar',
       });
-      expect(file.base).toNotEqual(file.cwd);
+      expect(file.base).not.toEqual(file.cwd);
       file.base = file.cwd;
       expect(file.base).toEqual(file.cwd);
       done();
@@ -989,11 +989,11 @@ describe('File', function() {
         cwd: '/foo',
         base: '/bar',
       });
-      expect(file.base).toNotEqual(file.cwd);
+      expect(file.base).not.toEqual(file.cwd);
       file.base = null;
       expect(file.base).toEqual(file.cwd);
       file.base = '/bar/';
-      expect(file.base).toNotEqual(file.cwd);
+      expect(file.base).not.toEqual(file.cwd);
       file.base = undefined;
       expect(file.base).toEqual(file.cwd);
       done();
@@ -1205,6 +1205,7 @@ describe('File', function() {
       var file = new File();
 
       function invalid() {
+        /* eslint no-unused-vars: 0 */
         var a = file.basename;
       }
 
@@ -1518,7 +1519,7 @@ describe('File', function() {
     it('throws on set with null path', function(done) {
       var file = new File();
 
-      expect(file.path).toNotExist();
+      expect(file.path).toBeFalsy();
       expect(file.history).toEqual([]);
 
       function invalid() {

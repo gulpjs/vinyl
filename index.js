@@ -2,13 +2,12 @@
 
 var path = require('path');
 var util = require('util');
-var isBuffer = require('buffer').Buffer.isBuffer;
+var Buffer = require('buffer').Buffer;
 
 var clone = require('clone');
 var cloneable = require('cloneable-readable');
 var replaceExt = require('replace-ext');
 var cloneStats = require('clone-stats');
-var cloneBuffer = require('clone-buffer');
 var removeTrailingSep = require('remove-trailing-separator');
 
 var isStream = require('./lib/is-stream');
@@ -59,7 +58,7 @@ function File(file) {
 }
 
 File.prototype.isBuffer = function() {
-  return isBuffer(this.contents);
+  return Buffer.isBuffer(this.contents);
 };
 
 File.prototype.isStream = function() {
@@ -117,7 +116,7 @@ File.prototype.clone = function(opt) {
   if (this.isStream()) {
     contents = this.contents.clone();
   } else if (this.isBuffer()) {
-    contents = opt.contents ? cloneBuffer(this.contents) : this.contents;
+    contents = opt.contents ? Buffer.from(this.contents) : this.contents;
   }
 
   var file = new this.constructor({
@@ -182,7 +181,7 @@ Object.defineProperty(File.prototype, 'contents', {
     return this._contents;
   },
   set: function(val) {
-    if (!isBuffer(val) && !isStream(val) && (val !== null)) {
+    if (!Buffer.isBuffer(val) && !isStream(val) && (val !== null)) {
       throw new Error('File.contents can only be a Buffer, a Stream, or null.');
     }
 
