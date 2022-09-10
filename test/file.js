@@ -6,7 +6,6 @@ var util = require('util');
 var expect = require('expect');
 var miss = require('mississippi');
 var cloneable = require('cloneable-readable');
-var saferBuffer = require('safer-buffer');
 
 var File = require('../');
 
@@ -14,7 +13,6 @@ var pipe = miss.pipe;
 var from = miss.from;
 var concat = miss.concat;
 var isCloneable = cloneable.isCloneable;
-var Buffer = saferBuffer.Buffer;
 
 var isWin = (process.platform === 'win32');
 
