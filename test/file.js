@@ -1199,8 +1199,7 @@ describe('File', function() {
       var file = new File();
 
       function invalid() {
-        /* eslint no-unused-vars: 0 */
-        var a = file.basename;
+        file.basename;
       }
 
       expect(invalid).toThrow('No path specified! Can not get basename.');
