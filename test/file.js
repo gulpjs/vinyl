@@ -772,18 +772,14 @@ describe('File', function() {
     it('returns correct format when no contents and no path', function(done) {
       var file = new File();
       var expectation = '<File >';
-      expect(file.inspect()).toEqual(expectation);
       expect(util.inspect(file)).toEqual(expectation);
-      if (util.inspect.custom) {
-        expect(file[util.inspect.custom]()).toEqual(expectation);
-      }
       done();
     });
 
     it('returns correct format when Buffer contents and no path', function(done) {
       var val = Buffer.from('test');
       var file = new File({ contents: val });
-      expect(file.inspect()).toEqual('<File <Buffer 74 65 73 74>>');
+      expect(util.inspect(file)).toEqual('<File <Buffer 74 65 73 74>>');
       done();
     });
 
@@ -795,7 +791,7 @@ describe('File', function() {
         path: '/test/test.coffee',
         contents: val,
       });
-      expect(file.inspect()).toEqual('<File "test.coffee" <Buffer 74 65 73 74>>');
+      expect(util.inspect(file)).toEqual('<File "test.coffee" <Buffer 74 65 73 74>>');
       done();
     });
 
@@ -806,7 +802,7 @@ describe('File', function() {
         path: '/test/test.coffee',
         contents: from([]),
       });
-      expect(file.inspect()).toEqual('<File "test.coffee" <CloneableStream>>');
+      expect(util.inspect(file)).toEqual('<File "test.coffee" <CloneableStream>>');
       done();
     });
 
@@ -817,7 +813,7 @@ describe('File', function() {
         path: '/test/test.coffee',
         contents: null,
       });
-      expect(file.inspect()).toEqual('<File "test.coffee">');
+      expect(util.inspect(file)).toEqual('<File "test.coffee">');
       done();
     });
   });

@@ -140,7 +140,8 @@ File.prototype.clone = function(opt) {
   return file;
 };
 
-File.prototype.inspect = function() {
+// Node.js v6.6.0+ use this symbol for custom inspection.
+File.prototype[util.inspect.custom] = function() {
   var inspect = [];
 
   // Use relative path if possible
@@ -160,11 +161,6 @@ File.prototype.inspect = function() {
 
   return '<File ' + inspect.join(' ') + '>';
 };
-
-// Newer Node.js versions use this symbol for custom inspection.
-if (util.inspect.custom) {
-  File.prototype[util.inspect.custom] = File.prototype.inspect;
-}
 
 File.isCustomProp = function(key) {
   return builtInFields.indexOf(key) === -1;
