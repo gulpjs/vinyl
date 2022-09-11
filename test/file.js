@@ -94,10 +94,10 @@ describe('File', function() {
       done();
     });
 
-    it('defaults path to undefined', function(done) {
+    it('defaults path to null', function(done) {
       var file = new File();
       expect(file.path).toBeFalsy();
-      expect(file.path).toEqual(undefined);
+      expect(file.path).toEqual(null);
       done();
     });
 

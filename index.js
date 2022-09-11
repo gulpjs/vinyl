@@ -305,7 +305,12 @@ Object.defineProperty(File.prototype, 'extname', {
 
 Object.defineProperty(File.prototype, 'path', {
   get: function() {
-    return this.history[this.history.length - 1];
+    var path = this.history[this.history.length - 1];
+    if (path) {
+      return path;
+    } else {
+      return null;
+    }
   },
   set: function(path) {
     if (typeof path !== 'string') {
