@@ -2,13 +2,12 @@
 
 var path = require('path');
 var util = require('util');
-var isBuffer = require('buffer').Buffer.isBuffer;
+var Buffer = require('buffer').Buffer;
 
 var clone = require('clone');
 var cloneable = require('cloneable-readable');
 var replaceExt = require('replace-ext');
 var cloneStats = require('clone-stats');
-var cloneBuffer = require('clone-buffer');
 var removeTrailingSep = require('remove-trailing-separator');
 
 var isStream = require('./lib/is-stream');
@@ -59,7 +58,7 @@ function File(file) {
 }
 
 File.prototype.isBuffer = function() {
-  return isBuffer(this.contents);
+  return Buffer.isBuffer(this.contents);
 };
 
 File.prototype.isStream = function() {
@@ -117,7 +116,7 @@ File.prototype.clone = function(opt) {
   if (this.isStream()) {
     contents = this.contents.clone();
   } else if (this.isBuffer()) {
-    contents = opt.contents ? cloneBuffer(this.contents) : this.contents;
+    contents = opt.contents ? Buffer.from(this.contents) : this.contents;
   }
 
   var file = new this.constructor({
@@ -141,7 +140,8 @@ File.prototype.clone = function(opt) {
   return file;
 };
 
-File.prototype.inspect = function() {
+// Node.js v6.6.0+ use this symbol for custom inspection.
+File.prototype[util.inspect.custom] = function() {
   var inspect = [];
 
   // Use relative path if possible
@@ -162,11 +162,6 @@ File.prototype.inspect = function() {
   return '<File ' + inspect.join(' ') + '>';
 };
 
-// Newer Node.js versions use this symbol for custom inspection.
-if (util.inspect.custom) {
-  File.prototype[util.inspect.custom] = File.prototype.inspect;
-}
-
 File.isCustomProp = function(key) {
   return builtInFields.indexOf(key) === -1;
 };
@@ -182,7 +177,7 @@ Object.defineProperty(File.prototype, 'contents', {
     return this._contents;
   },
   set: function(val) {
-    if (!isBuffer(val) && !isStream(val) && (val !== null)) {
+    if (!Buffer.isBuffer(val) && !isStream(val) && (val !== null)) {
       throw new Error('File.contents can only be a Buffer, a Stream, or null.');
     }
 
@@ -306,7 +301,12 @@ Object.defineProperty(File.prototype, 'extname', {
 
 Object.defineProperty(File.prototype, 'path', {
   get: function() {
-    return this.history[this.history.length - 1];
+    var path = this.history[this.history.length - 1];
+    if (path) {
+      return path;
+    } else {
+      return null;
+    }
   },
   set: function(path) {
     if (typeof path !== 'string') {
