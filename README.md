@@ -27,7 +27,7 @@ var jsFile = new Vinyl({
   cwd: '/',
   base: '/test/',
   path: '/test/file.js',
-  contents: Buffer.from('var x = 123')
+  contents: Buffer.from('var x = 123'),
 });
 ```
 
@@ -87,7 +87,7 @@ Default: `undefined`
 
 ##### `options.contents`
 
-The contents of the file.  If `options.contents` is a [`ReadableStream`][readable-stream], it is wrapped in a [`cloneable-readable`][cloneable-readable] stream.
+The contents of the file. If `options.contents` is a [`ReadableStream`][readable-stream], it is wrapped in a [`cloneable-readable`][cloneable-readable] stream.
 
 Type: [`ReadableStream`][readable-stream], [`Buffer`][buffer], or `null`
 
@@ -148,7 +148,7 @@ When constructing a Vinyl object, pass in a valid [`fs.Stats`][fs-stats] object 
 
 Returns a new Vinyl object with all attributes cloned.
 
-__By default custom attributes are cloned deeply.__
+**By default custom attributes are cloned deeply.**
 
 If `options` or `options.deep` is `false`, custom attributes will not be cloned deeply.
 
@@ -215,7 +215,7 @@ Example:
 var file = new File({
   cwd: '/',
   base: '/test/',
-  path: '/test/file.js'
+  path: '/test/file.js',
 });
 
 console.log(file.relative); // file.js
@@ -235,7 +235,7 @@ Example:
 var file = new File({
   cwd: '/',
   base: '/test/',
-  path: '/test/file.js'
+  path: '/test/file.js',
 });
 
 console.log(file.dirname); // /test
@@ -260,7 +260,7 @@ Example:
 var file = new File({
   cwd: '/',
   base: '/test/',
-  path: '/test/file.js'
+  path: '/test/file.js',
 });
 
 console.log(file.basename); // file.js
@@ -285,7 +285,7 @@ Example:
 var file = new File({
   cwd: '/',
   base: '/test/',
-  path: '/test/file.js'
+  path: '/test/file.js',
 });
 
 console.log(file.stem); // file
@@ -310,7 +310,7 @@ Example:
 var file = new File({
   cwd: '/',
   base: '/test/',
-  path: '/test/file.js'
+  path: '/test/file.js',
 });
 
 console.log(file.extname); // .js
@@ -335,7 +335,7 @@ Static method used for checking if an object is a Vinyl file. Use this method in
 
 Takes an object and returns `true` if it is a Vinyl file, otherwise returns `false`.
 
-__Note: This method uses an internal flag that some older versions of Vinyl didn't expose.__
+**Note: This method uses an internal flag that some older versions of Vinyl didn't expose.**
 
 Example:
 
@@ -410,17 +410,16 @@ class SuperFile extends Vinyl {
 }
 
 // `foo` won't be assigned to the object below
-new SuperFile({ foo: "something" });
+new SuperFile({ foo: 'something' });
 ```
 
-This makes properties `foo` and `_foo` skipped when passed in options to `constructor(options)` so they don't get assigned to the new object and override your custom implementation. They also won't be copied when cloning. __Note:__ The `_foo` and `foo` properties will still exist on the created/cloned object because you are assigning `_foo` in the constructor and `foo` is defined on the prototype.
+This makes properties `foo` and `_foo` skipped when passed in options to `constructor(options)` so they don't get assigned to the new object and override your custom implementation. They also won't be copied when cloning. **Note:** The `_foo` and `foo` properties will still exist on the created/cloned object because you are assigning `_foo` in the constructor and `foo` is defined on the prototype.
 
 Same goes for `clone()`. If you have your own internal stuff that needs special handling during cloning, you should extend it to do so.
 
 ## License
 
 MIT
-
 
 <!-- prettier-ignore-start -->
 [downloads-image]: https://img.shields.io/npm/dm/vinyl.svg?style=flat-square
@@ -446,4 +445,3 @@ MIT
 [vinyl-fs]: https://github.com/gulpjs/vinyl-fs
 [cloneable-readable]: https://github.com/mcollina/cloneable-readable
 <!-- prettier-ignore-end -->
-
