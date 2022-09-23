@@ -523,7 +523,7 @@ function suite(moduleName) {
         );
       });
 
-      it('does not start flowing until all clones flows (data)', function (done) {
+      it('does not lose data even when clones flow differently (data)', function (done) {
         var options = {
           cwd: '/',
           base: '/test/',
@@ -539,7 +539,8 @@ function suite(moduleName) {
 
         function assert() {
           if (--ends === 0) {
-            expect(data).toEqual(data2);
+            expect(data).toEqual('wadup');
+            expect(data2).toEqual('wadup');
             done();
           }
         }
@@ -550,10 +551,6 @@ function suite(moduleName) {
         });
 
         process.nextTick(function () {
-          // Nothing was written yet
-          expect(data).toEqual('');
-          expect(data2).toEqual('');
-
           // Starts flowing file
           file.contents.on('data', function (chunk) {
             data += chunk.toString('utf8');
@@ -564,7 +561,7 @@ function suite(moduleName) {
         file.contents.on('end', assert);
       });
 
-      it('does not start flowing until all clones flows (readable)', function (done) {
+      it('does not lose data even when clones flow differently (readable & pipe)', function (done) {
         var options = {
           cwd: '/',
           base: '/test/',
@@ -577,7 +574,8 @@ function suite(moduleName) {
         var data2 = '';
 
         function assert(data) {
-          expect(data.join('')).toEqual(data2);
+          expect(data.join('')).toEqual('wadup');
+          expect(data2).toEqual('wadup');
         }
 
         // Start flowing file2
@@ -588,6 +586,7 @@ function suite(moduleName) {
           }
         });
 
+        // Pipe file1
         stream.pipeline([file.contents, concat(assert)], done);
       });
 

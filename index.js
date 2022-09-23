@@ -122,7 +122,7 @@ File.prototype.clone = function (opt) {
   // Clone our file contents
   var contents;
   if (this.isStream()) {
-    var streams = teex(this.contents);
+    var streams = teex(this._contents);
     this._contents = streams[0];
     contents = streams[1];
   } else if (this.isBuffer()) {
