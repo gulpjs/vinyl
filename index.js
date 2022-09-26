@@ -5,7 +5,7 @@ var util = require('util');
 var Buffer = require('buffer').Buffer;
 
 var clone = require('clone');
-var cloneable = require('cloneable-readable');
+var teex = require('teex');
 var replaceExt = require('replace-ext');
 var cloneStats = require('clone-stats');
 var removeTrailingSep = require('remove-trailing-separator');
@@ -122,7 +122,9 @@ File.prototype.clone = function (opt) {
   // Clone our file contents
   var contents;
   if (this.isStream()) {
-    contents = this.contents.clone();
+    var streams = teex(this._contents);
+    this._contents = streams[0];
+    contents = streams[1];
   } else if (this.isBuffer()) {
     contents = opt.contents ? Buffer.from(this.contents) : this.contents;
   }
@@ -187,13 +189,6 @@ Object.defineProperty(File.prototype, 'contents', {
   set: function (val) {
     if (!Buffer.isBuffer(val) && !isStream(val) && val !== null) {
       throw new Error('File.contents can only be a Buffer, a Stream, or null.');
-    }
-
-    // Ask cloneable if the stream is a already a cloneable
-    // this avoid piping into many streams
-    // reducing the overhead of cloning
-    if (isStream(val) && !cloneable.isCloneable(val)) {
-      val = cloneable(val);
     }
 
     this._contents = val;
