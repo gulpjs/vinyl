@@ -427,7 +427,7 @@ MIT
 [npm-image]: https://img.shields.io/npm/v/vinyl.svg?style=flat-square
 
 [ci-url]: https://github.com/gulpjs/vinyl/actions?query=workflow:dev
-[ci-image]: https://img.shields.io/github/workflow/status/gulpjs/vinyl/dev?style=flat-square
+[ci-image]: https://img.shields.io/github/actions/workflow/status/gulpjs/vinyl/dev.yml?branch=master&style=flat-square
 
 [coveralls-url]: https://coveralls.io/r/gulpjs/vinyl
 [coveralls-image]: https://img.shields.io/coveralls/gulpjs/vinyl/master.svg?style=flat-square
