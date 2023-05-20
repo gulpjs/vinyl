@@ -753,15 +753,7 @@ function suite(moduleName) {
       });
 
       it('supports inheritance', function (done) {
-        function ExtendedFile() {
-          File.apply(this, arguments);
-        }
-        ExtendedFile.prototype = Object.create(File.prototype);
-        ExtendedFile.prototype.constructor = ExtendedFile;
-        // Just copy static stuff since Object.setPrototypeOf is node >=0.12
-        Object.keys(File).forEach(function (key) {
-          ExtendedFile[key] = File[key];
-        });
+        class ExtendedFile extends File { }
 
         var file = new ExtendedFile();
         var file2 = file.clone();
