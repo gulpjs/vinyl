@@ -7,7 +7,7 @@ var Buffer = require('buffer').Buffer;
 var clone = require('clone');
 var teex = require('teex');
 var replaceExt = require('replace-ext');
-var cloneStats = require('clone-stats');
+var statsCloner = require('stats-cloner');
 var removeTrailingSep = require('remove-trailing-separator');
 
 var isStream = require('./lib/is-stream');
@@ -132,7 +132,7 @@ File.prototype.clone = function (opt) {
   var file = new this.constructor({
     cwd: this.cwd,
     base: this.base,
-    stat: this.stat ? cloneStats(this.stat) : null,
+    stat: this.stat ? statsCloner(this.stat) : null,
     history: this.history.slice(),
     contents: contents,
   });

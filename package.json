@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "clone": "^2.1.2",
-    "clone-stats": "^1.0.0",
+    "stats-cloner": "^1.1.0",
     "remove-trailing-separator": "^1.1.0",
     "replace-ext": "^2.0.0",
     "teex": "^1.0.1"
