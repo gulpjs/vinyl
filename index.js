@@ -7,12 +7,15 @@ var Buffer = require('buffer').Buffer;
 var clone = require('clone');
 var teex = require('teex');
 var replaceExt = require('replace-ext');
-var cloneStats = require('clone-stats');
 var removeTrailingSep = require('remove-trailing-separator');
 
 var isStream = require('./lib/is-stream');
 var normalize = require('./lib/normalize');
 var inspectStream = require('./lib/inspect-stream');
+
+function cloneObject (obj) {
+  return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
+}
 
 var builtInFields = [
   '_contents',
@@ -132,7 +135,7 @@ File.prototype.clone = function (opt) {
   var file = new this.constructor({
     cwd: this.cwd,
     base: this.base,
-    stat: this.stat ? cloneStats(this.stat) : null,
+    stat: this.stat ? cloneObject(this.stat) : null,
     history: this.history.slice(),
     contents: contents,
   });
