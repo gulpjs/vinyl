@@ -422,6 +422,12 @@ function suite(moduleName) {
     });
 
     describe('clone()', function () {
+      before(function () {
+        if (process.versions.node.startsWith("10.")) {
+          this.skip();
+        }
+      });
+
       var fakeStat = {
         isSymbolicLink: function () {
           return true;
