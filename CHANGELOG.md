@@ -1,5 +1,12 @@
 # Changelog
 
+### [3.0.1](https://www.github.com/gulpjs/vinyl/compare/v3.0.0...v3.0.1) (2025-05-31)
+
+
+### Bug Fixes
+
+* Drop clone-stats dependency by cloning with `Object.create` ([#162](https://www.github.com/gulpjs/vinyl/issues/162)) ([f56ac3d](https://www.github.com/gulpjs/vinyl/commit/f56ac3dece382e15879246cb743f66cf43dfd0e3))
+
 ## [3.0.0](https://www.github.com/gulpjs/vinyl/compare/v2.2.1...v3.0.0) (2022-09-26)
 
 
