@@ -13,6 +13,13 @@
     "node": ">=10.13.0"
   },
   "main": "index.js",
+  "exports": {
+    ".": {
+      "require": "./index.js",
+      "default": "./index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "LICENSE",
     "index.js",
