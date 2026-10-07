@@ -417,6 +417,16 @@ This makes properties `foo` and `_foo` skipped when passed in options to `constr
 
 Same goes for `clone()`. If you have your own internal stuff that needs special handling during cloning, you should extend it to do so.
 
+## Strict No LLM / No AI Policy
+
+No LLMs for issues.
+
+No LLMs for patches / pull requests.
+
+No LLMs for comments on the bug tracker, including translation.
+
+English is encouraged, but not required. You are welcome to post in your native language and rely on others to have their own translation tools of choice to interpret your words.
+
 ## License
 
 MIT
@@ -426,22 +436,9 @@ MIT
 [npm-url]: https://www.npmjs.com/package/vinyl
 [npm-image]: https://img.shields.io/npm/v/vinyl.svg?style=flat-square
 
-[ci-url]: https://github.com/gulpjs/vinyl/actions?query=workflow:dev
-[ci-image]: https://img.shields.io/github/actions/workflow/status/gulpjs/vinyl/dev.yml?branch=master&style=flat-square
+[ci-url]: https://github.com/gulpjs/vinyl/actions/workflows/dev.yml
+[ci-image]: https://img.shields.io/github/actions/workflow/status/gulpjs/vinyl/dev.yml?style=flat-square
 
 [coveralls-url]: https://coveralls.io/r/gulpjs/vinyl
-[coveralls-image]: https://img.shields.io/coveralls/gulpjs/vinyl/master.svg?style=flat-square
-<!-- prettier-ignore-end -->
-
-<!-- prettier-ignore-start -->
-[is-symbolic]: #issymbolic
-[is-directory]: #isdirectory
-[normalization]: #normalization-and-concatenation
-[extending-vinyl]: #extending-vinyl
-[stream]: https://nodejs.org/api/stream.html#stream_stream
-[readable-stream]: https://nodejs.org/api/stream.html#stream_readable_streams
-[buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer
-[fs-stats]: https://nodejs.org/api/fs.html#fs_class_fs_stats
-[vinyl-fs]: https://github.com/gulpjs/vinyl-fs
-[cloneable-readable]: https://github.com/mcollina/cloneable-readable
+[coveralls-image]: https://img.shields.io/coveralls/gulpjs/vinyl/main.svg?style=flat-square
 <!-- prettier-ignore-end -->

@@ -3,27 +3,11 @@ on:
   pull_request:
   push:
     branches:
-      - master
       - main
 env:
   CI: true
 
 jobs:
-  prettier:
-    name: Format code
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Prettier
-        uses: gulpjs/prettier_action@v3.0
-        with:
-          commit_message: 'chore: Run prettier'
-          prettier_options: '--write .'
-
   test:
     name: Tests for Node ${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -31,23 +15,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [10, 12, 14, 16, 18, 20, 22, 24]
-        os: [ubuntu-latest, windows-latest, macos-13]
+        node: [22, 24, 26]
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set Node.js version
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node }}
 
-      - run: node --version
-      - run: npm --version
+      - name: Check node version
+        run: node --version
+
+      - name: Check npm version
+        run: npm --version
 
       - name: Install npm dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run lint
         run: npm run lint
@@ -55,8 +42,11 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Check format
+        run: npm run format-check
+
       - name: Coveralls
-        uses: coverallsapp/github-action@v1.1.2
+        uses: coverallsapp/github-action@8d6379e14d29928660c4ba802d8e85393440b329 # v2.3.8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           flag-name: ${{matrix.os}}-node-${{ matrix.node }}
@@ -69,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
-        uses: coverallsapp/github-action@v1.1.2
+        uses: coverallsapp/github-action@8d6379e14d29928660c4ba802d8e85393440b329 # v2.3.8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true
