@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/gulpjs/vinyl/compare/v3.0.1...v4.0.0) (2026-10-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* Normalize repository, dropping Node <22.15.0 ([#168](https://github.com/gulpjs/vinyl/issues/168))
+
+### Miscellaneous Chores
+
+* Normalize repository, dropping Node &lt;22.15.0 ([#168](https://github.com/gulpjs/vinyl/issues/168)) ([3855faa](https://github.com/gulpjs/vinyl/commit/3855faa21b19a9e0200054ec81a7ff699133a836))
+
 ### [3.0.1](https://www.github.com/gulpjs/vinyl/compare/v3.0.0...v3.0.1) (2025-05-31)
 
 
