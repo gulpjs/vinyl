@@ -21,13 +21,13 @@ While Vinyl provides a clean way to describe a file, we also need a way to acces
 ## Usage
 
 ```js
-var Vinyl = require('vinyl');
+var Vinyl = require("vinyl");
 
 var jsFile = new Vinyl({
-  cwd: '/',
-  base: '/test/',
-  path: '/test/file.js',
-  contents: Buffer.from('var x = 123'),
+  cwd: "/",
+  base: "/test/",
+  path: "/test/file.js",
+  contents: Buffer.from("var x = 123"),
 });
 ```
 
@@ -98,10 +98,10 @@ Default: `null`
 Any other option properties will be directly assigned to the new Vinyl object.
 
 ```js
-var Vinyl = require('vinyl');
+var Vinyl = require("vinyl");
 
-var file = new Vinyl({ foo: 'bar' });
-file.foo === 'bar'; // true
+var file = new Vinyl({ foo: "bar" });
+file.foo === "bar"; // true
 ```
 
 ### Instance methods
@@ -213,9 +213,9 @@ Example:
 
 ```js
 var file = new File({
-  cwd: '/',
-  base: '/test/',
-  path: '/test/file.js',
+  cwd: "/",
+  base: "/test/",
+  path: "/test/file.js",
 });
 
 console.log(file.relative); // file.js
@@ -233,14 +233,14 @@ Example:
 
 ```js
 var file = new File({
-  cwd: '/',
-  base: '/test/',
-  path: '/test/file.js',
+  cwd: "/",
+  base: "/test/",
+  path: "/test/file.js",
 });
 
 console.log(file.dirname); // /test
 
-file.dirname = '/specs';
+file.dirname = "/specs";
 
 console.log(file.dirname); // /specs
 console.log(file.path); // /specs/file.js
@@ -258,14 +258,14 @@ Example:
 
 ```js
 var file = new File({
-  cwd: '/',
-  base: '/test/',
-  path: '/test/file.js',
+  cwd: "/",
+  base: "/test/",
+  path: "/test/file.js",
 });
 
 console.log(file.basename); // file.js
 
-file.basename = 'file.txt';
+file.basename = "file.txt";
 
 console.log(file.basename); // file.txt
 console.log(file.path); // /test/file.txt
@@ -283,14 +283,14 @@ Example:
 
 ```js
 var file = new File({
-  cwd: '/',
-  base: '/test/',
-  path: '/test/file.js',
+  cwd: "/",
+  base: "/test/",
+  path: "/test/file.js",
 });
 
 console.log(file.stem); // file
 
-file.stem = 'foo';
+file.stem = "foo";
 
 console.log(file.stem); // foo
 console.log(file.path); // /test/foo.js
@@ -308,14 +308,14 @@ Example:
 
 ```js
 var file = new File({
-  cwd: '/',
-  base: '/test/',
-  path: '/test/file.js',
+  cwd: "/",
+  base: "/test/",
+  path: "/test/file.js",
 });
 
 console.log(file.extname); // .js
 
-file.extname = '.txt';
+file.extname = ".txt";
 
 console.log(file.extname); // .txt
 console.log(file.path); // /test/file.txt
@@ -340,7 +340,7 @@ Takes an object and returns `true` if it is a Vinyl file, otherwise returns `fal
 Example:
 
 ```js
-var Vinyl = require('vinyl');
+var Vinyl = require("vinyl");
 
 var file = new Vinyl();
 var notAFile = {};
@@ -360,10 +360,10 @@ This method is useful for inheritting from the Vinyl constructor. Read more in [
 Example:
 
 ```js
-var Vinyl = require('vinyl');
+var Vinyl = require("vinyl");
 
-Vinyl.isCustomProp('sourceMap'); // true
-Vinyl.isCustomProp('path'); // false -> internal getter/setter
+Vinyl.isCustomProp("sourceMap"); // true
+Vinyl.isCustomProp("path"); // false -> internal getter/setter
 ```
 
 ## Normalization and concatenation
@@ -374,7 +374,7 @@ Example:
 
 ```js
 var file = new File();
-file.path = '/' + 'test' + '/' + 'foo.bar';
+file.path = "/" + "test" + "/" + "foo.bar";
 
 console.log(file.path);
 // posix => /test/foo.bar
@@ -390,14 +390,14 @@ When extending Vinyl into your own class with extra features, you need to think 
 When you have your own properties that are managed internally, you need to extend the static `isCustomProp` method to return `false` when one of these properties is queried.
 
 ```js
-var Vinyl = require('vinyl');
+var Vinyl = require("vinyl");
 
-var builtInProps = ['foo', '_foo'];
+var builtInProps = ["foo", "_foo"];
 
 class SuperFile extends Vinyl {
   constructor(options) {
     super(options);
-    this._foo = 'example internal read-only value';
+    this._foo = "example internal read-only value";
   }
 
   get foo() {
@@ -410,12 +410,22 @@ class SuperFile extends Vinyl {
 }
 
 // `foo` won't be assigned to the object below
-new SuperFile({ foo: 'something' });
+new SuperFile({ foo: "something" });
 ```
 
 This makes properties `foo` and `_foo` skipped when passed in options to `constructor(options)` so they don't get assigned to the new object and override your custom implementation. They also won't be copied when cloning. **Note:** The `_foo` and `foo` properties will still exist on the created/cloned object because you are assigning `_foo` in the constructor and `foo` is defined on the prototype.
 
 Same goes for `clone()`. If you have your own internal stuff that needs special handling during cloning, you should extend it to do so.
+
+## Strict No LLM / No AI Policy
+
+No LLMs for issues.
+
+No LLMs for patches / pull requests.
+
+No LLMs for comments on the bug tracker, including translation.
+
+English is encouraged, but not required. You are welcome to post in your native language and rely on others to have their own translation tools of choice to interpret your words.
 
 ## License
 
@@ -426,11 +436,11 @@ MIT
 [npm-url]: https://www.npmjs.com/package/vinyl
 [npm-image]: https://img.shields.io/npm/v/vinyl.svg?style=flat-square
 
-[ci-url]: https://github.com/gulpjs/vinyl/actions?query=workflow:dev
-[ci-image]: https://img.shields.io/github/actions/workflow/status/gulpjs/vinyl/dev.yml?branch=master&style=flat-square
+[ci-url]: https://github.com/gulpjs/vinyl/actions/workflows/dev.yml
+[ci-image]: https://img.shields.io/github/actions/workflow/status/gulpjs/vinyl/dev.yml?style=flat-square
 
 [coveralls-url]: https://coveralls.io/r/gulpjs/vinyl
-[coveralls-image]: https://img.shields.io/coveralls/gulpjs/vinyl/master.svg?style=flat-square
+[coveralls-image]: https://img.shields.io/coveralls/gulpjs/vinyl/main.svg?style=flat-square
 <!-- prettier-ignore-end -->
 
 <!-- prettier-ignore-start -->

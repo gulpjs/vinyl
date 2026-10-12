@@ -1,33 +1,36 @@
-'use strict';
+"use strict";
 
-var path = require('path');
-var util = require('util');
-var Buffer = require('buffer').Buffer;
+var path = require("path");
+var util = require("util");
+var Buffer = require("buffer").Buffer;
 
-var clone = require('clone');
-var teex = require('teex');
-var replaceExt = require('replace-ext');
-var removeTrailingSep = require('remove-trailing-separator');
+var clone = require("clone");
+var teex = require("teex");
+var replaceExt = require("replace-ext");
+var removeTrailingSep = require("remove-trailing-separator");
 
-var isStream = require('./lib/is-stream');
-var normalize = require('./lib/normalize');
-var inspectStream = require('./lib/inspect-stream');
+var isStream = require("./lib/is-stream");
+var normalize = require("./lib/normalize");
+var inspectStream = require("./lib/inspect-stream");
 
-function cloneObject (obj) {
-  return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
+function cloneObject(obj) {
+  return Object.create(
+    Object.getPrototypeOf(obj),
+    Object.getOwnPropertyDescriptors(obj),
+  );
 }
 
 var builtInFields = [
-  '_contents',
-  '_symlink',
-  'contents',
-  'stat',
-  'history',
-  'path',
-  '_base',
-  'base',
-  '_cwd',
-  'cwd',
+  "_contents",
+  "_symlink",
+  "contents",
+  "stat",
+  "history",
+  "path",
+  "_base",
+  "base",
+  "_cwd",
+  "cwd",
 ];
 
 function File(file) {
@@ -85,7 +88,7 @@ File.prototype.isDirectory = function () {
     return false;
   }
 
-  if (this.stat && typeof this.stat.isDirectory === 'function') {
+  if (this.stat && typeof this.stat.isDirectory === "function") {
     return this.stat.isDirectory();
   }
 
@@ -97,7 +100,7 @@ File.prototype.isSymbolic = function () {
     return false;
   }
 
-  if (this.stat && typeof this.stat.isSymbolicLink === 'function') {
+  if (this.stat && typeof this.stat.isSymbolicLink === "function") {
     return this.stat.isSymbolicLink();
   }
 
@@ -107,7 +110,7 @@ File.prototype.isSymbolic = function () {
 File.prototype.clone = function (opt) {
   var self = this;
 
-  if (typeof opt === 'boolean') {
+  if (typeof opt === "boolean") {
     opt = {
       deep: opt,
       contents: true,
@@ -172,7 +175,7 @@ File.prototype[util.inspect.custom] = function () {
     inspect.push(inspectStream(this.contents));
   }
 
-  return '<File ' + inspect.join(' ') + '>';
+  return "<File " + inspect.join(" ") + ">";
 };
 
 File.isCustomProp = function (key) {
@@ -185,32 +188,32 @@ File.isVinyl = function (file) {
 
 // Virtual attributes
 // Or stuff with extra logic
-Object.defineProperty(File.prototype, 'contents', {
+Object.defineProperty(File.prototype, "contents", {
   get: function () {
     return this._contents;
   },
   set: function (val) {
     if (!Buffer.isBuffer(val) && !isStream(val) && val !== null) {
-      throw new Error('File.contents can only be a Buffer, a Stream, or null.');
+      throw new Error("File.contents can only be a Buffer, a Stream, or null.");
     }
 
     this._contents = val;
   },
 });
 
-Object.defineProperty(File.prototype, 'cwd', {
+Object.defineProperty(File.prototype, "cwd", {
   get: function () {
     return this._cwd;
   },
   set: function (cwd) {
-    if (!cwd || typeof cwd !== 'string') {
-      throw new Error('cwd must be a non-empty string.');
+    if (!cwd || typeof cwd !== "string") {
+      throw new Error("cwd must be a non-empty string.");
     }
     this._cwd = removeTrailingSep(normalize(cwd));
   },
 });
 
-Object.defineProperty(File.prototype, 'base', {
+Object.defineProperty(File.prototype, "base", {
   get: function () {
     return this._base || this._cwd;
   },
@@ -219,8 +222,8 @@ Object.defineProperty(File.prototype, 'base', {
       delete this._base;
       return;
     }
-    if (typeof base !== 'string' || !base) {
-      throw new Error('base must be a non-empty string, or null/undefined.');
+    if (typeof base !== "string" || !base) {
+      throw new Error("base must be a non-empty string, or null/undefined.");
     }
     base = removeTrailingSep(normalize(base));
     if (base !== this._cwd) {
@@ -232,82 +235,82 @@ Object.defineProperty(File.prototype, 'base', {
 });
 
 // TODO: Should this be moved to vinyl-fs?
-Object.defineProperty(File.prototype, 'relative', {
+Object.defineProperty(File.prototype, "relative", {
   get: function () {
     if (!this.path) {
-      throw new Error('No path specified! Can not get relative.');
+      throw new Error("No path specified! Can not get relative.");
     }
     return path.relative(this.base, this.path);
   },
   set: function () {
     throw new Error(
-      'File.relative is generated from the base and path attributes. Do not modify it.'
+      "File.relative is generated from the base and path attributes. Do not modify it.",
     );
   },
 });
 
-Object.defineProperty(File.prototype, 'dirname', {
+Object.defineProperty(File.prototype, "dirname", {
   get: function () {
     if (!this.path) {
-      throw new Error('No path specified! Can not get dirname.');
+      throw new Error("No path specified! Can not get dirname.");
     }
     return path.dirname(this.path);
   },
   set: function (dirname) {
     if (!this.path) {
-      throw new Error('No path specified! Can not set dirname.');
+      throw new Error("No path specified! Can not set dirname.");
     }
     this.path = path.join(dirname, this.basename);
   },
 });
 
-Object.defineProperty(File.prototype, 'basename', {
+Object.defineProperty(File.prototype, "basename", {
   get: function () {
     if (!this.path) {
-      throw new Error('No path specified! Can not get basename.');
+      throw new Error("No path specified! Can not get basename.");
     }
     return path.basename(this.path);
   },
   set: function (basename) {
     if (!this.path) {
-      throw new Error('No path specified! Can not set basename.');
+      throw new Error("No path specified! Can not set basename.");
     }
     this.path = path.join(this.dirname, basename);
   },
 });
 
 // Property for getting/setting stem of the filename.
-Object.defineProperty(File.prototype, 'stem', {
+Object.defineProperty(File.prototype, "stem", {
   get: function () {
     if (!this.path) {
-      throw new Error('No path specified! Can not get stem.');
+      throw new Error("No path specified! Can not get stem.");
     }
     return path.basename(this.path, this.extname);
   },
   set: function (stem) {
     if (!this.path) {
-      throw new Error('No path specified! Can not set stem.');
+      throw new Error("No path specified! Can not set stem.");
     }
     this.path = path.join(this.dirname, stem + this.extname);
   },
 });
 
-Object.defineProperty(File.prototype, 'extname', {
+Object.defineProperty(File.prototype, "extname", {
   get: function () {
     if (!this.path) {
-      throw new Error('No path specified! Can not get extname.');
+      throw new Error("No path specified! Can not get extname.");
     }
     return path.extname(this.path);
   },
   set: function (extname) {
     if (!this.path) {
-      throw new Error('No path specified! Can not set extname.');
+      throw new Error("No path specified! Can not set extname.");
     }
     this.path = replaceExt(this.path, extname);
   },
 });
 
-Object.defineProperty(File.prototype, 'path', {
+Object.defineProperty(File.prototype, "path", {
   get: function () {
     var path = this.history[this.history.length - 1];
     if (path) {
@@ -317,8 +320,8 @@ Object.defineProperty(File.prototype, 'path', {
     }
   },
   set: function (path) {
-    if (typeof path !== 'string') {
-      throw new Error('path should be a string.');
+    if (typeof path !== "string") {
+      throw new Error("path should be a string.");
     }
     path = removeTrailingSep(normalize(path));
 
@@ -329,14 +332,14 @@ Object.defineProperty(File.prototype, 'path', {
   },
 });
 
-Object.defineProperty(File.prototype, 'symlink', {
+Object.defineProperty(File.prototype, "symlink", {
   get: function () {
     return this._symlink;
   },
   set: function (symlink) {
     // TODO: should this set the mode to symbolic if set?
-    if (typeof symlink !== 'string') {
-      throw new Error('symlink should be a string');
+    if (typeof symlink !== "string") {
+      throw new Error("symlink should be a string");
     }
 
     this._symlink = removeTrailingSep(normalize(symlink));
