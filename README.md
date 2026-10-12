@@ -442,3 +442,16 @@ MIT
 [coveralls-url]: https://coveralls.io/r/gulpjs/vinyl
 [coveralls-image]: https://img.shields.io/coveralls/gulpjs/vinyl/main.svg?style=flat-square
 <!-- prettier-ignore-end -->
+
+<!-- prettier-ignore-start -->
+[is-symbolic]: #issymbolic
+[is-directory]: #isdirectory
+[normalization]: #normalization-and-concatenation
+[extending-vinyl]: #extending-vinyl
+[stream]: https://nodejs.org/api/stream.html#stream_stream
+[readable-stream]: https://nodejs.org/api/stream.html#stream_readable_streams
+[buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer
+[fs-stats]: https://nodejs.org/api/fs.html#fs_class_fs_stats
+[vinyl-fs]: https://github.com/gulpjs/vinyl-fs
+[cloneable-readable]: https://github.com/mcollina/cloneable-readable
+<!-- prettier-ignore-end -->
