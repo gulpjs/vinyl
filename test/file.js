@@ -4,7 +4,7 @@ var fs = require("node:fs");
 var path = require("node:path");
 var util = require("node:util");
 var assert = require("node:assert");
-var { before, describe, it } = require("node:test");
+var { describe, it } = require("node:test");
 
 var File = require("../");
 
@@ -372,13 +372,6 @@ function suite(moduleName) {
     });
 
     describe("clone()", function () {
-      before(function (t) {
-        if (process.versions.node.startsWith("10.")) {
-          t.skip();
-          return;
-        }
-      });
-
       var fakeStat = {
         isSymbolicLink: function () {
           return true;
