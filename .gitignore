@@ -65,3 +65,4 @@ typings/
 
 # Test results
 test.xunit
+test/lcov.info

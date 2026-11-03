@@ -1,21 +1,20 @@
 "use strict";
 
-var path = require("path");
-var expect = require("expect");
+var path = require("node:path");
+var assert = require("node:assert");
+var { describe, it } = require("node:test");
 
 var normalize = require("../lib/normalize");
 
 describe("normalize()", function () {
-  it("leaves empty strings unmodified", function (done) {
+  it("leaves empty strings unmodified", function () {
     var result = normalize("");
-    expect(result).toEqual("");
-    done();
+    assert.strictEqual(result, "");
   });
 
-  it("applies path.normalize for everything else", function (done) {
+  it("applies path.normalize for everything else", function () {
     var str = "/foo//../bar/baz";
     var result = normalize(str);
-    expect(result).toEqual(path.normalize(str));
-    done();
+    assert.strictEqual(result, path.normalize(str));
   });
 });

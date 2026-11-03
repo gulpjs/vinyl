@@ -26,8 +26,7 @@
     "format-check": "prettier . --check",
     "format-write": "prettier . --write",
     "lint": "eslint .",
-    "pretest": "npm run lint",
-    "test": "nyc mocha --async-only"
+    "test": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=test/lcov.info \"test/*.js\""
   },
   "dependencies": {
     "clone": "^2.1.2",
@@ -38,18 +37,9 @@
   "devDependencies": {
     "eslint": "10.11.0",
     "eslint-config-gulp": "7.0.0",
-    "expect": "^27.4.6",
-    "mocha": "^8.4.0",
-    "nyc": "^15.1.0",
     "prettier": "3.9.6",
     "readable-stream": "^3.6.0",
     "streamx": "^2.12.5"
-  },
-  "nyc": {
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ]
   },
   "keywords": [
     "virtual",
